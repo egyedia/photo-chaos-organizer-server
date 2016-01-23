@@ -1,5 +1,6 @@
 package com.dubylon.photochaos;
 
+import com.dubylon.photochaos.servlet.FilesystemMetaThumbnailDataServlet;
 import com.dubylon.photochaos.servlet.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.servlet.FilesystemRootsServlet;
 import com.dubylon.photochaos.servlet.RemainderServlet;
@@ -36,6 +37,8 @@ public class PhotoChaosOrganizer {
     ServletHandler servletHandler = new ServletHandler();
     servletHandler.addServletWithMapping(FilesystemRootsServlet.class, "/filesystem-roots");
     servletHandler.addServletWithMapping(FilesystemPathContentsServlet.class, "/filesystem-path-contents/*");
+    servletHandler.addServletWithMapping(FilesystemMetaThumbnailDataServlet.class, "/filesystem-meta-thumbnail-data/*");
+    
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
 
     // create the handler collections
