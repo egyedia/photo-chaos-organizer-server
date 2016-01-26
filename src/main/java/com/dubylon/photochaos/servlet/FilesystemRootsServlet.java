@@ -1,13 +1,10 @@
 package com.dubylon.photochaos.servlet;
 
-import com.dubylon.photochaos.util.PhotoChaosUtil;
+import com.dubylon.photochaos.handler.FilesystemRootsHandler;
+import com.dubylon.photochaos.handler.PCResponseObject;
+import com.dubylon.photochaos.handler.PCResponseWriter;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,15 +13,13 @@ public class FilesystemRootsServlet extends AbstractPhotoChaosServlet {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
-    List<Object> roots = new ArrayList<>();
-    for (Path rootDirectory : rootDirectories) {
-      Map<String, Object> root = new HashMap<>();
-      String rootPath = rootDirectory.toString();
-      rootPath = PhotoChaosUtil.getNormalPath(rootPath);
-      root.put("path", rootPath);
-      roots.add(root);
+    FilesystemRootsHandler h = new FilesystemRootsHandler();
+    PCResponseObject pcResponse = h.doGet(request);
+    if (pcResponse.isOk()) {
+      List<Object> roots = (List<Object>) pcResponse.getData("roots");
+      PCResponseWriter.writeSuccess(response, pcResponse, roots);
+    } else {
+      PCResponseWriter.writeError(response, pcResponse);
     }
-    ok(response, roots);
   }
 }

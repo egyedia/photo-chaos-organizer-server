@@ -18,6 +18,4 @@
 * http://localhost:8080/filesystem-meta-thumbnail-data/QzovVXNlcnM=
 * http://localhost:8080/filesystem-meta-thumbnail-data/QzovVXNlcnMvRGVmYXVsdC9OVFVTRVIuREFULkxPRw==
 * http://localhost:8080/filesystem-meta-thumbnail-data/QzovYmFkLmpwZw==
-{errorMessage=com.drew.metadata.MetadataException: Tag 'Image Width' has not been set -- check using containsTag() first, errorCode=METADATA_EXCEPTION}
-
 * http://localhost:8080/filesystem-meta-thumbnail-data/QzovZ29vZC5qcGc=
