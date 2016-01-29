@@ -19,3 +19,5 @@
 * http://localhost:8080/filesystem-meta-thumbnail-data/QzovVXNlcnMvRGVmYXVsdC9OVFVTRVIuREFULkxPRw==
 * http://localhost:8080/filesystem-meta-thumbnail-data/QzovYmFkLmpwZw==
 * http://localhost:8080/filesystem-meta-thumbnail-data/QzovZ29vZC5qcGc=
+
+* http://localhost:8080/filesystem-meta-thumbnail-meta

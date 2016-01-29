@@ -2,7 +2,7 @@ package com.dubylon.photochaos.handler;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class FilesystemMetaThumbnailDataHandler extends AsbtractMetaThumbnailHandler {
+public class FilesystemMetaThumbnailMetaHandler extends AsbtractMetaThumbnailHandler {
 
   @Override
   public PCResponseObject doGet(HttpServletRequest request) {
@@ -12,7 +12,7 @@ public class FilesystemMetaThumbnailDataHandler extends AsbtractMetaThumbnailHan
       if (response.isOk()) {
         response = handleMetadataObject(request, response);
         if (response.isOk()) {
-          response = handleMetadata(request, response, true);
+          response = handleMetadata(request, response, false);
         }
       }
     }
