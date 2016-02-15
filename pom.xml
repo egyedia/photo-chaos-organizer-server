@@ -46,4 +46,35 @@
     </dependency>
   </dependencies>
 
+<build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+
+  <plugins>
+    <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-jar-plugin</artifactId>
+    <configuration>
+    </configuration>
+  </plugin>
+
+<plugin>
+  <artifactId>maven-assembly-plugin</artifactId>
+  <version>2.3</version>
+  <configuration>
+    <archive>
+        <manifest>
+          <addClasspath>true</addClasspath>
+          <mainClass>com.dubylon.photochaos.PhotoChaosOrganizer</mainClass>
+        </manifest>
+      </archive>
+    <descriptorRefs>
+      <descriptorRef>jar-with-dependencies</descriptorRef>
+    </descriptorRefs>
+  </configuration>
+</plugin>
+
+</plugins>
+
+</build>
 </project>
