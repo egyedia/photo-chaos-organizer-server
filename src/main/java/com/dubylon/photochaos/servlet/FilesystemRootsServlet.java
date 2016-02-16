@@ -15,7 +15,7 @@ public class FilesystemRootsServlet extends AbstractPhotoChaosServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     FilesystemRootsHandler h = new FilesystemRootsHandler();
     PCResponseObject pcResponse = h.doGet(request);
-    if (pcResponse.isOk()) {
+    if (pcResponse.isSuccess()) {
       List<Object> roots = (List<Object>) pcResponse.getData("roots");
       PCResponseWriter.writeSuccess(response, pcResponse, roots);
     } else {

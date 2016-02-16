@@ -7,11 +7,11 @@ public class FilesystemMetaThumbnailMetaHandler extends AsbtractMetaThumbnailHan
   @Override
   public PCResponseObject doGet(HttpServletRequest request) {
     PCResponseObject response = handlePath(request);
-    if (response.isOk()) {
+    if (response.isSuccess()) {
       response = handleFile(request, response);
-      if (response.isOk()) {
+      if (response.isSuccess()) {
         response = handleMetadataObject(request, response);
-        if (response.isOk()) {
+        if (response.isSuccess()) {
           response = handleMetadata(request, response, false);
         }
       }
@@ -22,6 +22,11 @@ public class FilesystemMetaThumbnailMetaHandler extends AsbtractMetaThumbnailHan
   @Override
   public PCResponseObject doPost(HttpServletRequest request) {
     return PCResponseObject.methodNotAllowed();
+  }
+
+  @Override
+  public PCResponseObject doPut(HttpServletRequest request) {
+    return null;
   }
 
   @Override

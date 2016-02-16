@@ -1,6 +1,7 @@
 package com.dubylon.photochaos.handler;
 
 import com.dubylon.photochaos.util.PhotoChaosUtil;
+
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -30,6 +31,11 @@ public class FilesystemRootsHandler extends AsbtractPCHandler {
   @Override
   public PCResponseObject doPost(HttpServletRequest request) {
     return PCResponseObject.methodNotAllowed();
+  }
+
+  @Override
+  public PCResponseObject doPut(HttpServletRequest request) {
+    return null;
   }
 
   @Override

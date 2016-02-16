@@ -1,10 +1,7 @@
 package com.dubylon.photochaos;
 
-import com.dubylon.photochaos.servlet.FilesystemMetaThumbnailDataServlet;
-import com.dubylon.photochaos.servlet.FilesystemMetaThumbnailMetaServlet;
-import com.dubylon.photochaos.servlet.FilesystemPathContentsServlet;
-import com.dubylon.photochaos.servlet.FilesystemRootsServlet;
-import com.dubylon.photochaos.servlet.RemainderServlet;
+import com.dubylon.photochaos.servlet.*;
+
 import java.io.File;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NCSARequestLog;
@@ -40,7 +37,8 @@ public class PhotoChaosOrganizer {
     servletHandler.addServletWithMapping(FilesystemPathContentsServlet.class, "/filesystem-path-contents/*");
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailDataServlet.class, "/filesystem-meta-thumbnail-data/*");
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailMetaServlet.class, "/filesystem-meta-thumbnail-meta/*");
-    
+    servletHandler.addServletWithMapping(FilesystemFavoritesServlet.class, "/filesystem-favorites");
+
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
 
     // create the handler collections

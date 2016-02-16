@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.jetty.util.ajax.JSON;
 
 public abstract class PCResponseWriter {
@@ -28,7 +29,8 @@ public abstract class PCResponseWriter {
     response.getWriter().println(JSON.toString(rm));
   }
 
-  public static void writeSuccess(HttpServletResponse response, String contentType, Map<String, String> headers, byte[] data) throws IOException {
+  public static void writeSuccess(HttpServletResponse response, String contentType, Map<String, String> headers,
+                                  byte[] data) throws IOException {
     response.setContentType(contentType);
     if (headers != null) {
       for (String key : headers.keySet()) {
@@ -41,11 +43,18 @@ public abstract class PCResponseWriter {
     }
   }
 
-  public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse, Object responseObject) throws IOException {
+  public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse, Object responseObject)
+      throws IOException {
     response.setContentType("application/json");
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setStatus(pcResponse.getResponseCode());
     response.getWriter().println(JSON.toString(responseObject));
+  }
+
+  public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse) throws IOException {
+    response.setContentType("application/json");
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setStatus(pcResponse.getResponseCode());
   }
 
 }

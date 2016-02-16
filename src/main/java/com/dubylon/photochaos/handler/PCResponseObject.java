@@ -32,6 +32,11 @@ public final class PCResponseObject {
     return r;
   }
 
+  public static PCResponseObject created() {
+    PCResponseObject r = new PCResponseObject(HttpServletResponse.SC_CREATED);
+    return r;
+  }
+
   public void setErrorCode(String errorCode) {
     this.errorCode = errorCode;
   }
@@ -82,8 +87,9 @@ public final class PCResponseObject {
     return r;
   }
 
-  public boolean isOk() {
-    return responseCode == HttpServletResponse.SC_OK;
+  public boolean isSuccess() {
+    return responseCode == HttpServletResponse.SC_OK
+        || responseCode == HttpServletResponse.SC_CREATED;
   }
 
   public PCResponseObject setData(String key, Object value) {
@@ -110,5 +116,4 @@ public final class PCResponseObject {
   public int getResponseCode() {
     return responseCode;
   }
-
 }

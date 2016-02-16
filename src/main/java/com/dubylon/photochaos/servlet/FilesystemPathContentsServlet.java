@@ -1,6 +1,6 @@
 package com.dubylon.photochaos.servlet;
 
-import com.dubylon.photochaos.handler.FilesystePathContentsHandler;
+import com.dubylon.photochaos.handler.FilesystemPathContentsHandler;
 import com.dubylon.photochaos.handler.PCResponseObject;
 import com.dubylon.photochaos.handler.PCResponseWriter;
 import java.io.IOException;
@@ -14,9 +14,9 @@ public class FilesystemPathContentsServlet extends AbstractPhotoChaosServlet {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    FilesystePathContentsHandler h = new FilesystePathContentsHandler();
+    FilesystemPathContentsHandler h = new FilesystemPathContentsHandler();
     PCResponseObject pcResponse = h.doGet(request);
-    if (pcResponse.isOk()) {
+    if (pcResponse.isSuccess()) {
       Map<String, Object> rm = new HashMap<>();
       rm.put("contentList", pcResponse.getData("contentList"));
       rm.put("pathInfo", pcResponse.getData("pathInfo"));

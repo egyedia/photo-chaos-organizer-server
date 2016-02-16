@@ -1,9 +1,9 @@
 package com.dubylon.photochaos.handler;
 
 import com.dubylon.photochaos.util.PhotoChaosUtil;
+
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.NotDirectoryException;
@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
-public class FilesystePathContentsHandler extends AsbtractPCHandler {
+public class FilesystemPathContentsHandler extends AsbtractPCHandler {
 
   @Override
   public PCResponseObject doGet(HttpServletRequest request) {
     PCResponseObject response = handlePath(request);
-    if (response.isOk()) {
+    if (response.isSuccess()) {
       response = handleContentList(request, response);
-      if (response.isOk()) {
+      if (response.isSuccess()) {
         response = handlePathInfo(request, response);
         response = handleParentInfo(request, response);
       }
@@ -33,6 +33,11 @@ public class FilesystePathContentsHandler extends AsbtractPCHandler {
   @Override
   public PCResponseObject doPost(HttpServletRequest request) {
     return PCResponseObject.methodNotAllowed();
+  }
+
+  @Override
+  public PCResponseObject doPut(HttpServletRequest request) {
+    return null;
   }
 
   @Override

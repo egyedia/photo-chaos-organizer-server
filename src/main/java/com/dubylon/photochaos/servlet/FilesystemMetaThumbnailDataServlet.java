@@ -16,7 +16,7 @@ public class FilesystemMetaThumbnailDataServlet extends AbstractPhotoChaosServle
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     FilesystemMetaThumbnailDataHandler h = new FilesystemMetaThumbnailDataHandler();
     PCResponseObject pcResponse = h.doGet(request);
-    if (pcResponse.isOk()) {
+    if (pcResponse.isSuccess()) {
       Map<String, String> headers = new HashMap<>();
       headers.put("PCO-height", (String) pcResponse.getData("height"));
       headers.put("PCO-width", (String) pcResponse.getData("width"));
