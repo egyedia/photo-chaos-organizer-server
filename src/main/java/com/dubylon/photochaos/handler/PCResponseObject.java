@@ -32,8 +32,10 @@ public final class PCResponseObject {
     return r;
   }
 
-  public static PCResponseObject created() {
+  public static PCResponseObject created(String location, Object obj) {
     PCResponseObject r = new PCResponseObject(HttpServletResponse.SC_CREATED);
+    r.setData("location", location);
+    r.setData("createdObject", obj);
     return r;
   }
 

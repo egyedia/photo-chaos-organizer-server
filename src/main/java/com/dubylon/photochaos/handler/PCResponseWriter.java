@@ -29,6 +29,10 @@ public abstract class PCResponseWriter {
     response.getWriter().println(JSON.toString(rm));
   }
 
+  public static void writeSuccess(HttpServletResponse response, String contentType, byte[] data) throws IOException {
+    writeSuccess(response, contentType, null, data);
+  }
+
   public static void writeSuccess(HttpServletResponse response, String contentType, Map<String, String> headers,
                                   byte[] data) throws IOException {
     response.setContentType(contentType);
@@ -45,9 +49,19 @@ public abstract class PCResponseWriter {
 
   public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse, Object responseObject)
       throws IOException {
+    writeSuccess(response, pcResponse, null, responseObject);
+  }
+
+  public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse, Map<String, String>
+      headers, Object responseObject) throws IOException {
     response.setContentType("application/json");
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setStatus(pcResponse.getResponseCode());
+    if (headers != null) {
+      for (String key : headers.keySet()) {
+        response.addHeader(key, headers.get(key));
+      }
+    }
     response.getWriter().println(JSON.toString(responseObject));
   }
 
