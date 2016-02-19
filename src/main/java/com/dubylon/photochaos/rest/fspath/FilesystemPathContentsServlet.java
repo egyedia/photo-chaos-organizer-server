@@ -1,8 +1,12 @@
-package com.dubylon.photochaos.servlet;
+package com.dubylon.photochaos.rest.fspath;
 
-import com.dubylon.photochaos.handler.FilesystemPathContentsHandler;
 import com.dubylon.photochaos.handler.PCResponseObject;
 import com.dubylon.photochaos.handler.PCResponseWriter;
+import com.dubylon.photochaos.rest.PCHandlerError;
+import com.dubylon.photochaos.rest.fsroot.FilesystemRootsData;
+import com.dubylon.photochaos.rest.fsroot.FilesystemRootsHandler;
+import com.dubylon.photochaos.servlet.AbstractPhotoChaosServlet;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,15 +19,15 @@ public class FilesystemPathContentsServlet extends AbstractPhotoChaosServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     FilesystemPathContentsHandler h = new FilesystemPathContentsHandler();
-    PCResponseObject pcResponse = h.doGet(request);
-    if (pcResponse.isSuccess()) {
+    try {
+      FilesystemPathContentsData pcResponse = h.doGet(request);
       Map<String, Object> rm = new HashMap<>();
-      rm.put("contentList", pcResponse.getData("contentList"));
-      rm.put("pathInfo", pcResponse.getData("pathInfo"));
-      rm.put("parentInfo", pcResponse.getData("parentInfo"));
+      rm.put("contentList", pcResponse.getContentList());
+      rm.put("pathInfo", pcResponse.getPathInfo());
+      rm.put("parentList", pcResponse.getParentList());
       PCResponseWriter.writeSuccess(response, pcResponse, rm);
-    } else {
-      PCResponseWriter.writeError(response, pcResponse);
+    } catch (PCHandlerError err) {
+      PCResponseWriter.writeError(response, err);
     }
   }
 }

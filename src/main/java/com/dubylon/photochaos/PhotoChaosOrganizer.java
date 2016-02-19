@@ -1,5 +1,10 @@
 package com.dubylon.photochaos;
 
+import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
+import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
+import com.dubylon.photochaos.rest.fsroot.FilesystemRootsServlet;
+import com.dubylon.photochaos.rest.thumbdata.FilesystemMetaThumbnailDataServlet;
+import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaServlet;
 import com.dubylon.photochaos.servlet.*;
 
 import java.io.File;

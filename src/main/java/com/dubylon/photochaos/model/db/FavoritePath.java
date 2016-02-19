@@ -1,4 +1,4 @@
-package com.dubylon.photochaos.model;
+package com.dubylon.photochaos.model.db;
 
 import javax.persistence.*;
 

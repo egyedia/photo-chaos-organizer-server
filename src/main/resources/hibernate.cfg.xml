@@ -20,7 +20,7 @@
     <property name="connection.pool_size">1</property>
     <property name="current_session_context_class">thread</property>
 
-    <mapping class="com.dubylon.photochaos.model.FavoritePath" />
+    <mapping class="com.dubylon.photochaos.model.db.FavoritePath" />
     <!--<mapping class="com.dubylon.photochaos.model.SourcePath" />-->
     <!--<mapping class="com.dubylon.photochaos.model.DestinationPath" />-->
 

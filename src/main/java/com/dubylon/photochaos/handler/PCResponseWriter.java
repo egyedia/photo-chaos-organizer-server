@@ -7,30 +7,30 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.util.ajax.JSON;
+import com.dubylon.photochaos.rest.PCHandlerError;
+import com.dubylon.photochaos.rest.PCHandlerResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class PCResponseWriter {
 
-  public static void writeError(HttpServletResponse response, PCResponseObject pcResponse) throws IOException {
+  private static ObjectMapper mapper = new ObjectMapper();
+
+  public static void writeError(HttpServletResponse response, PCHandlerError err) throws IOException {
     response.setContentType("application/json");
     response.setHeader("Access-Control-Allow-Origin", "*");
-    response.setStatus(pcResponse.getResponseCode());
+    response.setStatus(err.getResponseCode());
     Map<String, Object> rm = new HashMap<>();
-    rm.put("errorCode", pcResponse.getErrorCode());
-    rm.put("errorDescription", pcResponse.getErrorDescription());
-    Exception ex = pcResponse.getException();
-    if (ex != null) {
+    rm.put("errorKey", err.getErrorKey());
+    rm.put("errorText", err.getErrorText());
+    Throwable t = err.getCause();
+    if (t != null) {
       List<String> stackTrace = new ArrayList<>();
-      for (StackTraceElement ste : ex.getStackTrace()) {
+      for (StackTraceElement ste : t.getStackTrace()) {
         stackTrace.add(ste.toString());
       }
       rm.put("stackTrace", stackTrace);
     }
-    response.getWriter().println(JSON.toString(rm));
-  }
-
-  public static void writeSuccess(HttpServletResponse response, String contentType, byte[] data) throws IOException {
-    writeSuccess(response, contentType, null, data);
+    response.getWriter().println(mapper.writeValueAsString(rm));
   }
 
   public static void writeSuccess(HttpServletResponse response, String contentType, Map<String, String> headers,
@@ -47,12 +47,12 @@ public abstract class PCResponseWriter {
     }
   }
 
-  public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse, Object responseObject)
+  public static void writeSuccess(HttpServletResponse response, PCHandlerResponse pcResponse, Object responseObject)
       throws IOException {
     writeSuccess(response, pcResponse, null, responseObject);
   }
 
-  public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse, Map<String, String>
+  public static void writeSuccess(HttpServletResponse response, PCHandlerResponse pcResponse, Map<String, String>
       headers, Object responseObject) throws IOException {
     response.setContentType("application/json");
     response.setHeader("Access-Control-Allow-Origin", "*");
@@ -62,7 +62,7 @@ public abstract class PCResponseWriter {
         response.addHeader(key, headers.get(key));
       }
     }
-    response.getWriter().println(JSON.toString(responseObject));
+    response.getWriter().println(mapper.writeValueAsString(responseObject));
   }
 
   public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse) throws IOException {

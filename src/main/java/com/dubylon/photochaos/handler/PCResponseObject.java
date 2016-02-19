@@ -1,10 +1,7 @@
 package com.dubylon.photochaos.handler;
 
-import java.nio.file.NoSuchFileException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.file.NoSuchFileException;
 
 public final class PCResponseObject {
 
@@ -12,20 +9,20 @@ public final class PCResponseObject {
   private String errorCode;
   private String errorDescription;
   private Exception exception;
-  private Map<String, Object> dataMap;
 
   private PCResponseObject(int responseCode) {
     this.responseCode = responseCode;
-    dataMap = new HashMap<>();
+    //dataMap = new HashMap<>();
   }
 
-  public PCResponseObject(PCResponseObject src) {
+  /*public PCResponseObject(PCResponseObject src) {
     this(src.getResponseCode());
+    // TODO handle plain response
     Set<String> keys = src.dataMap.keySet();
     for (String key : keys) {
       setData(key, src.getData(key));
     }
-  }
+  }*/
 
   public static PCResponseObject ok() {
     PCResponseObject r = new PCResponseObject(HttpServletResponse.SC_OK);
@@ -34,8 +31,9 @@ public final class PCResponseObject {
 
   public static PCResponseObject created(String location, Object obj) {
     PCResponseObject r = new PCResponseObject(HttpServletResponse.SC_CREATED);
-    r.setData("location", location);
-    r.setData("createdObject", obj);
+    //TODO created handle location and object
+    //r.setData("location", location);
+    //r.setData("createdObject", obj);
     return r;
   }
 
@@ -92,15 +90,6 @@ public final class PCResponseObject {
   public boolean isSuccess() {
     return responseCode == HttpServletResponse.SC_OK
         || responseCode == HttpServletResponse.SC_CREATED;
-  }
-
-  public PCResponseObject setData(String key, Object value) {
-    dataMap.put(key, value);
-    return this;
-  }
-
-  public Object getData(String key) {
-    return dataMap.get(key);
   }
 
   public String getErrorCode() {

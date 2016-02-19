@@ -1,8 +1,11 @@
-package com.dubylon.photochaos.servlet;
+package com.dubylon.photochaos.rest.fsroot;
 
-import com.dubylon.photochaos.handler.FilesystemRootsHandler;
 import com.dubylon.photochaos.handler.PCResponseObject;
 import com.dubylon.photochaos.handler.PCResponseWriter;
+import com.dubylon.photochaos.rest.PCHandlerError;
+import com.dubylon.photochaos.rest.PCHandlerResponseData;
+import com.dubylon.photochaos.servlet.AbstractPhotoChaosServlet;
+
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -14,12 +17,11 @@ public class FilesystemRootsServlet extends AbstractPhotoChaosServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     FilesystemRootsHandler h = new FilesystemRootsHandler();
-    PCResponseObject pcResponse = h.doGet(request);
-    if (pcResponse.isSuccess()) {
-      List<Object> roots = (List<Object>) pcResponse.getData("roots");
-      PCResponseWriter.writeSuccess(response, pcResponse, roots);
-    } else {
-      PCResponseWriter.writeError(response, pcResponse);
+    try {
+      FilesystemRootsData pcResponse = h.doGet(request);
+      PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getRoots());
+    } catch (PCHandlerError err) {
+      PCResponseWriter.writeError(response, err);
     }
   }
 }
