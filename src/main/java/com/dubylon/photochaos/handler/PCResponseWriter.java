@@ -62,7 +62,9 @@ public abstract class PCResponseWriter {
         response.addHeader(key, headers.get(key));
       }
     }
-    response.getWriter().println(mapper.writeValueAsString(responseObject));
+    if (responseObject != null) {
+      response.getWriter().println(mapper.writeValueAsString(responseObject));
+    }
   }
 
   public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse) throws IOException {

@@ -6,14 +6,14 @@ import com.dubylon.photochaos.rest.generic.AbstractRequestedPathData;
 
 import java.io.File;
 
-public class FilesystemMetaThumbnailMetaData extends AbstractRequestedPathData {
+public class FilesystemMetaThumbnailMetaGetData extends AbstractRequestedPathData {
 
   private Metadata metadata;
   private ThumbnailMeta extractedMeta;
   private File image;
   private byte[] thumbnailData;
 
-  public FilesystemMetaThumbnailMetaData() {
+  public FilesystemMetaThumbnailMetaGetData() {
   }
 
   public ThumbnailMeta getExtractedMeta() {

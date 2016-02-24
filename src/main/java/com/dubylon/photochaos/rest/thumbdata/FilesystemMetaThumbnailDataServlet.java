@@ -2,7 +2,7 @@ package com.dubylon.photochaos.rest.thumbdata;
 
 import com.dubylon.photochaos.handler.PCResponseWriter;
 import com.dubylon.photochaos.rest.PCHandlerError;
-import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaData;
+import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaGetData;
 import com.dubylon.photochaos.servlet.AbstractPhotoChaosServlet;
 
 import javax.servlet.ServletException;
@@ -16,9 +16,9 @@ public class FilesystemMetaThumbnailDataServlet extends AbstractPhotoChaosServle
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    FilesystemMetaThumbnailDataHandler h = new FilesystemMetaThumbnailDataHandler();
+    FilesystemMetaThumbnailDataGetHandler h = new FilesystemMetaThumbnailDataGetHandler();
     try {
-      FilesystemMetaThumbnailMetaData pcResponse = h.doGet(request);
+      FilesystemMetaThumbnailMetaGetData pcResponse = h.handleRequest(request);
       Map<String, String> headers = new HashMap<>();
       headers.put("PCO-height", String.valueOf(pcResponse.getExtractedMeta().getHeight()));
       headers.put("PCO-width", String.valueOf(pcResponse.getExtractedMeta().getWidth()));

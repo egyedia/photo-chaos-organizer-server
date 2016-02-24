@@ -2,7 +2,6 @@ package com.dubylon.photochaos.rest.fspath;
 
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
-import com.dubylon.photochaos.rest.PCHandlerResponseError;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandlerPath;
 import com.dubylon.photochaos.util.FileTypeUtil;
 import com.dubylon.photochaos.util.PhotoChaosUtil;
@@ -17,14 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FilesystemPathContentsHandler extends AbstractPCHandlerPath {
+public class FilesystemPathContentsGetHandler extends AbstractPCHandlerPath {
 
-  public FilesystemPathContentsHandler() {
+  public FilesystemPathContentsGetHandler() {
   }
 
   @Override
-  public FilesystemPathContentsData doGet(HttpServletRequest request) throws PCHandlerError {
-    FilesystemPathContentsData response = new FilesystemPathContentsData();
+  public FilesystemPathContentsGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
+    FilesystemPathContentsGetData response = new FilesystemPathContentsGetData();
     handlePath(request, response);
     handleContentList(request, response);
     handlePathInfo(request, response);
@@ -32,22 +31,7 @@ public class FilesystemPathContentsHandler extends AbstractPCHandlerPath {
     return response;
   }
 
-  @Override
-  public PCHandlerResponse doPost(HttpServletRequest request) throws PCHandlerError {
-    return PCHandlerResponseError.methodNotAllowed();
-  }
-
-  @Override
-  public PCHandlerResponse doPut(HttpServletRequest request) throws PCHandlerError {
-    return PCHandlerResponseError.methodNotAllowed();
-  }
-
-  @Override
-  public PCHandlerResponse doDelete(HttpServletRequest request) throws PCHandlerError {
-    return PCHandlerResponseError.methodNotAllowed();
-  }
-
-  private void handleContentList(HttpServletRequest request, FilesystemPathContentsData response) throws
+  private void handleContentList(HttpServletRequest request, FilesystemPathContentsGetData response) throws
       PCHandlerError {
     Path requestedPath = response.getRequestedPath();
     List<Object> contentList = new ArrayList<>();
@@ -77,7 +61,7 @@ public class FilesystemPathContentsHandler extends AbstractPCHandlerPath {
     response.setContentList(contentList);
   }
 
-  private void handlePathInfo(HttpServletRequest request, FilesystemPathContentsData response) {
+  private void handlePathInfo(HttpServletRequest request, FilesystemPathContentsGetData response) {
     Path requestedPath = response.getRequestedPath();
     // Is requested path root?
     boolean isRoot = requestedPath.getRoot().equals(requestedPath);
@@ -91,7 +75,7 @@ public class FilesystemPathContentsHandler extends AbstractPCHandlerPath {
     response.setIsRoot(isRoot);
   }
 
-  private void handleParentInfo(HttpServletRequest request, FilesystemPathContentsData response) {
+  private void handleParentInfo(HttpServletRequest request, FilesystemPathContentsGetData response) {
     Path requestedPath = response.getRequestedPath();
     boolean isRoot = response.isRoot();
     // Add parent list
@@ -109,7 +93,8 @@ public class FilesystemPathContentsHandler extends AbstractPCHandlerPath {
         Map<String, Object> parent = new HashMap<>();
         parentList.add(0, parent);
         parent.put("path", normalPath);
-        parent.put("name", currentPath.getFileName() == null? currentPath.toString() : currentPath.getFileName().toString());
+        parent.put("name", currentPath.getFileName() == null ? currentPath.toString() : currentPath.getFileName()
+            .toString());
         // go up one level
         currentPath = currentPath.getParent();
         normalPath = PhotoChaosUtil.getNormalPath(currentPath);

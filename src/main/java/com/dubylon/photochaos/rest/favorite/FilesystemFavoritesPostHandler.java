@@ -3,13 +3,9 @@ package com.dubylon.photochaos.rest.favorite;
 import com.dubylon.photochaos.model.db.FavoritePath;
 import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
-import com.dubylon.photochaos.rest.PCHandlerResponse;
-import com.dubylon.photochaos.rest.PCHandlerResponseError;
 import com.dubylon.photochaos.util.HibernateUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -22,18 +18,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FilesystemFavoritesHandler implements IPhotoChaosHandler {
+public class FilesystemFavoritesPostHandler implements IPhotoChaosHandler {
 
-  public FilesystemFavoritesHandler() {
+  public FilesystemFavoritesPostHandler() {
   }
 
   @Override
-  public PCHandlerResponse doGet(HttpServletRequest request) throws PCHandlerError {
-    return PCHandlerResponseError.methodNotAllowed();
-  }
-
-  @Override
-  public FilesystemFavoritesCreateData doPost(HttpServletRequest request) throws PCHandlerError {
+  public FilesystemFavoritesPostData handleRequest(HttpServletRequest request) throws PCHandlerError {
     String content = null;
     try {
       //TODO handle body reading
@@ -77,7 +68,7 @@ public class FilesystemFavoritesHandler implements IPhotoChaosHandler {
       throw new PCHandlerError("ERROR_CONNECTING_TO_DATASTORE", e);
     }
 
-    FilesystemFavoritesCreateData response = new FilesystemFavoritesCreateData();
+    FilesystemFavoritesPostData response = new FilesystemFavoritesPostData();
 
     Session session = sessionFactory.openSession();
     Transaction tx = null;
@@ -97,16 +88,6 @@ public class FilesystemFavoritesHandler implements IPhotoChaosHandler {
     } finally {
       session.close();
     }
-  }
-
-  @Override
-  public PCHandlerResponse doPut(HttpServletRequest request) throws PCHandlerError {
-    return PCHandlerResponseError.methodNotAllowed();
-  }
-
-  @Override
-  public PCHandlerResponse doDelete(HttpServletRequest request) throws PCHandlerError {
-    return PCHandlerResponseError.methodNotAllowed();
   }
 
 }

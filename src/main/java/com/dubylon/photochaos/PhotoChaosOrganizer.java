@@ -42,7 +42,7 @@ public class PhotoChaosOrganizer {
     servletHandler.addServletWithMapping(FilesystemPathContentsServlet.class, "/filesystem-path-contents/*");
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailDataServlet.class, "/filesystem-meta-thumbnail-data/*");
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailMetaServlet.class, "/filesystem-meta-thumbnail-meta/*");
-    servletHandler.addServletWithMapping(FilesystemFavoritesServlet.class, "/filesystem-favorites");
+    servletHandler.addServletWithMapping(FilesystemFavoritesServlet.class, "/filesystem-favorites/*");
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
 

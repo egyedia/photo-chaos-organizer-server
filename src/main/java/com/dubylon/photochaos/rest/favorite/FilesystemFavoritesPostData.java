@@ -3,12 +3,12 @@ package com.dubylon.photochaos.rest.favorite;
 import com.dubylon.photochaos.model.db.FavoritePath;
 import com.dubylon.photochaos.rest.PCHandlerResponseData;
 
-public class FilesystemFavoritesCreateData extends PCHandlerResponseData {
+public class FilesystemFavoritesPostData extends PCHandlerResponseData {
 
   private FavoritePath createdObject;
   private Long id;
 
-  public FilesystemFavoritesCreateData() {
+  public FilesystemFavoritesPostData() {
   }
 
   public FavoritePath getCreatedObject() {

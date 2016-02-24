@@ -5,11 +5,11 @@ import com.dubylon.photochaos.rest.PCHandlerResponseData;
 import java.util.List;
 import java.util.Map;
 
-public class FilesystemRootsData extends PCHandlerResponseData {
+public class FilesystemRootsGetData extends PCHandlerResponseData {
 
   private List<Map<String, Object>> roots;
 
-  public FilesystemRootsData() {
+  public FilesystemRootsGetData() {
   }
 
   public List<Map<String, Object>> getRoots() {

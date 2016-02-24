@@ -6,7 +6,7 @@ import com.dubylon.photochaos.rest.generic.AbstractRequestedPathData;
 import java.util.List;
 import java.util.Map;
 
-public class FilesystemPathContentsData extends AbstractRequestedPathData {
+public class FilesystemPathContentsGetData extends AbstractRequestedPathData {
 
   private List<Object> contentList;
   private List<Map<String, Object>> parentList;

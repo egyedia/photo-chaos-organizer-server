@@ -11,7 +11,7 @@ import com.drew.metadata.exif.ExifThumbnailDirectory;
 import com.dubylon.photochaos.model.meta.meta.ThumbnailMeta;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
-import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaData;
+import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaGetData;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -21,7 +21,7 @@ import java.util.Date;
 
 public abstract class AbstractPCHandlerMetaThumbnail extends AbstractPCHandlerPath {
 
-  protected static void handleFile(HttpServletRequest request, FilesystemMetaThumbnailMetaData response) throws
+  protected static void handleFile(HttpServletRequest request, FilesystemMetaThumbnailMetaGetData response) throws
       PCHandlerError {
     Path requestedPath = response.getRequestedPath();
     File imageFile = requestedPath.toFile();
@@ -34,7 +34,7 @@ public abstract class AbstractPCHandlerMetaThumbnail extends AbstractPCHandlerPa
     response.setImage(imageFile);
   }
 
-  protected static void handleMetadataObject(HttpServletRequest request, FilesystemMetaThumbnailMetaData response)
+  protected static void handleMetadataObject(HttpServletRequest request, FilesystemMetaThumbnailMetaGetData response)
       throws
       PCHandlerError {
     File imageFile = response.getImage();
@@ -49,7 +49,7 @@ public abstract class AbstractPCHandlerMetaThumbnail extends AbstractPCHandlerPa
     response.setMetadata(metadata);
   }
 
-  protected static void handleMetadata(HttpServletRequest request, FilesystemMetaThumbnailMetaData response, boolean
+  protected static void handleMetadata(HttpServletRequest request, FilesystemMetaThumbnailMetaGetData response, boolean
       extractThumbnailData) throws PCHandlerError {
     Metadata metadata = response.getMetadata();
     long w = -1;
