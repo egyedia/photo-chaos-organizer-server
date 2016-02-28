@@ -19,7 +19,7 @@ public class FilesystemPathContentsServlet extends AbstractPhotoChaosServlet {
     try {
       FilesystemPathContentsGetData pcResponse = h.handleRequest(request);
       Map<String, Object> rm = new HashMap<>();
-      rm.put("contentList", pcResponse.getContentList());
+      rm.put("entryList", pcResponse.getEntryList());
       rm.put("pathInfo", pcResponse.getPathInfo());
       rm.put("parentList", pcResponse.getParentList());
       PCResponseWriter.writeSuccess(response, pcResponse, rm);

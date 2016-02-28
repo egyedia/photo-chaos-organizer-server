@@ -40,15 +40,10 @@ public class FilesystemPathContentsGetHandler extends AbstractPCHandlerPath {
         Map<String, Object> entry = new HashMap<>();
         BasicFileAttributes attrs = Files.readAttributes(file, BasicFileAttributes.class);
         entry.put("name", file.getFileName().toString());
-        Map<String, Object> attributes = new HashMap<>();
-        entry.put("attributes", attributes);
-        attributes.put("size", attrs.size());
-        attributes.put("lastModTime", attrs.lastModifiedTime().toMillis());
-        attributes.put("isDir", attrs.isDirectory());
-        attributes.put("isSymlink", attrs.isSymbolicLink());
-        attributes.put("isRegular", attrs.isRegularFile());
+        entry.put("attributes", FileTypeUtil.getFileSystemAttributes(attrs, Files.isHidden(file)));
+        entry.put("entryType", FileTypeUtil.getFileSystemFileTypeDescriptor(attrs));
         String extension = FilenameUtils.getExtension(file.getFileName().toString());
-        entry.put("canHaveMeta", FileTypeUtil.canHaveThumbnail(extension));
+        entry.put("fileType", FileTypeUtil.getPhotoChaosFileTypeDescriptor(extension));
         contentList.add(entry);
       }
     } catch (NoSuchFileException ex) {
@@ -58,7 +53,7 @@ public class FilesystemPathContentsGetHandler extends AbstractPCHandlerPath {
     } catch (IOException ex) {
       throw new PCHandlerError("IO_ERROR", ex);
     }
-    response.setContentList(contentList);
+    response.setEntryList(contentList);
   }
 
   private void handlePathInfo(HttpServletRequest request, FilesystemPathContentsGetData response) {

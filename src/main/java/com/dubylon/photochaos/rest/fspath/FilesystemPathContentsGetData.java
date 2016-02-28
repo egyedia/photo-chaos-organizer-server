@@ -1,6 +1,5 @@
 package com.dubylon.photochaos.rest.fspath;
 
-import com.dubylon.photochaos.rest.PCHandlerResponseData;
 import com.dubylon.photochaos.rest.generic.AbstractRequestedPathData;
 
 import java.util.List;
@@ -8,17 +7,17 @@ import java.util.Map;
 
 public class FilesystemPathContentsGetData extends AbstractRequestedPathData {
 
-  private List<Object> contentList;
+  private List<Object> entryList;
   private List<Map<String, Object>> parentList;
   private Map<String, Object> pathInfo;
   private boolean isRoot;
 
-  public List<Object> getContentList() {
-    return contentList;
+  public List<Object> getEntryList() {
+    return entryList;
   }
 
-  public void setContentList(List<Object> contentList) {
-    this.contentList = contentList;
+  public void setEntryList(List<Object> entryList) {
+    this.entryList = entryList;
   }
 
   public List<Map<String, Object>> getParentList() {
