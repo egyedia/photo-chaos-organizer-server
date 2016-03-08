@@ -1,5 +1,8 @@
 package com.dubylon.photochaos.model.db;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 
 @Entity
@@ -9,6 +12,17 @@ public class FavoritePath {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
+
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @Fetch(FetchMode.JOIN)
+  @JoinColumn(name = "owner_user_id",
+      referencedColumnName = "id",
+      unique = false,
+      nullable = true,
+      insertable = true,
+      updatable = true
+  )
+  private User owner;
 
   private String path;
 
@@ -39,5 +53,13 @@ public class FavoritePath {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public User getOwner() {
+    return owner;
+  }
+
+  public void setOwner(User owner) {
+    this.owner = owner;
   }
 }

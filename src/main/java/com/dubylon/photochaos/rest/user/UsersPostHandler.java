@@ -1,9 +1,10 @@
-package com.dubylon.photochaos.rest.favorite;
+package com.dubylon.photochaos.rest.user;
 
 import com.dubylon.photochaos.model.db.FavoritePath;
 import com.dubylon.photochaos.model.db.User;
 import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
+import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesPostData;
 import com.dubylon.photochaos.util.HibernateUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,15 +19,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
-public class FilesystemFavoritesPostHandler implements IPhotoChaosHandler {
+public class UsersPostHandler implements IPhotoChaosHandler {
 
-  public FilesystemFavoritesPostHandler() {
+  public UsersPostHandler() {
   }
 
   @Override
-  public FilesystemFavoritesPostData handleRequest(HttpServletRequest request) throws PCHandlerError {
+  public UsersPostData handleRequest(HttpServletRequest request) throws PCHandlerError {
     String content = null;
     try {
       //TODO handle body reading
@@ -50,24 +50,15 @@ public class FilesystemFavoritesPostHandler implements IPhotoChaosHandler {
       throw new PCHandlerError("NULL_REQUEST", "Request is empty");
     }
 
-    JsonNode pathNode = parsedObject.get("path");
-    if (pathNode == null) {
-      throw new PCHandlerError("NO_PATH_IN_REQUEST", "Path is not present in request");
+    JsonNode displayNameNode = parsedObject.get("displayName");
+    if (displayNameNode == null) {
+      throw new PCHandlerError("NO_DISPLAY_NAME_IN_REQUEST", "Display name is not present in request");
     }
 
-    JsonNode userIdNode = parsedObject.get("userId");
-    if (userIdNode == null) {
-      throw new PCHandlerError("NO_USER_ID_IN_REQUEST", "UserId is not present in request");
-    }
+    String displayName = displayNameNode.asText();
 
-    //TODO handle base64 decoding in one step
-    Long userId = userIdNode.asLong();
-    String path = pathNode.asText();
-
-    FavoritePath fp = new FavoritePath();
-    fp.setPath(path);
-    Path realPath = Paths.get(path);
-    fp.setTitle(realPath.getFileName().toString());
+    User user = new User();
+    user.setDisplayName(displayName);
 
     SessionFactory sessionFactory = null;
     try {
@@ -76,20 +67,16 @@ public class FilesystemFavoritesPostHandler implements IPhotoChaosHandler {
       throw new PCHandlerError("ERROR_CONNECTING_TO_DATASTORE", e);
     }
 
-    FilesystemFavoritesPostData response = new FilesystemFavoritesPostData();
+    UsersPostData response = new UsersPostData();
 
     Session session = sessionFactory.openSession();
     Transaction tx = null;
     try {
       tx = session.beginTransaction();
-
-      User owner = (User) session.get(User.class, userId);
-      fp.setOwner(owner);
-
-      session.save(fp);
+      session.save(user);
       tx.commit();
-      response.setId(fp.getId());
-      response.setCreatedObject(fp);
+      response.setId(user.getId());
+      response.setCreatedObject(user);
       return response;
     } catch (HibernateException e) {
       e.printStackTrace();

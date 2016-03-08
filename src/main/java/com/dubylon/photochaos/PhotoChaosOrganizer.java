@@ -5,6 +5,7 @@ import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.rest.fsroot.FilesystemRootsServlet;
 import com.dubylon.photochaos.rest.thumbdata.FilesystemMetaThumbnailDataServlet;
 import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaServlet;
+import com.dubylon.photochaos.rest.user.UsersServlet;
 import com.dubylon.photochaos.servlet.*;
 
 import java.io.File;
@@ -43,6 +44,7 @@ public class PhotoChaosOrganizer {
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailDataServlet.class, "/filesystem-meta-thumbnail-data/*");
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailMetaServlet.class, "/filesystem-meta-thumbnail-meta/*");
     servletHandler.addServletWithMapping(FilesystemFavoritesServlet.class, "/filesystem-favorites/*");
+    servletHandler.addServletWithMapping(UsersServlet.class, "/users/*");
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
 
