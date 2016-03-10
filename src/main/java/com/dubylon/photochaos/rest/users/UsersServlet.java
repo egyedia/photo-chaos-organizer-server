@@ -1,8 +1,7 @@
-package com.dubylon.photochaos.rest.user;
+package com.dubylon.photochaos.rest.users;
 
 import com.dubylon.photochaos.handler.PCResponseWriter;
 import com.dubylon.photochaos.rest.PCHandlerError;
-import com.dubylon.photochaos.rest.favorite.*;
 import com.dubylon.photochaos.servlet.AbstractPhotoChaosServlet;
 
 import javax.servlet.ServletException;

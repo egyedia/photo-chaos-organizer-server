@@ -1,10 +1,8 @@
-package com.dubylon.photochaos.rest.user;
+package com.dubylon.photochaos.rest.users;
 
-import com.dubylon.photochaos.model.db.FavoritePath;
 import com.dubylon.photochaos.model.db.User;
 import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
-import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesPostData;
 import com.dubylon.photochaos.util.HibernateUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +15,6 @@ import org.hibernate.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class UsersPostHandler implements IPhotoChaosHandler {
 

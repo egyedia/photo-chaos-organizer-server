@@ -1,6 +1,25 @@
 # photo-chaos-organizer-server
 
-##Test URLs for Windows
+##Check out the project
+
+    git clone https://github.com/egyedia/photo-chaos-organizer-server.git
+    git clone https://github.com/egyedia/photo-chaos-organizer-client.git
+
+##Build the project
+
+    cd photo-chaos-organizer-server
+    mvn clean install
+
+##Run the project
+
+    java -jar target/dubylon-photo-chaos-organizer-0.1.0.jar
+
+##Access it from a browser
+
+http://localhost:8080
+
+
+###Test URLs for Windows
 * http://localhost:8080/filesystem-roots
 
 * http://localhost:8080/filesystem-path-contents

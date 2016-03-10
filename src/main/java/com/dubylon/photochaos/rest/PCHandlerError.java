@@ -1,7 +1,5 @@
 package com.dubylon.photochaos.rest;
 
-import java.nio.file.NoSuchFileException;
-
 public class PCHandlerError extends Exception {
 
   private String errorKey;

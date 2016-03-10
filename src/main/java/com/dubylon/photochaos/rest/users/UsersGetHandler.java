@@ -1,4 +1,4 @@
-package com.dubylon.photochaos.rest.user;
+package com.dubylon.photochaos.rest.users;
 
 import com.dubylon.photochaos.model.db.User;
 import com.dubylon.photochaos.rest.IPhotoChaosHandler;

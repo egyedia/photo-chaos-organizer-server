@@ -1,11 +1,13 @@
 package com.dubylon.photochaos;
 
+import com.dubylon.photochaos.resource.ClasspathResourceHandler;
 import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
 import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.rest.fsroot.FilesystemRootsServlet;
 import com.dubylon.photochaos.rest.thumbdata.FilesystemMetaThumbnailDataServlet;
 import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaServlet;
-import com.dubylon.photochaos.rest.user.UsersServlet;
+import com.dubylon.photochaos.rest.user.UserServlet;
+import com.dubylon.photochaos.rest.users.UsersServlet;
 import com.dubylon.photochaos.servlet.*;
 
 import java.io.File;
@@ -22,8 +24,10 @@ public class PhotoChaosOrganizer {
 
   public static void main(String[] args) throws Exception {
 
-    Server server = new Server(8080);
-    server.setStopAtShutdown(true);
+    Server jettyServer = new Server(8080);
+    jettyServer.setStopAtShutdown(true);
+
+    org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(args).start();
 
     // create the handlers
     RequestLogHandler requestLog = new RequestLogHandler();
@@ -33,10 +37,7 @@ public class PhotoChaosOrganizer {
     NCSARequestLog ncsaLog = new NCSARequestLog(requestLogFile.getAbsolutePath());
     requestLog.setRequestLog(ncsaLog);
 
-    ResourceHandler resourceHandler = new ResourceHandler();
-    resourceHandler.setDirectoriesListed(true);
-    resourceHandler.setWelcomeFiles(new String[]{"index.html"});
-    resourceHandler.setResourceBase("./src/main/resources/");
+    ResourceHandler resourceHandler = new ClasspathResourceHandler();
 
     ServletHandler servletHandler = new ServletHandler();
     servletHandler.addServletWithMapping(FilesystemRootsServlet.class, "/filesystem-roots");
@@ -44,7 +45,8 @@ public class PhotoChaosOrganizer {
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailDataServlet.class, "/filesystem-meta-thumbnail-data/*");
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailMetaServlet.class, "/filesystem-meta-thumbnail-meta/*");
     servletHandler.addServletWithMapping(FilesystemFavoritesServlet.class, "/filesystem-favorites/*");
-    servletHandler.addServletWithMapping(UsersServlet.class, "/users/*");
+    servletHandler.addServletWithMapping(UsersServlet.class, "/users");
+    servletHandler.addServletWithMapping(UserServlet.class, "/users/*");
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
 
@@ -56,9 +58,11 @@ public class PhotoChaosOrganizer {
     list.setHandlers(new Handler[]{resourceHandler, servletHandler});
     handlers.setHandlers(new Handler[]{list, requestLog});
 
-    server.setHandler(handlers);
+    jettyServer.setHandler(handlers);
 
-    server.start();
-    server.join();
+    jettyServer.start();
+    jettyServer.join();
+
+    h2Server.stop();
   }
 }

@@ -1,35 +1,31 @@
-package com.dubylon.photochaos.rest.favorite;
+package com.dubylon.photochaos.rest.user;
 
-import com.dubylon.photochaos.model.db.FavoritePath;
+import com.dubylon.photochaos.model.db.User;
 import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
+import com.dubylon.photochaos.rest.users.UsersGetData;
 import com.dubylon.photochaos.util.HibernateUtil;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.NoSuchFileException;
+import java.util.List;
 
-public class FilesystemFavoritesDeleteHandler implements IPhotoChaosHandler {
+public class UserGetHandler implements IPhotoChaosHandler {
 
-  public FilesystemFavoritesDeleteHandler() {
+  public UserGetHandler() {
   }
 
   @Override
-  public FilesystemFavoritesDeleteData handleRequest(HttpServletRequest request) throws PCHandlerError {
+  public UserGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
     //TODO have this code in util method
     String pathInfo = request.getPathInfo();
     if (pathInfo == null || pathInfo.length() <= 1) {
-      throw new PCHandlerError("MISSING_ID", "Favorite id should be specified in the path.");
+      throw new PCHandlerError("MISSING_ID", "User id should be specified in the path.");
     }
     pathInfo = pathInfo.substring(1);
     long id = 0;
@@ -46,29 +42,27 @@ public class FilesystemFavoritesDeleteHandler implements IPhotoChaosHandler {
       throw new PCHandlerError("ERROR_CONNECTING_TO_DATASTORE", e);
     }
 
-    FilesystemFavoritesDeleteData response = new FilesystemFavoritesDeleteData();
-
     Session session = sessionFactory.openSession();
     Transaction tx = null;
     try {
       tx = session.beginTransaction();
-      Object o = session.get(FavoritePath.class, id);
-      if (o != null) {
-        session.delete(o);
-      } else {
-        response.setResponseCode(PCHandlerResponse.NOT_FOUND);
-      }
+      User user = (User) session.get(User.class, id);
       tx.commit();
-      return response;
+      if (user == null) {
+        throw new PCHandlerError(PCHandlerResponse.NOT_FOUND, "NO_SUCH_USER");
+      } else {
+        UserGetData response = new UserGetData();
+        response.setUser(user);
+        return response;
+      }
     } catch (HibernateException e) {
       e.printStackTrace();
       if (tx != null) {
         tx.rollback();
       }
-      throw new PCHandlerError("ERROR_WHILE_DELETING", e);
+      throw new PCHandlerError("ERROR_WHILE_READING", e);
     } finally {
       session.close();
     }
   }
-
 }
