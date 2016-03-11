@@ -1,4 +1,4 @@
-package com.dubylon.photochaos.model.meta.meta;
+package com.dubylon.photochaos.model.meta;
 
 public class ThumbnailMeta {
 

@@ -8,7 +8,7 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.ExifThumbnailDirectory;
-import com.dubylon.photochaos.model.meta.meta.ThumbnailMeta;
+import com.dubylon.photochaos.model.meta.ThumbnailMeta;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaGetData;

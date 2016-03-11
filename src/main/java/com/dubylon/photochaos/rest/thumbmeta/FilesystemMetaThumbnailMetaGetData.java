@@ -1,7 +1,7 @@
 package com.dubylon.photochaos.rest.thumbmeta;
 
 import com.drew.metadata.Metadata;
-import com.dubylon.photochaos.model.meta.meta.ThumbnailMeta;
+import com.dubylon.photochaos.model.meta.ThumbnailMeta;
 import com.dubylon.photochaos.rest.generic.AbstractRequestedPathData;
 
 import java.io.File;

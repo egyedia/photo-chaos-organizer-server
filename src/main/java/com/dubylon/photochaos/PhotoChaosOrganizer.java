@@ -11,6 +11,8 @@ import com.dubylon.photochaos.rest.users.UsersServlet;
 import com.dubylon.photochaos.servlet.*;
 
 import java.io.File;
+
+import com.dubylon.photochaos.task.copytodatedfolder.CopyToDatedFolderServlet;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
@@ -47,6 +49,8 @@ public class PhotoChaosOrganizer {
     servletHandler.addServletWithMapping(FilesystemFavoritesServlet.class, "/filesystem-favorites/*");
     servletHandler.addServletWithMapping(UsersServlet.class, "/users");
     servletHandler.addServletWithMapping(UserServlet.class, "/users/*");
+
+    servletHandler.addServletWithMapping(CopyToDatedFolderServlet.class, "/tasks/copy-to-dated-folder");
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
 
