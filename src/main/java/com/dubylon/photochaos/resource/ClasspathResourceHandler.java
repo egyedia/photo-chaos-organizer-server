@@ -11,9 +11,9 @@ public class ClasspathResourceHandler extends ResourceHandler {
     if (path == null || "/".equals(path)) {
       path = "index.html";
     }
-    System.out.println("path:" + path + ":");
+    //System.out.println("path:" + path + ":");
     Resource resource = Resource.newClassPathResource(path);
-    System.out.println("resource:" + resource + ":");
+    //System.out.println("resource:" + resource + ":");
     return resource;
   }
 }

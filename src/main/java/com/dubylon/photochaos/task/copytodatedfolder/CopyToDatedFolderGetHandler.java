@@ -13,8 +13,10 @@ public class CopyToDatedFolderGetHandler implements IPhotoChaosHandler {
   @Override
   public CopyToDatedFolderGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
     CopyToDatedFolderGetData response = new CopyToDatedFolderGetData();
+    String perf = request.getParameter("perform");
+    boolean perform = perf != null && "true".equals(perf);
 
-    CopyFilesToFoldersByCaptureDateFromFileNameTask task = new CopyFilesToFoldersByCaptureDateFromFileNameTask(response, false);
+    CopyFilesToFoldersByCaptureDateFromFileNameTask task = new CopyFilesToFoldersByCaptureDateFromFileNameTask(response, perform);
     task.execute();
     return response;
   }
