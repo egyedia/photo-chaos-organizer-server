@@ -108,7 +108,10 @@ public class PhotoChaosOrganizerApplication {
     // configure request logging
     File requestLogFile = null;
     try {
-      requestLogFile = File.createTempFile("pco", "log", basePath.toFile());
+      Path logFolder = basePath.resolve("log");
+      File logFolderFile = logFolder.toFile();
+      logFolderFile.mkdirs();
+      requestLogFile = File.createTempFile("pco-", ".log", logFolderFile);
     } catch (IOException e) {
       e.printStackTrace();
     }

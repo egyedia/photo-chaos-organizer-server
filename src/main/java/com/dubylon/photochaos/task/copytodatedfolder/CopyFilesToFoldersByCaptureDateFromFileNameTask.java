@@ -1,5 +1,9 @@
 package com.dubylon.photochaos.task.copytodatedfolder;
 
+import com.dubylon.photochaos.PhotoChaosOrganizerLauncher;
+import com.dubylon.photochaos.app.CopyDatedFolderTaskConfig;
+import com.dubylon.photochaos.app.PhotoChaosOrganizerApplication;
+import com.dubylon.photochaos.app.TaskConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -23,17 +27,21 @@ public class CopyFilesToFoldersByCaptureDateFromFileNameTask {
   private boolean performOperations;
 
   public CopyFilesToFoldersByCaptureDateFromFileNameTask(CopyToDatedFolderGetData response, boolean performOperations) {
+
+    CopyDatedFolderTaskConfig copyDatedFolder = (CopyDatedFolderTaskConfig) PhotoChaosOrganizerApplication
+        .getAppConfig().getTasks().get("copyDatedFolder");
+
     this.response = response;
     this.performOperations = performOperations;
-    sourceFolder = "/atti/imago_mundi_import/atti android import nexus 6p/";
-    destinationFolder = "/atti/imago_mundi_import/atti android import nexus 6p sorted/";
-    creatorDeviceSuffix = " @n6p";
-    targetFolderNameFormatter = "%1$04d%2$02d%3$02d%4$s";
-    fullDateTimePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})" +
+    this.sourceFolder = copyDatedFolder.getSourceFolder();
+    this.destinationFolder = copyDatedFolder.getDestinationFolder();
+    this.creatorDeviceSuffix = copyDatedFolder.getDestinationFolderSuffix();
+    this.targetFolderNameFormatter = "%1$04d%2$02d%3$02d%4$s";
+    this.fullDateTimePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})" +
         "([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)";
-    justDatePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)";
-    fullDateTimePattern = Pattern.compile(fullDateTimePatternString);
-    justDatePattern = Pattern.compile(justDatePatternString);
+    this.justDatePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)";
+    this.fullDateTimePattern = Pattern.compile(fullDateTimePatternString);
+    this.justDatePattern = Pattern.compile(justDatePatternString);
   }
 
   public void execute() {
