@@ -7,7 +7,7 @@ public class ClasspathResourceHandler extends ResourceHandler {
 
   @Override
   public Resource getResource(String path) {
-    System.out.println("ClasspathResourceHandler.getResource:" + path + ":");
+    //System.out.println("ClasspathResourceHandler.getResource:" + path + ":");
     if (path == null || "/".equals(path)) {
       path = "index.html";
     }
