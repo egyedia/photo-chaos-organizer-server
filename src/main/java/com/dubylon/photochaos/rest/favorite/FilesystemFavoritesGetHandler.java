@@ -1,25 +1,17 @@
 package com.dubylon.photochaos.rest.favorite;
 
 import com.dubylon.photochaos.model.db.FavoritePath;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
+import com.dubylon.photochaos.model.db.User;
 import com.dubylon.photochaos.rest.PCHandlerError;
+import com.dubylon.photochaos.rest.generic.AbstractPCHandler;
 import com.dubylon.photochaos.util.HibernateUtil;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
+import org.hibernate.criterion.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
-public class FilesystemFavoritesGetHandler implements IPhotoChaosHandler {
+public class FilesystemFavoritesGetHandler extends AbstractPCHandler {
 
   public FilesystemFavoritesGetHandler() {
   }
@@ -34,11 +26,16 @@ public class FilesystemFavoritesGetHandler implements IPhotoChaosHandler {
       throw new PCHandlerError("ERROR_CONNECTING_TO_DATASTORE", e);
     }
 
+    long userId = getUserId(request);
+
     Session session = sessionFactory.openSession();
     Transaction tx = null;
     try {
       tx = session.beginTransaction();
-      List list = session.createCriteria(FavoritePath.class).list();
+      User ownUser = (User) session.get(User.class, userId);
+      Criteria crit = session.createCriteria(FavoritePath.class)
+          .add(Restrictions.eq("owner", ownUser));
+      List list = crit.list();
       tx.commit();
       FilesystemFavoritesGetData response = new FilesystemFavoritesGetData();
       response.setFavorites(list);

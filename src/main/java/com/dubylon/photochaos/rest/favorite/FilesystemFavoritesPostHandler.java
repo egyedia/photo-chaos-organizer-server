@@ -2,12 +2,11 @@ package com.dubylon.photochaos.rest.favorite;
 
 import com.dubylon.photochaos.model.db.FavoritePath;
 import com.dubylon.photochaos.model.db.User;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
+import com.dubylon.photochaos.rest.generic.AbstractPCHandler;
 import com.dubylon.photochaos.util.HibernateUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,28 +14,17 @@ import org.hibernate.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
-public class FilesystemFavoritesPostHandler implements IPhotoChaosHandler {
+public class FilesystemFavoritesPostHandler extends AbstractPCHandler {
 
   public FilesystemFavoritesPostHandler() {
   }
 
   @Override
   public FilesystemFavoritesPostData handleRequest(HttpServletRequest request) throws PCHandlerError {
-    String content = null;
-    try {
-      //TODO handle body reading
-      content = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new PCHandlerError("ERROR_READING_REQUEST_CONTENT", e);
-    }
-    if (content == null || content.length() == 0) {
-      throw new PCHandlerError("MISSING_CONTENT", "Path should be passed as json object in request body.");
-    }
+    String content = readNonEmptyContent(request, "Path should be passed in a json object in request body.");
 
     ObjectMapper mapper = new ObjectMapper();
     JsonNode parsedObject = null;
@@ -55,13 +43,7 @@ public class FilesystemFavoritesPostHandler implements IPhotoChaosHandler {
       throw new PCHandlerError("NO_PATH_IN_REQUEST", "Path is not present in request");
     }
 
-    JsonNode userIdNode = parsedObject.get("userId");
-    if (userIdNode == null) {
-      throw new PCHandlerError("NO_USER_ID_IN_REQUEST", "UserId is not present in request");
-    }
-
-    //TODO handle base64 decoding in one step
-    Long userId = userIdNode.asLong();
+    long userId = getUserId(request);
     String path = pathNode.asText();
 
     FavoritePath fp = new FavoritePath();

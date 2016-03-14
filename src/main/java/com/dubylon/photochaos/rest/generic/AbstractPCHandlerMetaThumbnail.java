@@ -63,7 +63,6 @@ public abstract class AbstractPCHandlerMetaThumbnail extends AbstractPCHandlerPa
       dto = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
     }
 
-
     ExifThumbnailDirectory thumbDir = metadata.getFirstDirectoryOfType(ExifThumbnailDirectory.class);
     if (thumbDir != null) {
       if (extractThumbnailData && thumbDir.hasThumbnailData()) {

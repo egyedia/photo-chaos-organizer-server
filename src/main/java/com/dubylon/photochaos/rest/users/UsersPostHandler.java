@@ -1,12 +1,11 @@
 package com.dubylon.photochaos.rest.users;
 
 import com.dubylon.photochaos.model.db.User;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
+import com.dubylon.photochaos.rest.generic.AbstractPCHandler;
 import com.dubylon.photochaos.util.HibernateUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,25 +13,15 @@ import org.hibernate.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
-public class UsersPostHandler implements IPhotoChaosHandler {
+public class UsersPostHandler extends AbstractPCHandler {
 
   public UsersPostHandler() {
   }
 
   @Override
   public UsersPostData handleRequest(HttpServletRequest request) throws PCHandlerError {
-    String content = null;
-    try {
-      //TODO handle body reading
-      content = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new PCHandlerError("ERROR_READING_REQUEST_CONTENT", e);
-    }
-    if (content == null || content.length() == 0) {
-      throw new PCHandlerError("MISSING_CONTENT", "Path should be passed as json object in request body.");
-    }
+    String content = readNonEmptyContent(request, "Path should be passed in a json object in request body.");
 
     ObjectMapper mapper = new ObjectMapper();
     JsonNode parsedObject = null;

@@ -38,13 +38,17 @@ public class FilesystemPathContentsGetHandler extends AbstractPCHandlerPath {
     try (DirectoryStream<Path> stream = Files.newDirectoryStream(requestedPath)) {
       for (Path file : stream) {
         Map<String, Object> entry = new HashMap<>();
-        BasicFileAttributes attrs = Files.readAttributes(file, BasicFileAttributes.class);
-        entry.put("name", file.getFileName().toString());
-        entry.put("attributes", FileTypeUtil.getFileSystemAttributes(attrs, Files.isHidden(file)));
-        entry.put("entryType", FileTypeUtil.getFileSystemFileTypeDescriptor(attrs));
-        String extension = FilenameUtils.getExtension(file.getFileName().toString());
-        entry.put("fileType", FileTypeUtil.getPhotoChaosFileTypeDescriptor(extension));
-        contentList.add(entry);
+        try {
+          BasicFileAttributes attrs = Files.readAttributes(file, BasicFileAttributes.class);
+          entry.put("name", file.getFileName().toString());
+          entry.put("attributes", FileTypeUtil.getFileSystemAttributes(attrs, Files.isHidden(file)));
+          entry.put("entryType", FileTypeUtil.getFileSystemFileTypeDescriptor(attrs));
+          String extension = FilenameUtils.getExtension(file.getFileName().toString());
+          entry.put("fileType", FileTypeUtil.getPhotoChaosFileTypeDescriptor(extension));
+          contentList.add(entry);
+        } catch (Exception e) {
+          System.out.println("There was an error reading:" + file.toString() + ". Exception:" + e.getMessage());
+        }
       }
     } catch (NoSuchFileException ex) {
       throw new PCHandlerError(PCHandlerResponse.NOT_FOUND, "NO_SUCH_FILE", ex);
