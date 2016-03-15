@@ -57,6 +57,7 @@ public class CopyFilesToFoldersByCaptureDateFromFileNameTask {
     File sourceFolderFile = new File(sourceFolder);
     response.setSourceOk(sourceFolderFile.exists() && sourceFolderFile.isDirectory());
 
+    //TODO if source is not ok, listOfFiles will be null, resultig in a NPE
     File[] listOfFiles = sourceFolderFile.listFiles();
 
     for (int i = 0; i < listOfFiles.length; i++) {

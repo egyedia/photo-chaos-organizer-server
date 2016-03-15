@@ -8,7 +8,7 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.ExifThumbnailDirectory;
-import com.dubylon.photochaos.model.meta.ThumbnailMeta;
+import com.dubylon.photochaos.model.response.meta.ThumbnailMeta;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaGetData;
@@ -52,43 +52,54 @@ public abstract class AbstractPCHandlerMetaThumbnail extends AbstractPCHandlerPa
   protected static void handleMetadata(HttpServletRequest request, FilesystemMetaThumbnailMetaGetData response, boolean
       extractThumbnailData) throws PCHandlerError {
     Metadata metadata = response.getMetadata();
-    long w = -1;
-    long h = -1;
-    int o = -1;
-    Date dto = null;
     byte[] thumbnailData = null;
+
+    ThumbnailMeta tm = new ThumbnailMeta();
 
     Directory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
     if (directory != null) {
-      dto = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+      if (directory.hasTagName(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)) {
+        Date dto = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+        if (dto != null) {
+          tm.setDateTimeOriginalRead(true);
+        }
+        tm.setDateTimeOriginal(dto == null ? -1 : dto.getTime());
+      }
     }
 
     ExifThumbnailDirectory thumbDir = metadata.getFirstDirectoryOfType(ExifThumbnailDirectory.class);
     if (thumbDir != null) {
-      if (extractThumbnailData && thumbDir.hasThumbnailData()) {
-        thumbnailData = thumbDir.getThumbnailData();
+      if (thumbDir.hasThumbnailData()) {
+        tm.setExifThumbReadable(true);
+        if (extractThumbnailData) {
+          thumbnailData = thumbDir.getThumbnailData();
+        }
       }
       try {
         if (thumbDir.containsTag(ExifThumbnailDirectory.TAG_IMAGE_WIDTH)) {
-          w = thumbDir.getLong(ExifThumbnailDirectory.TAG_IMAGE_WIDTH);
+          tm.setWidth(thumbDir.getLong(ExifThumbnailDirectory.TAG_IMAGE_WIDTH));
+          tm.setWidthRead(true);
         }
         if (thumbDir.containsTag(ExifThumbnailDirectory.TAG_IMAGE_HEIGHT)) {
-          h = thumbDir.getLong(ExifThumbnailDirectory.TAG_IMAGE_HEIGHT);
+          tm.setHeight(thumbDir.getLong(ExifThumbnailDirectory.TAG_IMAGE_HEIGHT));
+          tm.setHeightRead(true);
         }
         if (thumbDir.containsTag(ExifThumbnailDirectory.TAG_ORIENTATION)) {
-          o = thumbDir.getInt(ExifThumbnailDirectory.TAG_ORIENTATION);
+          tm.setOrientation(thumbDir.getInt(ExifThumbnailDirectory.TAG_ORIENTATION));
+          tm.setOrientationRead(true);
         }
       } catch (MetadataException ex) {
         throw new PCHandlerError("METADATA_EXCEPTION", ex);
       }
     }
 
-    if (o == -1) {
+    if (!tm.isOrientationRead()) {
       final ExifIFD0Directory exifIFD0Directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
       if (exifIFD0Directory != null) {
         if (exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
           try {
-            o = exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+            tm.setOrientation(exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION));
+            tm.setOrientationRead(true);
           } catch (MetadataException ex) {
             throw new PCHandlerError("METADATA_EXCEPTION", ex);
           }
@@ -96,16 +107,9 @@ public abstract class AbstractPCHandlerMetaThumbnail extends AbstractPCHandlerPa
       }
     }
 
-    ThumbnailMeta tm = new ThumbnailMeta();
     response.setExtractedMeta(tm);
-    tm.setWidth(w);
-    tm.setHeight(h);
-    tm.setOrientation(o);
-    tm.setDateTimeOriginal(dto == null ? -1 : dto.getTime());
     if (extractThumbnailData) {
       response.setThumbnailData(thumbnailData);
     }
-
   }
-
 }

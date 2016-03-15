@@ -1,46 +1,39 @@
 package com.dubylon.photochaos.rest.fspath;
 
+import com.dubylon.photochaos.model.response.fs.FsEntry;
+import com.dubylon.photochaos.model.response.fs.NamedPath;
+import com.dubylon.photochaos.model.response.fs.PathInfo;
 import com.dubylon.photochaos.rest.generic.AbstractRequestedPathData;
 
 import java.util.List;
-import java.util.Map;
 
 public class FilesystemPathContentsGetData extends AbstractRequestedPathData {
 
-  private List<Object> entryList;
-  private List<Map<String, Object>> parentList;
-  private Map<String, Object> pathInfo;
-  private boolean isRoot;
+  private List<FsEntry> entryList;
+  private List<NamedPath> parentList;
+  private PathInfo pathInfo;
 
-  public List<Object> getEntryList() {
+  public List<FsEntry> getEntryList() {
     return entryList;
   }
 
-  public void setEntryList(List<Object> entryList) {
+  public void setEntryList(List<FsEntry> entryList) {
     this.entryList = entryList;
   }
 
-  public List<Map<String, Object>> getParentList() {
+  public List<NamedPath> getParentList() {
     return parentList;
   }
 
-  public void setParentList(List<Map<String, Object>> parentList) {
+  public void setParentList(List<NamedPath> parentList) {
     this.parentList = parentList;
   }
 
-  public Map<String, Object> getPathInfo() {
+  public PathInfo getPathInfo() {
     return pathInfo;
   }
 
-  public void setPathInfo(Map<String, Object> pathInfo) {
+  public void setPathInfo(PathInfo pathInfo) {
     this.pathInfo = pathInfo;
-  }
-
-  public boolean isRoot() {
-    return isRoot;
-  }
-
-  public void setIsRoot(boolean isRoot) {
-    this.isRoot = isRoot;
   }
 }

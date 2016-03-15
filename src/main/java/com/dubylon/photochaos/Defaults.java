@@ -36,5 +36,8 @@ public final class Defaults {
     FILE_EXTENSIONS.put("moff", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.VIDEO_META, false, false));
 
     FILE_EXTENSIONS.put("thm", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.THUMBNAIL, false, false));
+
+    FILE_EXTENSIONS.put("mp3", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.SOUND, false, false));
+    FILE_EXTENSIONS.put("wav", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.SOUND, false, false));
   }
 }

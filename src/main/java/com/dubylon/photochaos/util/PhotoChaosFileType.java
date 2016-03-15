@@ -9,6 +9,7 @@ public enum PhotoChaosFileType {
   IMAGE_META("image-meta"),
   VIDEO_META("video-meta"),
   THUMBNAIL("thumbnail"),
+  SOUND("sound"),
   OTHER("other");
 
   private String value;

@@ -106,7 +106,7 @@ public class PhotoChaosOrganizerApplication {
     RequestLogHandler requestLog = new RequestLogHandler();
 
     // configure request logging
-    File requestLogFile = null;
+    /*File requestLogFile = null;
     try {
       Path logFolder = basePath.resolve("log");
       File logFolderFile = logFolder.toFile();
@@ -117,6 +117,7 @@ public class PhotoChaosOrganizerApplication {
     }
     NCSARequestLog ncsaLog = new NCSARequestLog(requestLogFile.getAbsolutePath());
     requestLog.setRequestLog(ncsaLog);
+    */
 
     ResourceHandler resourceHandler = new ClasspathResourceHandler();
 
