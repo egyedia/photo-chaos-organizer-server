@@ -1,6 +1,7 @@
 package com.dubylon.photochaos.model.response.fs;
 
 public class PathInfo {
+
   private String path;
   private boolean root;
   private String parentPath;

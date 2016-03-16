@@ -1,50 +1,20 @@
 package com.dubylon.photochaos.rest.thumbmeta;
 
-import com.drew.metadata.Metadata;
-import com.dubylon.photochaos.model.response.meta.ThumbnailMeta;
-import com.dubylon.photochaos.rest.generic.AbstractRequestedPathData;
+import com.dubylon.photochaos.model.response.meta.ImageExtractedMeta;
+import com.dubylon.photochaos.rest.generic.AbstractFilesystemMetadataData;
 
-import java.io.File;
+public class FilesystemMetaThumbnailMetaGetData extends AbstractFilesystemMetadataData {
 
-public class FilesystemMetaThumbnailMetaGetData extends AbstractRequestedPathData {
-
-  private Metadata metadata;
-  private ThumbnailMeta extractedMeta;
-  private File image;
-  private byte[] thumbnailData;
+  private ImageExtractedMeta extractedMeta;
 
   public FilesystemMetaThumbnailMetaGetData() {
   }
 
-  public ThumbnailMeta getExtractedMeta() {
+  public ImageExtractedMeta getExtractedMeta() {
     return extractedMeta;
   }
 
-  public void setExtractedMeta(ThumbnailMeta extractedMeta) {
+  public void setExtractedMeta(ImageExtractedMeta extractedMeta) {
     this.extractedMeta = extractedMeta;
-  }
-
-  public File getImage() {
-    return image;
-  }
-
-  public void setImage(File image) {
-    this.image = image;
-  }
-
-  public Metadata getMetadata() {
-    return metadata;
-  }
-
-  public void setMetadata(Metadata metadata) {
-    this.metadata = metadata;
-  }
-
-  public byte[] getThumbnailData() {
-    return thumbnailData;
-  }
-
-  public void setThumbnailData(byte[] thumbnailData) {
-    this.thumbnailData = thumbnailData;
   }
 }

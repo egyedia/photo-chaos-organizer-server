@@ -1,6 +1,7 @@
 package com.dubylon.photochaos.handler;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 
 public abstract class PCResponseWriter {
 
@@ -33,18 +35,17 @@ public abstract class PCResponseWriter {
     response.getWriter().println(mapper.writeValueAsString(rm));
   }
 
-  public static void writeSuccess(HttpServletResponse response, String contentType, Map<String, String> headers,
-                                  byte[] data) throws IOException {
+  public static void writeSuccess(HttpServletResponse response, String contentType, byte[] data) throws IOException {
     response.setContentType(contentType);
-    if (headers != null) {
-      for (String key : headers.keySet()) {
-        response.addHeader(key, headers.get(key));
-      }
-    }
     response.setContentLength(data == null ? 0 : data.length);
     if (data != null) {
       response.getOutputStream().write(data);
     }
+  }
+
+  public static void writeSuccess(HttpServletResponse response, String contentType, InputStream is) throws IOException {
+    response.setContentType(contentType);
+    IOUtils.copy(is, response.getOutputStream());
   }
 
   public static void writeSuccess(HttpServletResponse response, PCHandlerResponse pcResponse, Object responseObject)

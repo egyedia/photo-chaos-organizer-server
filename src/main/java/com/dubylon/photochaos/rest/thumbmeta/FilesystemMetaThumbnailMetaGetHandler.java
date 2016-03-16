@@ -13,8 +13,9 @@ public class FilesystemMetaThumbnailMetaGetHandler extends AbstractPCHandlerMeta
     handlePath(request, response);
     handleFile(request, response);
     handleMetadataObject(request, response);
-    handleMetadata(request, response, false);
+    handleMetadata(request, response);
     return response;
   }
+
 
 }

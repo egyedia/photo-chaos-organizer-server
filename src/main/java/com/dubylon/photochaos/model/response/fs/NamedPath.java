@@ -1,6 +1,7 @@
 package com.dubylon.photochaos.model.response.fs;
 
 public class NamedPath {
+
   private String path;
   private String name;
 

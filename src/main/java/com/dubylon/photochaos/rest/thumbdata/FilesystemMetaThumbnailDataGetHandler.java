@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 public class FilesystemMetaThumbnailDataGetHandler extends AbstractPCHandlerMetaThumbnail {
 
   @Override
-  public FilesystemMetaThumbnailMetaGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
-    FilesystemMetaThumbnailMetaGetData response = new FilesystemMetaThumbnailMetaGetData();
+  public FilesystemMetaThumbnailDataGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
+    FilesystemMetaThumbnailDataGetData response = new FilesystemMetaThumbnailDataGetData();
     handlePath(request, response);
     handleFile(request, response);
     handleMetadataObject(request, response);
-    handleMetadata(request, response, true);
+    handleMetadataThumbnail(request, response);
     return response;
   }
 
