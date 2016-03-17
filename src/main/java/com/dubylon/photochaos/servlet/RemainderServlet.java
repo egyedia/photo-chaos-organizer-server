@@ -17,6 +17,8 @@ public class RemainderServlet extends HttpServlet {
     Resource resource = Resource.newClassPathResource("index.html");
     response.setContentType("text/html");
     response.setStatus(HttpServletResponse.SC_OK);
+    System.out.println(resource);
+    System.out.println(resource.getURI());
     IOUtils.copy(resource.getInputStream(), response.getOutputStream());
   }
 }
