@@ -1,23 +1,14 @@
 package com.dubylon.photochaos.model.tasktemplate;
 
+import java.util.List;
+import java.util.Map;
+
 public class TaskTemplate {
 
-  protected String type;
   protected String name;
-  protected String description;
-  protected TaskTemplateParameters parameters;
-
-  public TaskTemplate() {
-    this.parameters = new TaskTemplateParameters();
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
-  }
+  protected List<String> description;
+  protected String className;
+  protected Map<String, TaskTemplateParameter> parameters;
 
   public String getName() {
     return name;
@@ -27,19 +18,27 @@ public class TaskTemplate {
     this.name = name;
   }
 
-  public String getDescription() {
+  public List<String> getDescription() {
     return description;
   }
 
-  public void setDescription(String description) {
+  public void setDescription(List<String> description) {
     this.description = description;
   }
 
-  public TaskTemplateParameters getParameters() {
+  public String getClassName() {
+    return className;
+  }
+
+  public void setClassName(String className) {
+    this.className = className;
+  }
+
+  public Map<String, TaskTemplateParameter> getParameters() {
     return parameters;
   }
 
-  public void setParameters(TaskTemplateParameters parameters) {
+  public void setParameters(Map<String, TaskTemplateParameter> parameters) {
     this.parameters = parameters;
   }
 }

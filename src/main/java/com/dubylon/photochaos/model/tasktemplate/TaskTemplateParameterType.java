@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum TaskTemplateParameterType {
   FOLDER("folder"),
   SHORTDATEFORMAT("shortDateFormat"),
+  COPYORMOVE("copyOrMove"),
   SUFFIX("suffix");
 
   private final String value;

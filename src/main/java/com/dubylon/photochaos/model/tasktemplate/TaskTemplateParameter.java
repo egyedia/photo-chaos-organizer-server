@@ -1,13 +1,13 @@
 package com.dubylon.photochaos.model.tasktemplate;
 
-import java.util.Map;
+import java.util.List;
 
 public class TaskTemplateParameter {
   private String name;
-  private String description;
-  private TaskTemplateParameterType type;
+  private List<String> description;
   private boolean mandatory;
-  private Map<String, String> options;
+  private TaskTemplateParameterType type;
+  private String defaultValue;
 
   public String getName() {
     return name;
@@ -17,20 +17,12 @@ public class TaskTemplateParameter {
     this.name = name;
   }
 
-  public String getDescription() {
+  public List<String> getDescription() {
     return description;
   }
 
-  public void setDescription(String description) {
+  public void setDescription(List<String> description) {
     this.description = description;
-  }
-
-  public TaskTemplateParameterType getType() {
-    return type;
-  }
-
-  public void setType(TaskTemplateParameterType type) {
-    this.type = type;
   }
 
   public boolean isMandatory() {
@@ -41,11 +33,19 @@ public class TaskTemplateParameter {
     this.mandatory = mandatory;
   }
 
-  public Map<String, String> getOptions() {
-    return options;
+  public TaskTemplateParameterType getType() {
+    return type;
   }
 
-  public void setOptions(Map<String, String> options) {
-    this.options = options;
+  public void setType(TaskTemplateParameterType type) {
+    this.type = type;
+  }
+
+  public String getDefaultValue() {
+    return defaultValue;
+  }
+
+  public void setDefaultValue(String defaultValue) {
+    this.defaultValue = defaultValue;
   }
 }

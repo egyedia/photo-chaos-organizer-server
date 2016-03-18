@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CopyFilesToFoldersByCaptureDateFromFileNameTask {
+public class CopyFilesToFoldersByDateFromFileNameTask {
 
   private String sourceFolder;
   private String destinationFolder;
@@ -26,7 +26,7 @@ public class CopyFilesToFoldersByCaptureDateFromFileNameTask {
   private CopyToDatedFolderGetData response;
   private boolean performOperations;
 
-  public CopyFilesToFoldersByCaptureDateFromFileNameTask(CopyToDatedFolderGetData response, boolean performOperations) {
+  public CopyFilesToFoldersByDateFromFileNameTask(CopyToDatedFolderGetData response, boolean performOperations) {
 
     CopyDatedFolderTaskConfig copyDatedFolder = (CopyDatedFolderTaskConfig) PhotoChaosOrganizerApplication
         .getAppConfig().getTasks().get("copyDatedFolder");

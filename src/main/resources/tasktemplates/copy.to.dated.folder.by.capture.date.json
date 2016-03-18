@@ -1,0 +1,55 @@
+{
+  "name": "Copy to dated folder by date from the image capture date",
+  "description": [
+    "The task will detect all the files under the source folder (including subfolders).",
+    "It will try to extract the capture date from the picture (EXIF).",
+    "For each day that was found in the pictures, a new folder will be created under the target folder.",
+    "Each file will be copied/moved to the corresponding new folder."
+  ],
+  "className": "com.dubylon.photochaos.task.copytodatedfolder.CopyFilesToFoldersByCaptureDateTask",
+  "parameters": {
+    "sourceFolder": {
+      "name": "Source folder",
+      "description": [
+        "The folder will be explored recursively, all the images will be collected"
+      ],
+      "mandatory": true,
+      "type": "folder"
+    },
+    "destinationFolder": {
+      "name": "Destination folder",
+      "description": [
+        "New folders will be created under this location."
+      ],
+      "mandatory": true,
+      "type": "folder"
+    },
+    "newFolderSuffix": {
+      "name": "New folder suffix",
+      "description": [
+        "A suffix string that will be added after the newly created folder names."
+      ],
+      "mandatory": false,
+      "type": "suffix",
+      "defaultValue": ""
+    },
+    "newFolderDateFormat": {
+      "name": "New folder date format",
+      "description": [
+        "The new folders will be created based on this date format"
+      ],
+      "mandatory": true,
+      "type": "shortDateFormat",
+      "defaultValue": "YYYYMMDD"
+    },
+    "fileOperation": {
+      "name": "Copy or move",
+      "description": [
+        "The files can be copied or moved. If you copy them, make sure you have enough free space on the target."
+      ],
+      "mandatory": true,
+      "type": "copyOrMove",
+      "defaultValue": "copy"
+    }
+  }
+}
