@@ -131,7 +131,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(UsersServlet.class, "/users");
     servletHandler.addServletWithMapping(UserServlet.class, "/users/*");
     servletHandler.addServletWithMapping(ConfigServlet.class, "/config");
-    servletHandler.addServletWithMapping(TaskTemplatesServlet.class, "/task-templates");
+    servletHandler.addServletWithMapping(TaskTemplatesServlet.class, "/task-templates/*");
 
     servletHandler.addServletWithMapping(CopyToDatedFolderServlet.class, "/tasks/copy-to-dated-folder");
 

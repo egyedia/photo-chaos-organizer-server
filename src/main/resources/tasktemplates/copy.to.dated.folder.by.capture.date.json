@@ -14,7 +14,8 @@
         "The folder will be explored recursively, all the images will be collected"
       ],
       "mandatory": true,
-      "type": "folder"
+      "type": "folder",
+      "defaultValue": ""
     },
     "destinationFolder": {
       "name": "Destination folder",
@@ -22,12 +23,13 @@
         "New folders will be created under this location."
       ],
       "mandatory": true,
-      "type": "folder"
+      "type": "folder",
+      "defaultValue": ""
     },
     "newFolderSuffix": {
       "name": "New folder suffix",
       "description": [
-        "A suffix string that will be added after the newly created folder names."
+        "This suffix will be added after the newly created folder names."
       ],
       "mandatory": false,
       "type": "suffix",

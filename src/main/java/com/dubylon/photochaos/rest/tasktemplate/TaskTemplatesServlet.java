@@ -13,12 +13,23 @@ public class TaskTemplatesServlet extends AbstractPhotoChaosServlet {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    TaskTemplatesGetHandler h = new TaskTemplatesGetHandler();
-    try {
-      TaskTemplatesGetData pcResponse = h.handleRequest(request);
-      PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getTaskTemplates());
-    } catch (PCHandlerError err) {
-      PCResponseWriter.writeError(response, err);
+    if (request.getPathInfo() == null) {
+      TaskTemplatesGetListHandler h = new TaskTemplatesGetListHandler();
+      try {
+        TaskTemplatesGetListData pcResponse = h.handleRequest(request);
+        PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getTaskTemplates());
+      } catch (PCHandlerError err) {
+        PCResponseWriter.writeError(response, err);
+      }
+    } else {
+      TaskTemplatesGetHandler h = new TaskTemplatesGetHandler();
+      try {
+        TaskTemplatesGetData pcResponse = h.handleRequest(request);
+        PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getTaskTemplate());
+      } catch (PCHandlerError err) {
+        PCResponseWriter.writeError(response, err);
+      }
+
     }
   }
 
