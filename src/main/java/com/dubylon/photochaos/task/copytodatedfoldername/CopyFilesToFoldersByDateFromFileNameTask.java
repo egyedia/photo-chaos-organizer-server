@@ -1,9 +1,7 @@
-package com.dubylon.photochaos.task.copytodatedfolder;
+package com.dubylon.photochaos.task.copytodatedfoldername;
 
-import com.dubylon.photochaos.PhotoChaosOrganizerLauncher;
 import com.dubylon.photochaos.app.CopyDatedFolderTaskConfig;
 import com.dubylon.photochaos.app.PhotoChaosOrganizerApplication;
-import com.dubylon.photochaos.app.TaskConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 

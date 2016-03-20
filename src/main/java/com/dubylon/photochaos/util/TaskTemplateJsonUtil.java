@@ -1,32 +1,29 @@
-package com.dubylon.photochaos.rest.tasktemplate;
+package com.dubylon.photochaos.util;
 
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplate;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
-import com.dubylon.photochaos.rest.PCHandlerError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class TaskTemplatesGetListHandler implements IPhotoChaosHandler {
+public final class TaskTemplateJsonUtil {
 
   private static final Pattern PATTERN = Pattern.compile(".*\\.json");
   private static final String FOLDER = "tasktemplates";
 
-  public TaskTemplatesGetListHandler() {
+  private TaskTemplateJsonUtil() {
   }
 
-  @Override
-  public TaskTemplatesGetListData handleRequest(HttpServletRequest request) throws PCHandlerError {
-    TaskTemplatesGetListData response = new TaskTemplatesGetListData();
-
+  public static Map<String, TaskTemplate> getTaskTemplates() {
+    Map<String, TaskTemplate> ret = new HashMap<>();
     Set<String> taskTemplates = new Reflections(FOLDER, new ResourcesScanner()).getResources(PATTERN);
     if (taskTemplates != null) {
       for (String taskTemplate : taskTemplates) {
@@ -41,14 +38,13 @@ public class TaskTemplatesGetListHandler implements IPhotoChaosHandler {
           ObjectMapper mapper = new ObjectMapper();
           try {
             TaskTemplate tt = mapper.readValue(template, TaskTemplate.class);
-            tt.setOriginalSource(taskTemplate);
-            response.getTaskTemplates().add(tt);
+            ret.put(tt.getClassName(), tt);
           } catch (IOException e) {
             e.printStackTrace();
           }
         }
       }
     }
-    return response;
+    return ret;
   }
 }

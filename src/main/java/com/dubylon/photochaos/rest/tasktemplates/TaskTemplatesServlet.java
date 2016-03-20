@@ -1,4 +1,4 @@
-package com.dubylon.photochaos.task.copytodatedfolder;
+package com.dubylon.photochaos.rest.tasktemplates;
 
 import com.dubylon.photochaos.handler.PCResponseWriter;
 import com.dubylon.photochaos.rest.PCHandlerError;
@@ -9,14 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class CopyToDatedFolderServlet extends AbstractPhotoChaosServlet {
+public class TaskTemplatesServlet extends AbstractPhotoChaosServlet {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    CopyToDatedFolderGetHandler h = new CopyToDatedFolderGetHandler();
+    TaskTemplatesGetHandler h = new TaskTemplatesGetHandler();
     try {
-      CopyToDatedFolderGetData pcResponse = h.handleRequest(request);
-      PCResponseWriter.writeSuccess(response, pcResponse, pcResponse);
+      TaskTemplatesGetData pcResponse = h.handleRequest(request);
+      PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getTaskTemplates());
     } catch (PCHandlerError err) {
       PCResponseWriter.writeError(response, err);
     }

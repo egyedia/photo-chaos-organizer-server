@@ -1,12 +1,12 @@
 {
-  "name": "Copy to dated folder by date from the image capture date",
+  "name": "Copy to dated folder by date from the file name",
   "description": [
     "The task will detect all the files under the source folder (including subfolders).",
-    "It will try to extract the capture date from the picture (EXIF).",
-    "For each day that was found in the pictures, a new folder will be created under the target folder.",
+    "It will try to extract the date from the filename.",
+    "For each day that was found in the filenames, a new folder will be created under the target folder.",
     "Each file will be copied/moved to the corresponding new folder."
   ],
-  "className": "com.dubylon.photochaos.task.copytodatedfolder.CopyFilesToFoldersByCaptureDateTask",
+  "className": "com.dubylon.photochaos.task.copytodatedfoldername.CopyFilesToFoldersByDateFromFileNameTask",
   "parameters": {
     "sourceFolder": {
       "name": "Source folder",

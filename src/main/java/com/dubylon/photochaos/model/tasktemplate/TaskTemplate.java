@@ -9,7 +9,6 @@ public class TaskTemplate {
   protected List<String> description;
   protected String className;
   protected Map<String, TaskTemplateParameter> parameters;
-  protected String originalSource;
 
   public String getName() {
     return name;
@@ -43,11 +42,4 @@ public class TaskTemplate {
     this.parameters = parameters;
   }
 
-  public String getOriginalSource() {
-    return originalSource;
-  }
-
-  public void setOriginalSource(String originalSource) {
-    this.originalSource = originalSource;
-  }
 }

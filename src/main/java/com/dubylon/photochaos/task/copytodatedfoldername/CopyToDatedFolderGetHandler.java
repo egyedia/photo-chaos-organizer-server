@@ -1,4 +1,4 @@
-package com.dubylon.photochaos.task.copytodatedfolder;
+package com.dubylon.photochaos.task.copytodatedfoldername;
 
 import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;

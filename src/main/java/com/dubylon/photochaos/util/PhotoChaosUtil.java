@@ -2,7 +2,10 @@ package com.dubylon.photochaos.util;
 
 import java.nio.file.Path;
 
-public class PhotoChaosUtil {
+public final class PhotoChaosUtil {
+
+  private PhotoChaosUtil() {
+  }
 
   public static String getNormalPath(String s) {
     return s == null ? null : s.replace("\\", "/").replace("//", "/");

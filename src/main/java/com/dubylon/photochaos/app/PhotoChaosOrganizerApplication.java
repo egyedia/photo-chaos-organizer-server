@@ -6,13 +6,15 @@ import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
 import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.rest.fsraw.FilesystemRawServlet;
 import com.dubylon.photochaos.rest.fsroot.FilesystemRootsServlet;
-import com.dubylon.photochaos.rest.tasktemplate.TaskTemplatesServlet;
+import com.dubylon.photochaos.rest.tasks.TasksServlet;
+import com.dubylon.photochaos.rest.tasktemplate.TaskTemplateServlet;
+import com.dubylon.photochaos.rest.tasktemplates.TaskTemplatesServlet;
 import com.dubylon.photochaos.rest.thumbdata.FilesystemMetaThumbnailDataServlet;
 import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaServlet;
 import com.dubylon.photochaos.rest.user.UserServlet;
 import com.dubylon.photochaos.rest.users.UsersServlet;
 import com.dubylon.photochaos.servlet.RemainderServlet;
-import com.dubylon.photochaos.task.copytodatedfolder.CopyToDatedFolderServlet;
+import com.dubylon.photochaos.task.copytodatedfoldername.CopyToDatedFolderServlet;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -131,7 +133,9 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(UsersServlet.class, "/users");
     servletHandler.addServletWithMapping(UserServlet.class, "/users/*");
     servletHandler.addServletWithMapping(ConfigServlet.class, "/config");
-    servletHandler.addServletWithMapping(TaskTemplatesServlet.class, "/task-templates/*");
+    servletHandler.addServletWithMapping(TaskTemplatesServlet.class, "/task-templates");
+    servletHandler.addServletWithMapping(TaskTemplateServlet.class, "/task-templates/*");
+    servletHandler.addServletWithMapping(TasksServlet.class, "/tasks");
 
     servletHandler.addServletWithMapping(CopyToDatedFolderServlet.class, "/tasks/copy-to-dated-folder");
 

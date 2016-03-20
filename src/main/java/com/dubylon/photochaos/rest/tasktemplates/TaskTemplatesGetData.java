@@ -1,4 +1,4 @@
-package com.dubylon.photochaos.rest.tasktemplate;
+package com.dubylon.photochaos.rest.tasktemplates;
 
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplate;
 import com.dubylon.photochaos.rest.PCHandlerResponseData;
@@ -6,11 +6,11 @@ import com.dubylon.photochaos.rest.PCHandlerResponseData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskTemplatesGetListData extends PCHandlerResponseData {
+public class TaskTemplatesGetData extends PCHandlerResponseData {
 
   private List<TaskTemplate> taskTemplates;
 
-  public TaskTemplatesGetListData() {
+  public TaskTemplatesGetData() {
     taskTemplates = new ArrayList<>();
   }
 

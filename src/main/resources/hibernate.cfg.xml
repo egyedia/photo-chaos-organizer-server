@@ -18,6 +18,7 @@
 
     <mapping class="com.dubylon.photochaos.model.db.FavoritePath" />
     <mapping class="com.dubylon.photochaos.model.db.User" />
+    <mapping class="com.dubylon.photochaos.model.db.TaskDefinition" />
 
   </session-factory>
 </hibernate-configuration>
