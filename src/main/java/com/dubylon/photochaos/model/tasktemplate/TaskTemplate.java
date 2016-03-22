@@ -1,14 +1,18 @@
 package com.dubylon.photochaos.model.tasktemplate;
 
-import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 public class TaskTemplate {
 
   protected String name;
-  protected List<String> description;
+  protected String description;
   protected String className;
   protected Map<String, TaskTemplateParameter> parameters;
+
+  public TaskTemplate() {
+    parameters = new HashMap<>();
+  }
 
   public String getName() {
     return name;
@@ -18,11 +22,11 @@ public class TaskTemplate {
     this.name = name;
   }
 
-  public List<String> getDescription() {
+  public String getDescription() {
     return description;
   }
 
-  public void setDescription(List<String> description) {
+  public void setDescription(String description) {
     this.description = description;
   }
 

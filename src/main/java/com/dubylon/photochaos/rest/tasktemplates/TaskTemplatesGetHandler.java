@@ -3,10 +3,10 @@ package com.dubylon.photochaos.rest.tasktemplates;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplate;
 import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
-import com.dubylon.photochaos.util.TaskTemplateJsonUtil;
+import com.dubylon.photochaos.util.TaskTemplateUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import java.util.List;
 
 public class TaskTemplatesGetHandler implements IPhotoChaosHandler {
 
@@ -16,8 +16,8 @@ public class TaskTemplatesGetHandler implements IPhotoChaosHandler {
   @Override
   public TaskTemplatesGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
     TaskTemplatesGetData response = new TaskTemplatesGetData();
-    Map<String, TaskTemplate> taskTemplates = TaskTemplateJsonUtil.getTaskTemplates();
-    for (TaskTemplate tt : taskTemplates.values()) {
+    List<TaskTemplate> taskTemplates = TaskTemplateUtil.getTaskTemplates();
+    for (TaskTemplate tt : taskTemplates) {
       response.getTaskTemplates().add(tt);
     }
     return response;

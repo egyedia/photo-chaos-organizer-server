@@ -32,7 +32,7 @@
         "This suffix will be added after the newly created folder names."
       ],
       "mandatory": false,
-      "type": "suffix",
+      "type": "folderSuffixr",
       "defaultValue": ""
     },
     "newFolderDateFormat": {

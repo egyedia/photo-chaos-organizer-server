@@ -1,10 +1,8 @@
 package com.dubylon.photochaos.model.tasktemplate;
 
-import java.util.List;
-
 public class TaskTemplateParameter {
   private String name;
-  private List<String> description;
+  private String description;
   private boolean mandatory;
   private TaskTemplateParameterType type;
   private String defaultValue;
@@ -17,11 +15,11 @@ public class TaskTemplateParameter {
     this.name = name;
   }
 
-  public List<String> getDescription() {
+  public String getDescription() {
     return description;
   }
 
-  public void setDescription(List<String> description) {
+  public void setDescription(String description) {
     this.description = description;
   }
 

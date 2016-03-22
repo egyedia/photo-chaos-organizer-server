@@ -1,7 +1,12 @@
-package com.dubylon.photochaos.task.copytodatedfoldername;
+package com.dubylon.photochaos.task.copytodatedfolderbyname;
 
 import com.dubylon.photochaos.app.CopyDatedFolderTaskConfig;
 import com.dubylon.photochaos.app.PhotoChaosOrganizerApplication;
+import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
+import com.dubylon.photochaos.task.IPcoTask;
+import com.dubylon.photochaos.task.PcoTaskTemplate;
+import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
+import com.dubylon.photochaos.task.TaskTemplateParameterCopyOrMove;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -10,11 +15,44 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CopyFilesToFoldersByDateFromFileNameTask {
+@PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileName.")
+public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
 
+  @PcoTaskTemplateParameter(
+      type = TaskTemplateParameterType.FOLDER,
+      mandatory = true,
+      defaultValue = ""
+  )
   private String sourceFolder;
+
+  @PcoTaskTemplateParameter(
+      type = TaskTemplateParameterType.FOLDER,
+      mandatory = true,
+      defaultValue = ""
+  )
   private String destinationFolder;
-  private String creatorDeviceSuffix;
+
+  @PcoTaskTemplateParameter(
+      type = TaskTemplateParameterType.FOLDERSUFFIX,
+      mandatory = true,
+      defaultValue = ""
+  )
+  private String suffix;
+
+  @PcoTaskTemplateParameter(
+      type = TaskTemplateParameterType.SHORTDATEFORMAT,
+      mandatory = true,
+      defaultValue = "YYYYMMDD"
+  )
+  private String newFolderDateFormat;
+
+  @PcoTaskTemplateParameter(
+      type = TaskTemplateParameterType.COPYORMOVE,
+      mandatory = true,
+      defaultValue = "copy"
+  )
+  private TaskTemplateParameterCopyOrMove fileOperation;
+
   private String targetFolderNameFormatter;
   private String fullDateTimePatternString;
   private String justDatePatternString;
@@ -33,7 +71,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask {
     this.performOperations = performOperations;
     this.sourceFolder = copyDatedFolder.getSourceFolder();
     this.destinationFolder = copyDatedFolder.getDestinationFolder();
-    this.creatorDeviceSuffix = copyDatedFolder.getDestinationFolderSuffix();
+    this.suffix = copyDatedFolder.getDestinationFolderSuffix();
     this.targetFolderNameFormatter = "%1$04d%2$02d%3$02d%4$s";
     this.fullDateTimePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})" +
         "([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)";
@@ -72,7 +110,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask {
         }
         if (dateTime != null) {
           targetDateFolderName = String.format(targetFolderNameFormatter, dateTime.getYear(), dateTime.getMonth(),
-              dateTime.getDay(), creatorDeviceSuffix);
+              dateTime.getDay(), suffix);
           String folderToCopy = destinationFolder + targetDateFolderName;
           cfo.setDestinationFolderName(targetDateFolderName);
           File folderToCopyFile = new File(folderToCopy);

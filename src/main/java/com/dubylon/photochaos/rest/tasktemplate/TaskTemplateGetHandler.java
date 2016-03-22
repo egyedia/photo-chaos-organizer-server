@@ -4,7 +4,7 @@ import com.dubylon.photochaos.Constants;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplate;
 import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
-import com.dubylon.photochaos.util.TaskTemplateJsonUtil;
+import com.dubylon.photochaos.util.TaskTemplateUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -19,11 +19,10 @@ public class TaskTemplateGetHandler implements IPhotoChaosHandler {
     TaskTemplateGetData response = new TaskTemplateGetData();
     String path = request.getPathInfo();
     if (path != null && path.indexOf(Constants.SLASH) == 0) {
-      path = path.substring(Constants.SLASH.length());
+      String className = path.substring(Constants.SLASH.length());
+      TaskTemplate taskTemplate = TaskTemplateUtil.getTaskTemplate(className);
+      response.setTaskTemplate(taskTemplate);
     }
-    Map<String, TaskTemplate> taskTemplates = TaskTemplateJsonUtil.getTaskTemplates();
-    TaskTemplate taskTemplate = taskTemplates.get(path);
-    response.setTaskTemplate(taskTemplate);
     return response;
   }
 }

@@ -6,7 +6,7 @@ public enum TaskTemplateParameterType {
   FOLDER("folder"),
   SHORTDATEFORMAT("shortDateFormat"),
   COPYORMOVE("copyOrMove"),
-  SUFFIX("suffix");
+  FOLDERSUFFIX("folderSuffix");
 
   private final String value;
 

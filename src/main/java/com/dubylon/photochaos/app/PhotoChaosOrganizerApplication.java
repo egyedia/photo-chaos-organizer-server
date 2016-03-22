@@ -14,7 +14,7 @@ import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaServlet;
 import com.dubylon.photochaos.rest.user.UserServlet;
 import com.dubylon.photochaos.rest.users.UsersServlet;
 import com.dubylon.photochaos.servlet.RemainderServlet;
-import com.dubylon.photochaos.task.copytodatedfoldername.CopyToDatedFolderServlet;
+import com.dubylon.photochaos.task.copytodatedfolderbyname.CopyToDatedFolderServlet;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;

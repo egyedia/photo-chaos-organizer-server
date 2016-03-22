@@ -1,4 +1,4 @@
-package com.dubylon.photochaos.task.copytodatedfoldername;
+package com.dubylon.photochaos.task.copytodatedfolderbyname;
 
 public class DateTimeBean {
 
