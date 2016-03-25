@@ -49,7 +49,8 @@ public final class TaskTemplateUtil {
       ttp.setType(fieldAnnotation.type());
       ttp.setDefaultValue(fieldAnnotation.defaultValue());
       ttp.setMandatory(fieldAnnotation.mandatory());
-      ttp.setDescription(taskAnnotation.languageKeyPrefix() + "field." + fieldName);
+      ttp.setNameKey(taskAnnotation.languageKeyPrefix() + "field." + fieldName + ".name");
+      ttp.setDescriptionKey(taskAnnotation.languageKeyPrefix() + "field." + fieldName + ".description");
       tt.getParameters().put(fieldName, ttp);
     }
     return tt;

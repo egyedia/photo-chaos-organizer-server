@@ -3,10 +3,11 @@ package com.dubylon.photochaos.model.tasktemplate;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TaskTemplateParameterType {
-  FOLDER("folder"),
-  SHORTDATEFORMAT("shortDateFormat"),
   COPYORMOVE("copyOrMove"),
-  FOLDERSUFFIX("folderSuffix");
+  FOLDERNAME("folderName"),
+  FOLDERSUFFIX("folderSuffix"),
+  PATH("path"),
+  SHORTDATEFORMAT("shortDateFormat");
 
   private final String value;
 

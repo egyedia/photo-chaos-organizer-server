@@ -84,7 +84,9 @@ public class TaskDefinition {
   public void setParametersString(String parameters){
     this.parametersString = parameters;
     try {
+      System.out.println("HERE");
       this.parametersObj = new ObjectMapper().readValue(parameters, Map.class);
+      System.out.println(parametersObj);
     } catch (IOException e) {
       e.printStackTrace();
     }

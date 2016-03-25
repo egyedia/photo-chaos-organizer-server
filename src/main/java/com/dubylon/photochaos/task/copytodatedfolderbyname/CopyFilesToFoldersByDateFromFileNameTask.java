@@ -19,14 +19,14 @@ import java.util.regex.Pattern;
 public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
 
   @PcoTaskTemplateParameter(
-      type = TaskTemplateParameterType.FOLDER,
+      type = TaskTemplateParameterType.PATH,
       mandatory = true,
       defaultValue = ""
   )
   private String sourceFolder;
 
   @PcoTaskTemplateParameter(
-      type = TaskTemplateParameterType.FOLDER,
+      type = TaskTemplateParameterType.PATH,
       mandatory = true,
       defaultValue = ""
   )
@@ -37,7 +37,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
       mandatory = true,
       defaultValue = ""
   )
-  private String suffix;
+  private String newFolderSuffix;
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.SHORTDATEFORMAT,
@@ -64,14 +64,12 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
 
   public CopyFilesToFoldersByDateFromFileNameTask(CopyToDatedFolderGetData response, boolean performOperations) {
 
-    CopyDatedFolderTaskConfig copyDatedFolder = (CopyDatedFolderTaskConfig) PhotoChaosOrganizerApplication
-        .getAppConfig().getTasks().get("copyDatedFolder");
-
+    CopyDatedFolderTaskConfig copyDatedFolder = null;
     this.response = response;
     this.performOperations = performOperations;
     this.sourceFolder = copyDatedFolder.getSourceFolder();
     this.destinationFolder = copyDatedFolder.getDestinationFolder();
-    this.suffix = copyDatedFolder.getDestinationFolderSuffix();
+    this.newFolderSuffix = copyDatedFolder.getDestinationFolderSuffix();
     this.targetFolderNameFormatter = "%1$04d%2$02d%3$02d%4$s";
     this.fullDateTimePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})" +
         "([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)";
@@ -110,7 +108,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
         }
         if (dateTime != null) {
           targetDateFolderName = String.format(targetFolderNameFormatter, dateTime.getYear(), dateTime.getMonth(),
-              dateTime.getDay(), suffix);
+              dateTime.getDay(), newFolderSuffix);
           String folderToCopy = destinationFolder + targetDateFolderName;
           cfo.setDestinationFolderName(targetDateFolderName);
           File folderToCopyFile = new File(folderToCopy);

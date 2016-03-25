@@ -11,14 +11,14 @@ import com.dubylon.photochaos.task.copytodatedfolderbyname.CopyToDatedFolderGetD
 public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask {
 
   @PcoTaskTemplateParameter(
-      type = TaskTemplateParameterType.FOLDER,
+      type = TaskTemplateParameterType.PATH,
       mandatory = true,
       defaultValue = ""
   )
   private String sourceFolder;
 
   @PcoTaskTemplateParameter(
-      type = TaskTemplateParameterType.FOLDER,
+      type = TaskTemplateParameterType.PATH,
       mandatory = true,
       defaultValue = ""
   )
@@ -29,7 +29,7 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask
       mandatory = true,
       defaultValue = ""
   )
-  private String suffix;
+  private String newFolderSuffix;
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.SHORTDATEFORMAT,

@@ -13,6 +13,17 @@ import java.util.Map;
 
 public class TasksServlet extends AbstractPhotoChaosServlet {
 
+  @Override
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    TasksGetHandler h = new TasksGetHandler();
+    try {
+      TasksGetData pcResponse = h.handleRequest(request);
+      Map<String, String> headers = new HashMap<>();
+      PCResponseWriter.writeSuccess(response, pcResponse, headers, pcResponse.getTasks());
+    } catch (PCHandlerError err) {
+      PCResponseWriter.writeError(response, err);
+    }
+  }
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

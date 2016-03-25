@@ -17,6 +17,7 @@ public final class Defaults {
       .OTHER, false, false);
 
   static {
+    // TODO : the files should have a textual type info
     FILE_EXTENSIONS = new HashMap<>();
     FILE_EXTENSIONS.put("jpg", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.IMAGE, true, true));
     FILE_EXTENSIONS.put("jpeg", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.IMAGE, true, true));
@@ -25,6 +26,7 @@ public final class Defaults {
     FILE_EXTENSIONS.put("gif", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.IMAGE, false, true));
 
     FILE_EXTENSIONS.put("cr2", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.IMAGE_RAW, false, false));
+    FILE_EXTENSIONS.put("nef", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.IMAGE_RAW, false, false));
 
     FILE_EXTENSIONS.put("avi", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.VIDEO, false, true));
     FILE_EXTENSIONS.put("mvi", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.VIDEO, false, true));

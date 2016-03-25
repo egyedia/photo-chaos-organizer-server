@@ -2,7 +2,8 @@ package com.dubylon.photochaos.model.tasktemplate;
 
 public class TaskTemplateParameter {
   private String name;
-  private String description;
+  private String nameKey;
+  private String descriptionKey;
   private boolean mandatory;
   private TaskTemplateParameterType type;
   private String defaultValue;
@@ -15,12 +16,20 @@ public class TaskTemplateParameter {
     this.name = name;
   }
 
-  public String getDescription() {
-    return description;
+  public String getNameKey() {
+    return nameKey;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
+  public void setNameKey(String nameKey) {
+    this.nameKey = nameKey;
+  }
+
+  public String getDescriptionKey() {
+    return descriptionKey;
+  }
+
+  public void setDescriptionKey(String descriptionKey) {
+    this.descriptionKey = descriptionKey;
   }
 
   public boolean isMandatory() {
