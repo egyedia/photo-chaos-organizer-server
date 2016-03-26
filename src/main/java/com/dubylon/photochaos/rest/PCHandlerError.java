@@ -18,11 +18,13 @@ public class PCHandlerError extends Exception {
   }
 
   public PCHandlerError(String errorKey, Exception ex) {
-    this(PCHandlerResponse.ERROR, errorKey, null, ex);
+    this(PCHandlerResponse.ERROR, errorKey, ex.getLocalizedMessage(), ex);
+    ex.printStackTrace();
   }
 
   public PCHandlerError(int responseCode, String errorKey, Exception ex) {
-    this(responseCode, errorKey, null, ex);
+    this(responseCode, errorKey, ex.getLocalizedMessage(), ex);
+    ex.printStackTrace();
   }
 
   public PCHandlerError(int responseCode, String errorKey) {

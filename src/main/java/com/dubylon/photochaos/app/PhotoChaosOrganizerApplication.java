@@ -6,6 +6,7 @@ import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
 import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.rest.fsraw.FilesystemRawServlet;
 import com.dubylon.photochaos.rest.fsroot.FilesystemRootsServlet;
+import com.dubylon.photochaos.rest.task.TaskServlet;
 import com.dubylon.photochaos.rest.tasks.TasksServlet;
 import com.dubylon.photochaos.rest.tasktemplate.TaskTemplateServlet;
 import com.dubylon.photochaos.rest.tasktemplates.TaskTemplatesServlet;
@@ -136,6 +137,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(TaskTemplatesServlet.class, "/task-templates");
     servletHandler.addServletWithMapping(TaskTemplateServlet.class, "/task-templates/*");
     servletHandler.addServletWithMapping(TasksServlet.class, "/tasks");
+    servletHandler.addServletWithMapping(TaskServlet.class, "/tasks/*");
 
     servletHandler.addServletWithMapping(CopyToDatedFolderServlet.class, "/tasks/copy-to-dated-folder");
 

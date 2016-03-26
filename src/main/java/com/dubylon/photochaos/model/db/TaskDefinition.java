@@ -1,18 +1,17 @@
 package com.dubylon.photochaos.model.db;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import com.dubylon.photochaos.util.JSONUserType;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
-import java.io.IOException;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Map;
 
 @Entity
 @Table()
+@TypeDefs({@TypeDef(name = "JSONUserType", typeClass = JSONUserType.class)})
 public class TaskDefinition {
 
   @Id
@@ -32,11 +31,8 @@ public class TaskDefinition {
 
   private String name;
 
-  private String parametersString;
-
-  @Transient
-  @JsonIgnore
-  private Map<String, String> parametersObj;
+  @Type(type = "JSONUserType", parameters = {@Parameter(name = "classType", value = "java.util.Map")})
+  private Map<String, String> parameters;
 
   private String className;
 
@@ -67,33 +63,12 @@ public class TaskDefinition {
     this.name = name;
   }
 
-  public void setParameters(Map<String, String> parametersObj) {
-    this.parametersObj = parametersObj;
-    try {
-      this.parametersString = new ObjectMapper().writeValueAsString(parametersObj);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @JsonProperty("parameters")
   public Map<String, String> getParameters() {
-    return this.parametersObj;
+    return parameters;
   }
 
-  public void setParametersString(String parameters){
-    this.parametersString = parameters;
-    try {
-      System.out.println("HERE");
-      this.parametersObj = new ObjectMapper().readValue(parameters, Map.class);
-      System.out.println(parametersObj);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public String getParametersString() {
-    return parametersString;
+  public void setParameters(Map<String, String> parameters) {
+    this.parameters = parameters;
   }
 
   public String getClassName() {
