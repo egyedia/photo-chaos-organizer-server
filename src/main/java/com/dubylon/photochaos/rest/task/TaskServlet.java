@@ -13,14 +13,28 @@ import java.io.IOException;
 
 public class TaskServlet extends AbstractPhotoChaosServlet {
 
+  public static final String PREVIEW = "preview";
+
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    TaskGetHandler h = new TaskGetHandler();
-    try {
-      TaskGetData pcResponse = h.handleRequest(request);
-      PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getTask());
-    } catch (PCHandlerError err) {
-      PCResponseWriter.writeError(response, err);
+    String action = request.getParameter("action");
+    if (PREVIEW.equals(action)) {
+      TaskPreviewGetHandler h = new TaskPreviewGetHandler();
+      try {
+        TaskPreviewGetData pcResponse = h.handleRequest(request);
+        PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getReport());
+      } catch (PCHandlerError err) {
+        PCResponseWriter.writeError(response, err);
+      }
+
+    } else {
+      TaskGetHandler h = new TaskGetHandler();
+      try {
+        TaskGetData pcResponse = h.handleRequest(request);
+        PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getTask());
+      } catch (PCHandlerError err) {
+        PCResponseWriter.writeError(response, err);
+      }
     }
   }
 

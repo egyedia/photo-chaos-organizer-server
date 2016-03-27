@@ -43,4 +43,21 @@ public abstract class AbstractPCHandler implements IPhotoChaosHandler {
     }
     return content;
   }
+
+
+  protected long extractIdFromPathInfo(HttpServletRequest request, String errorMessagePrefix) throws PCHandlerError {
+    String pathInfo = request.getPathInfo();
+    if (pathInfo == null || pathInfo.length() <= 1) {
+      throw new PCHandlerError("MISSING_ID", errorMessagePrefix + " should be specified in the path.");
+    }
+    pathInfo = pathInfo.substring(1);
+    long id = 0;
+    try {
+      id = Long.parseLong(pathInfo);
+    } catch (Exception ex) {
+      throw new PCHandlerError("INVALID_ID", ex);
+    }
+    return id;
+  }
+
 }

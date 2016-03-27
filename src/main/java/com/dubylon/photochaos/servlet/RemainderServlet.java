@@ -1,14 +1,13 @@
 package com.dubylon.photochaos.servlet;
 
-import com.dubylon.photochaos.resource.ClasspathResourceHandler;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.util.resource.Resource;
 
-import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class RemainderServlet extends HttpServlet {
 

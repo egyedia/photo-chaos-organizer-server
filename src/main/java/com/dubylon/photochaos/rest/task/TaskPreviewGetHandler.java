@@ -1,25 +1,24 @@
-package com.dubylon.photochaos.rest.user;
+package com.dubylon.photochaos.rest.task;
 
+import com.dubylon.photochaos.model.db.TaskDefinition;
 import com.dubylon.photochaos.model.db.User;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandler;
 import com.dubylon.photochaos.util.HibernateUtil;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
+import org.hibernate.criterion.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class UserGetHandler extends AbstractPCHandler {
+public class TaskPreviewGetHandler extends AbstractPCHandler {
 
-  public UserGetHandler() {
+  public TaskPreviewGetHandler() {
   }
 
   @Override
-  public UserGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
-    long id = extractIdFromPathInfo(request, "User id");
+  public TaskPreviewGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
+    long id = extractIdFromPathInfo(request, "Task id");
 
     SessionFactory sessionFactory = null;
     try {
@@ -28,17 +27,25 @@ public class UserGetHandler extends AbstractPCHandler {
       throw new PCHandlerError("ERROR_CONNECTING_TO_DATASTORE", e);
     }
 
+    long userId = getUserId(request);
+
+
     Session session = sessionFactory.openSession();
     Transaction tx = null;
     try {
       tx = session.beginTransaction();
-      User user = (User) session.get(User.class, id);
+
+      User ownUser = (User) session.get(User.class, userId);
+      Criteria crit = session.createCriteria(TaskDefinition.class)
+          .add(Restrictions.eq("id", id))
+          .add(Restrictions.eq("owner", ownUser));
+      TaskDefinition task = (TaskDefinition) crit.uniqueResult();
       tx.commit();
-      if (user == null) {
-        throw new PCHandlerError(PCHandlerResponse.NOT_FOUND, "NO_SUCH_USER");
+      if (task == null) {
+        throw new PCHandlerError(PCHandlerResponse.NOT_FOUND, "NO_SUCH_TASK");
       } else {
-        UserGetData response = new UserGetData();
-        response.setUser(user);
+        TaskPreviewGetData response = new TaskPreviewGetData();
+        response.setReport(null);
         return response;
       }
     } catch (HibernateException e) {

@@ -19,18 +19,7 @@ public class FilesystemFavoritesDeleteHandler extends AbstractPCHandler {
 
   @Override
   public FilesystemFavoritesDeleteData handleRequest(HttpServletRequest request) throws PCHandlerError {
-    //TODO have this code in util method
-    String pathInfo = request.getPathInfo();
-    if (pathInfo == null || pathInfo.length() <= 1) {
-      throw new PCHandlerError("MISSING_ID", "Favorite id should be specified in the path.");
-    }
-    pathInfo = pathInfo.substring(1);
-    long id = 0;
-    try {
-      id = Long.parseLong(pathInfo);
-    } catch (Exception ex) {
-      throw new PCHandlerError("INVALID_ID", ex);
-    }
+    long id = extractIdFromPathInfo(request, "Favorite id");
 
     SessionFactory sessionFactory = null;
     try {

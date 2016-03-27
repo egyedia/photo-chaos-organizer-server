@@ -1,19 +1,15 @@
 package com.dubylon.photochaos.rest.task;
 
-import com.dubylon.photochaos.model.db.FavoritePath;
 import com.dubylon.photochaos.model.db.TaskDefinition;
 import com.dubylon.photochaos.model.db.User;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandler;
-import com.dubylon.photochaos.rest.user.UserGetData;
 import com.dubylon.photochaos.util.HibernateUtil;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 public class TaskGetHandler extends AbstractPCHandler {
 
@@ -22,18 +18,7 @@ public class TaskGetHandler extends AbstractPCHandler {
 
   @Override
   public TaskGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
-    //TODO have this code in util method
-    String pathInfo = request.getPathInfo();
-    if (pathInfo == null || pathInfo.length() <= 1) {
-      throw new PCHandlerError("MISSING_ID", "Task id should be specified in the path.");
-    }
-    pathInfo = pathInfo.substring(1);
-    long id = 0;
-    try {
-      id = Long.parseLong(pathInfo);
-    } catch (Exception ex) {
-      throw new PCHandlerError("INVALID_ID", ex);
-    }
+    long id = extractIdFromPathInfo(request, "Task id");
 
     SessionFactory sessionFactory = null;
     try {
