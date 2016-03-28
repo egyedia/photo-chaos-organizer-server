@@ -7,7 +7,6 @@ import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.util.TaskTemplateUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 public class TaskTemplateGetHandler implements IPhotoChaosHandler {
 
@@ -20,7 +19,7 @@ public class TaskTemplateGetHandler implements IPhotoChaosHandler {
     String path = request.getPathInfo();
     if (path != null && path.indexOf(Constants.SLASH) == 0) {
       String className = path.substring(Constants.SLASH.length());
-      TaskTemplate taskTemplate = TaskTemplateUtil.getTaskTemplate(className);
+      TaskTemplate taskTemplate = TaskTemplateUtil.buildTaskTemplate(className);
       response.setTaskTemplate(taskTemplate);
     }
     return response;

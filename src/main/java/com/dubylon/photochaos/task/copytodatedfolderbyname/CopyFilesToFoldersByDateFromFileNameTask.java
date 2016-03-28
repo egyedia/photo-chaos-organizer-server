@@ -3,6 +3,7 @@ package com.dubylon.photochaos.task.copytodatedfolderbyname;
 import com.dubylon.photochaos.app.CopyDatedFolderTaskConfig;
 import com.dubylon.photochaos.app.PhotoChaosOrganizerApplication;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
+import com.dubylon.photochaos.rest.task.TaskPreviewGetData;
 import com.dubylon.photochaos.task.IPcoTask;
 import com.dubylon.photochaos.task.PcoTaskTemplate;
 import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
@@ -78,18 +79,19 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
     this.justDatePattern = Pattern.compile(justDatePatternString);
   }
 
-  public void execute() {
+  @Override
+  public void execute(TaskPreviewGetData response, boolean performOperations) {
 
-    response.setSourcePath(sourceFolder);
-    response.setDestinationPath(destinationFolder);
-    response.setCopiedCount(0);
-    response.setSkippedCount(0);
+    //response.setSourcePath(sourceFolder);
+    //response.setDestinationPath(destinationFolder);
+    //response.setCopiedCount(0);
+    //response.setSkippedCount(0);
 
     File destinationFolderFile = new File(destinationFolder);
-    response.setDestinationOk(destinationFolderFile.exists() && destinationFolderFile.isDirectory());
+    //response.setDestinationOk(destinationFolderFile.exists() && destinationFolderFile.isDirectory());
 
     File sourceFolderFile = new File(sourceFolder);
-    response.setSourceOk(sourceFolderFile.exists() && sourceFolderFile.isDirectory());
+    //response.setSourceOk(sourceFolderFile.exists() && sourceFolderFile.isDirectory());
 
     //TODO if source is not ok, listOfFiles will be null, resultig in a NPE
     File[] listOfFiles = sourceFolderFile.listFiles();
@@ -99,7 +101,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
         String name = listOfFiles[i].getName();
         String fileName = FilenameUtils.getBaseName(name);
         CopyFileOperation cfo = new CopyFileOperation();
-        response.getOperations().add(cfo);
+        //response.getOperations().add(cfo);
         cfo.setFileName(fileName);
         DateTimeBean dateTime = extractDateAndTime(fileName);
         String targetDateFolderName = null;
@@ -134,21 +136,21 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
               try {
                 FileUtils.copyFileToDirectory(src, folderToCopyFile);
                 cfo.setCopied(true);
-                response.setCopiedCount(response.getCopiedCount() + 1);
+                //response.setCopiedCount(response.getCopiedCount() + 1);
               } catch (IOException ex) {
                 ex.printStackTrace();
-                response.setSkippedCount(response.getSkippedCount() + 1);
+                //response.setSkippedCount(response.getSkippedCount() + 1);
                 cfo.setReason("ERROR_WHILE_COPYING");
                 cfo.setCopied(false);
               }
             } else {
               cfo.setCopied(true);
-              response.setCopiedCount(response.getCopiedCount() + 1);
+              //response.setCopiedCount(response.getCopiedCount() + 1);
             }
           } else {
             cfo.setReason("TARGET_DIR_DOES_NOT_EXIST");
             cfo.setCopied(false);
-            response.setSkippedCount(response.getSkippedCount() + 1);
+            //response.setSkippedCount(response.getSkippedCount() + 1);
           }
 
         }

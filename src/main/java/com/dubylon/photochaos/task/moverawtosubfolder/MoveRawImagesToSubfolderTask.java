@@ -1,6 +1,7 @@
 package com.dubylon.photochaos.task.moverawtosubfolder;
 
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
+import com.dubylon.photochaos.rest.task.TaskPreviewGetData;
 import com.dubylon.photochaos.task.IPcoTask;
 import com.dubylon.photochaos.task.PcoTaskTemplate;
 import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
@@ -32,22 +33,12 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
   )
   private String rawFolder;
 
-  private MoveRawImagesToSubfolderGetData response;
+  private TaskPreviewGetData response;
   private boolean performOperations;
 
   private List<Path> pathList;
 
-  public MoveRawImagesToSubfolderTask(MoveRawImagesToSubfolderGetData response, boolean performOperations) {
-    this.response = response;
-    this.performOperations = performOperations;
-  }
-
-  public void setWorkingFolder(String workingFolder) {
-    this.workingFolder = workingFolder;
-  }
-
-  public void setRawFolder(String rawFolder) {
-    this.rawFolder = rawFolder;
+  public MoveRawImagesToSubfolderTask() {
   }
 
   private void detectPaths(Path currentPath) {
@@ -90,8 +81,11 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
     }
   }
 
+  @Override
+  public void execute(TaskPreviewGetData response, boolean performOperations) {
+    this.response = response;
+    this.performOperations = performOperations;
 
-  public void execute() {
     pathList = new ArrayList<>();
     //TODO set reports
     Path workingFolderPath = Paths.get(workingFolder);
@@ -102,15 +96,8 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
 
     if (workingFolderOk) {
       detectPaths(workingFolderPath);
-
     }
     pathList.forEach(this::moveFiles);
   }
 
-  public static void main(String[] args) {
-    MoveRawImagesToSubfolderTask t = new MoveRawImagesToSubfolderTask(null, false);
-    t.setWorkingFolder("/atti/development/photo-chaos-organizer-images/moverawimagestosubfolder/");
-    t.setRawFolder("raw");
-    t.execute();
-  }
 }

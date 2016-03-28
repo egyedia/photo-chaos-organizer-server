@@ -17,7 +17,7 @@ public class CopyToDatedFolderGetHandler implements IPhotoChaosHandler {
     boolean perform = perf != null && "true".equals(perf);
 
     CopyFilesToFoldersByDateFromFileNameTask task = new CopyFilesToFoldersByDateFromFileNameTask(response, perform);
-    task.execute();
+    //---task.execute();
     return response;
   }
 }

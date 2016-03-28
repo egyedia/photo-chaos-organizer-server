@@ -24,13 +24,13 @@ public final class TaskTemplateUtil {
     Set<Class<?>> annotatedTaskTemplates =
         classReflections.getTypesAnnotatedWith(PcoTaskTemplate.class);
     for (Class c : annotatedTaskTemplates) {
-      TaskTemplate tt = getTaskTemplate(c);
+      TaskTemplate tt = buildTaskTemplate(c);
       ret.add(tt);
     }
     return ret;
   }
 
-  public static TaskTemplate getTaskTemplate(Class c) {
+  public static TaskTemplate buildTaskTemplate(Class c) {
     TaskTemplate tt = new TaskTemplate();
     PcoTaskTemplate taskAnnotation = (PcoTaskTemplate) c.getAnnotation(PcoTaskTemplate.class);
     tt.setClassName(c.getCanonicalName());
@@ -56,13 +56,13 @@ public final class TaskTemplateUtil {
     return tt;
   }
 
-  public static TaskTemplate getTaskTemplate(String className) {
+  public static TaskTemplate buildTaskTemplate(String className) {
     Class c = null;
     try {
       c = Class.forName(className);
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }
-    return getTaskTemplate(c);
+    return buildTaskTemplate(c);
   }
 }

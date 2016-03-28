@@ -1,15 +1,15 @@
 package com.dubylon.photochaos.rest.task;
 
+import com.dubylon.photochaos.dao.TaskDefinitionDao;
 import com.dubylon.photochaos.model.db.TaskDefinition;
-import com.dubylon.photochaos.model.db.User;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandler;
-import com.dubylon.photochaos.util.HibernateUtil;
-import org.hibernate.*;
-import org.hibernate.criterion.Restrictions;
+import com.dubylon.photochaos.task.IPcoTask;
+import org.reflections.Reflections;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
 
 public class TaskPreviewGetHandler extends AbstractPCHandler {
 
@@ -19,43 +19,63 @@ public class TaskPreviewGetHandler extends AbstractPCHandler {
   @Override
   public TaskPreviewGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
     long id = extractIdFromPathInfo(request, "Task id");
-
-    SessionFactory sessionFactory = null;
-    try {
-      sessionFactory = HibernateUtil.getSessionFactory();
-    } catch (Exception e) {
-      throw new PCHandlerError("ERROR_CONNECTING_TO_DATASTORE", e);
-    }
-
     long userId = getUserId(request);
 
+    TaskDefinitionDao tdd = new TaskDefinitionDao();
+    TaskDefinition td = tdd.getById(id, userId, TaskDefinition.class);
 
-    Session session = sessionFactory.openSession();
-    Transaction tx = null;
-    try {
-      tx = session.beginTransaction();
+    if (td == null) {
+      throw new PCHandlerError(PCHandlerResponse.NOT_FOUND, "NO_SUCH_TASK");
+    } else {
+      Class c = null;
+      try {
+        c = Class.forName(td.getClassName());
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+      }
 
-      User ownUser = (User) session.get(User.class, userId);
-      Criteria crit = session.createCriteria(TaskDefinition.class)
-          .add(Restrictions.eq("id", id))
-          .add(Restrictions.eq("owner", ownUser));
-      TaskDefinition task = (TaskDefinition) crit.uniqueResult();
-      tx.commit();
-      if (task == null) {
-        throw new PCHandlerError(PCHandlerResponse.NOT_FOUND, "NO_SUCH_TASK");
-      } else {
-        TaskPreviewGetData response = new TaskPreviewGetData();
-        response.setReport(null);
-        return response;
+      IPcoTask task = null;
+      try {
+        task = (IPcoTask) c.newInstance();
+      } catch (InstantiationException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
       }
-    } catch (HibernateException e) {
-      e.printStackTrace();
-      if (tx != null) {
-        tx.rollback();
+
+      Reflections classReflections = new Reflections("");
+      for (String paramName : td.getParameters().keySet()) {
+        String paramValue = td.getParameters().get(paramName);
+        Field field = null;
+        Object o = null;
+        try {
+          field = task.getClass().getDeclaredField(paramName);
+          field.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+          e.printStackTrace();
+        }
+        if (field != null) {
+          Class<?> type = field.getType();
+          /*System.out.println("------");
+          System.out.println(paramName);
+          System.out.println(paramValue);
+          System.out.println(type);*/
+          if (String.class.equals(type)) {
+            try {
+              field.set(task, paramValue);
+            } catch (IllegalAccessException e) {
+              e.printStackTrace();
+            }
+          }
+        }
       }
-      throw new PCHandlerError("ERROR_WHILE_READING", e);
-    } finally {
-      session.close();
+
+      TaskPreviewGetData response = new TaskPreviewGetData();
+
+      task.execute(response, false);
+
+      response.setReport(null);
+      return response;
     }
   }
 }
