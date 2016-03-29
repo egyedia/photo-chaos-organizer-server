@@ -1,10 +1,15 @@
 package com.dubylon.photochaos.task.moverawtosubfolder;
 
+import com.dubylon.photochaos.Defaults;
+import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
+import com.dubylon.photochaos.report.TableReport;
+import com.dubylon.photochaos.report.TableReportRow;
 import com.dubylon.photochaos.rest.task.TaskPreviewGetData;
 import com.dubylon.photochaos.task.IPcoTask;
 import com.dubylon.photochaos.task.PcoTaskTemplate;
 import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
+import com.dubylon.photochaos.util.PhotoChaosFileType;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +19,10 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
+
+import static com.dubylon.photochaos.report.TableReport.*;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.moveRawImagesToSubfolders.")
 public class MoveRawImagesToSubfolderTask implements IPcoTask {
@@ -32,11 +40,14 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
       defaultValue = "raw"
   )
   private String rawFolder;
+  private Path rawPath;
 
   private TaskPreviewGetData response;
   private boolean performOperations;
+  private String rawGlobFilter;
 
   private List<Path> pathList;
+  private Object operation;
 
   public MoveRawImagesToSubfolderTask() {
   }
@@ -44,7 +55,7 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
   private void detectPaths(Path currentPath) {
     try (final Stream<Path> stream = Files.list(currentPath)) {
       stream
-          .filter(path -> path.toFile().isDirectory() && !rawFolder.equals(path.getFileName().toString()))
+          .filter(path -> path.toFile().isDirectory() && !rawFolder.equalsIgnoreCase(path.getFileName().toString()))
           .forEach(path -> {
             pathList.add(path);
             detectPaths(path);
@@ -54,27 +65,34 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
     }
   }
 
-  private void moveFiles(Path currentPath) {
-    Path rawPath = currentPath.resolve(rawFolder);
-    if (rawPath.toFile().exists()) {
-      if (rawPath.toFile().isDirectory()) {
-        System.out.println(rawFolder + " already present, no need to create it:" + rawPath);
+
+  private void createOperation(Path currentPath, List<FilesystemOperation> fsol) {
+    final FilesystemOperation folderOp;
+    Path newPath = currentPath.resolve(rawPath);
+    if (newPath.toFile().exists()) {
+      if (newPath.toFile().isDirectory()) {
+        folderOp = new FolderAlreadyPresent(newPath);
       } else {
-        System.out.println(rawFolder + " already present, but not a directory. Unable to perform operation, skipping " +
-            "folder:" + currentPath);
+        folderOp = new NotFolderAlreadyPresent(newPath);
         return;
       }
     } else {
-      System.out.println(rawFolder + " is not present, need to create it:" + rawPath);
+      folderOp = new CreateFolder(currentPath, rawPath);
     }
 
-    //TODO build the extension list from real data
-    final PathMatcher filter = currentPath.getFileSystem().getPathMatcher("glob:*.{cr2,nef}");
+    final AtomicBoolean folderAlreadyCreated = new AtomicBoolean();
+    folderAlreadyCreated.set(false);
+    final PathMatcher filter = currentPath.getFileSystem().getPathMatcher(rawGlobFilter);
     try (final Stream<Path> stream = Files.list(currentPath)) {
       stream
           .filter(path -> path.toFile().isFile() && filter.matches(path.getFileName()))
           .forEach(path -> {
-            System.out.println("Move file:" + path.getFileName() + " from:" + currentPath + " to:" + rawPath);
+            if (!folderAlreadyCreated.get()) {
+              fsol.add(folderOp);
+              folderAlreadyCreated.set(true);
+            }
+            FilesystemOperation moveOp = new MoveFile(path.getFileName(), currentPath, newPath);
+            fsol.add(moveOp);
           });
     } catch (IOException e) {
       e.printStackTrace();
@@ -86,18 +104,61 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
     this.response = response;
     this.performOperations = performOperations;
 
+    rawPath = Paths.get(rawFolder);
+
     pathList = new ArrayList<>();
-    //TODO set reports
+    // Check working folder
     Path workingFolderPath = Paths.get(workingFolder);
     File workingFolderFile = workingFolderPath.toFile();
     boolean workingFolderOk = workingFolderFile.exists()
         && workingFolderFile.isDirectory()
         && workingFolderFile.canRead();
 
+    // Detect all subfolders
     if (workingFolderOk) {
       detectPaths(workingFolderPath);
     }
-    pathList.forEach(this::moveFiles);
+
+    // Build the glob for matching raw files
+    StringBuilder sb = new StringBuilder();
+    sb.append("glob:*.{");
+    final StringBuilder separator = new StringBuilder();
+    Defaults.FILE_EXTENSIONS.forEach((ext, desc) -> {
+      if (PhotoChaosFileType.IMAGE_RAW.equals(desc.getFileType())) {
+        sb.append(separator);
+        sb.append(ext);
+        if (separator.length() == 0) {
+          separator.append(",");
+        }
+      }
+    });
+    sb.append("}");
+    rawGlobFilter = sb.toString();
+
+    // Create the operation list
+    List<FilesystemOperation> fsOpList = new ArrayList<>();
+    pathList.forEach(path -> this.createOperation(path, fsOpList));
+
+    // Create the operation report
+    TableReport opReport = new TableReport();
+    opReport.addHeader(FSOP_OPERATION);
+    opReport.addHeader(FSOP_SOURCE);
+    opReport.addHeader(FSOP_SOURCE_NAME);
+    opReport.addHeader(FSOP_DESTINATION);
+    opReport.addHeader(FSOP_DESTINATION_NAME);
+    opReport.addHeader(FSOP_STATUS);
+    fsOpList.forEach(op -> {
+      TableReportRow row = opReport.createRow();
+      row.set(FSOP_OPERATION, op.getType());
+      row.set(FSOP_SOURCE, op.getSource() == null ? null : workingFolderPath.relativize(op.getSource()));
+      row.set(FSOP_SOURCE_NAME, op.getSourceName());
+      row.set(FSOP_DESTINATION, op.getDestination() == null ? null : workingFolderPath.relativize(op.getDestination()));
+      row.set(FSOP_DESTINATION_NAME, op.getDestinationName());
+      row.set(FSOP_STATUS, op.getStatus());
+    });
+
+    response.getReports().add(opReport);
+
   }
 
 }

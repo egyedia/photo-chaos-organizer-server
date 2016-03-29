@@ -2,8 +2,6 @@ package com.dubylon.photochaos.rest.task;
 
 import com.dubylon.photochaos.handler.PCResponseWriter;
 import com.dubylon.photochaos.rest.PCHandlerError;
-import com.dubylon.photochaos.rest.user.UserGetData;
-import com.dubylon.photochaos.rest.user.UserGetHandler;
 import com.dubylon.photochaos.servlet.AbstractPhotoChaosServlet;
 
 import javax.servlet.ServletException;
@@ -22,7 +20,7 @@ public class TaskServlet extends AbstractPhotoChaosServlet {
       TaskPreviewGetHandler h = new TaskPreviewGetHandler();
       try {
         TaskPreviewGetData pcResponse = h.handleRequest(request);
-        PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getReport());
+        PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getReports());
       } catch (PCHandlerError err) {
         PCResponseWriter.writeError(response, err);
       }
