@@ -12,19 +12,26 @@ import java.io.IOException;
 public class TaskServlet extends AbstractPhotoChaosServlet {
 
   public static final String PREVIEW = "preview";
+  public static final String RUN = "run";
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String action = request.getParameter("action");
+    Boolean runTask = null;
     if (PREVIEW.equals(action)) {
-      TaskPreviewGetHandler h = new TaskPreviewGetHandler();
+      runTask = Boolean.FALSE;
+    } else if (RUN.equals(action)) {
+      runTask = Boolean.TRUE;
+    }
+
+    if (runTask != null) {
+      TaskPreviewOrRunGetHandler h = new TaskPreviewOrRunGetHandler(runTask);
       try {
-        TaskPreviewGetData pcResponse = h.handleRequest(request);
+        TaskPreviewOrRunGetData pcResponse = h.handleRequest(request);
         PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getReports());
       } catch (PCHandlerError err) {
         PCResponseWriter.writeError(response, err);
       }
-
     } else {
       TaskGetHandler h = new TaskGetHandler();
       try {

@@ -5,45 +5,47 @@ import org.apache.commons.io.FileUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class CreateFolder extends AbstractFilesystemOperation {
+public class CopyFile extends AbstractFilesystemOperation {
 
-  private Path parent;
-  private Path name;
+  private Path fileName;
+  private Path sourcePath;
+  private Path destinationPath;
 
-  public CreateFolder(Path parent, Path name) {
-    this.parent = parent;
-    this.name = name;
+  public CopyFile(Path fileName, Path sourcePath, Path destinationPath) {
+    this.fileName = fileName;
+    this.sourcePath = sourcePath;
+    this.destinationPath = destinationPath;
   }
 
   @Override
   public FilesystemOperationType getType() {
-    return FilesystemOperationType.CREATEFOLDER;
+    return FilesystemOperationType.COPYFILE;
   }
 
   @Override
   public Path getSource() {
-    return null;
+    return sourcePath;
   }
 
   @Override
   public Path getSourceName() {
-    return null;
+    return fileName;
   }
 
   @Override
   public Path getDestination() {
-    return parent;
+    return destinationPath;
   }
 
   @Override
   public Path getDestinationName() {
-    return name;
+    return fileName;
   }
 
   @Override
   public void perform() {
     try {
-      FileUtils.forceMkdir(parent.resolve(name).toFile());
+      FileUtils.copyFile(sourcePath.resolve(fileName).toFile(), destinationPath.resolve(fileName).toFile());
       setStatus(FilesystemOperationStatus.SUCCESS);
     } catch (IOException e) {
       e.printStackTrace();

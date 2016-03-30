@@ -10,13 +10,15 @@ import com.dubylon.photochaos.util.TaskUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class TaskPreviewGetHandler extends AbstractPCHandler {
+public class TaskPreviewOrRunGetHandler extends AbstractPCHandler {
 
-  public TaskPreviewGetHandler() {
+  private boolean performOperations;
+  public TaskPreviewOrRunGetHandler(boolean performOperations) {
+    this.performOperations = performOperations;
   }
 
   @Override
-  public TaskPreviewGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
+  public TaskPreviewOrRunGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
     long id = extractIdFromPathInfo(request, "Task id");
     long userId = getUserId(request);
 
@@ -27,8 +29,8 @@ public class TaskPreviewGetHandler extends AbstractPCHandler {
       throw new PCHandlerError(PCHandlerResponse.NOT_FOUND, "NO_SUCH_TASK");
     } else {
       IPcoTask task = TaskUtil.buildTaskWithParameters(td.getClassName(), td.getParameters());
-      TaskPreviewGetData response = new TaskPreviewGetData();
-      task.execute(response, false);
+      TaskPreviewOrRunGetData response = new TaskPreviewOrRunGetData();
+      task.execute(response, performOperations);
       return response;
     }
   }

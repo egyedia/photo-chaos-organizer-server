@@ -15,7 +15,6 @@ import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaServlet;
 import com.dubylon.photochaos.rest.user.UserServlet;
 import com.dubylon.photochaos.rest.users.UsersServlet;
 import com.dubylon.photochaos.servlet.RemainderServlet;
-import com.dubylon.photochaos.task.copytodatedfolderbyname.CopyToDatedFolderServlet;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -138,8 +137,6 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(TaskTemplateServlet.class, "/task-templates/*");
     servletHandler.addServletWithMapping(TasksServlet.class, "/tasks");
     servletHandler.addServletWithMapping(TaskServlet.class, "/tasks/*");
-
-    servletHandler.addServletWithMapping(CopyToDatedFolderServlet.class, "/tasks/copy-to-dated-folder");
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
 

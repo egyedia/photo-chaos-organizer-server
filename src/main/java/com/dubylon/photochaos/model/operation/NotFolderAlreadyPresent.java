@@ -2,7 +2,7 @@ package com.dubylon.photochaos.model.operation;
 
 import java.nio.file.Path;
 
-public class NotFolderAlreadyPresent implements FilesystemOperation {
+public class NotFolderAlreadyPresent extends AbstractFilesystemOperation {
 
   private Path path;
 
@@ -36,7 +36,8 @@ public class NotFolderAlreadyPresent implements FilesystemOperation {
   }
 
   @Override
-  public FilesystemOperationStatus getStatus() {
-    return FilesystemOperationStatus.SUCCESS;
+  public void perform() {
+    // do nothing
   }
+
 }

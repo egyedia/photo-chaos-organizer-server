@@ -5,7 +5,8 @@ import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
-import com.dubylon.photochaos.rest.task.TaskPreviewGetData;
+import com.dubylon.photochaos.rest.task.TaskPreviewOrRunGetData;
+import com.dubylon.photochaos.task.FilesystemOperationPerformer;
 import com.dubylon.photochaos.task.IPcoTask;
 import com.dubylon.photochaos.task.PcoTaskTemplate;
 import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
@@ -42,12 +43,11 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
   private String rawFolder;
   private Path rawPath;
 
-  private TaskPreviewGetData response;
+  private TaskPreviewOrRunGetData response;
   private boolean performOperations;
   private String rawGlobFilter;
 
   private List<Path> pathList;
-  private Object operation;
 
   public MoveRawImagesToSubfolderTask() {
   }
@@ -66,8 +66,8 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
   }
 
 
-  private void createOperation(Path currentPath, List<FilesystemOperation> fsol) {
-    final FilesystemOperation folderOp;
+  private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
+    final IFilesystemOperation folderOp;
     Path newPath = currentPath.resolve(rawPath);
     if (newPath.toFile().exists()) {
       if (newPath.toFile().isDirectory()) {
@@ -91,7 +91,7 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
               fsol.add(folderOp);
               folderAlreadyCreated.set(true);
             }
-            FilesystemOperation moveOp = new MoveFile(path.getFileName(), currentPath, newPath);
+            IFilesystemOperation moveOp = new MoveFile(path.getFileName(), currentPath, newPath);
             fsol.add(moveOp);
           });
     } catch (IOException e) {
@@ -100,7 +100,7 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
   }
 
   @Override
-  public void execute(TaskPreviewGetData response, boolean performOperations) {
+  public void execute(TaskPreviewOrRunGetData response, boolean performOperations) {
     this.response = response;
     this.performOperations = performOperations;
 
@@ -116,27 +116,29 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
 
     // Detect all subfolders
     if (workingFolderOk) {
+      pathList.add(workingFolderPath);
       detectPaths(workingFolderPath);
     }
 
     // Build the glob for matching raw files
     StringBuilder sb = new StringBuilder();
-    sb.append("glob:*.{");
+    sb.append("regex:");
+    sb.append("([^\\s]+(\\.(?i)(");
     final StringBuilder separator = new StringBuilder();
     Defaults.FILE_EXTENSIONS.forEach((ext, desc) -> {
       if (PhotoChaosFileType.IMAGE_RAW.equals(desc.getFileType())) {
         sb.append(separator);
         sb.append(ext);
         if (separator.length() == 0) {
-          separator.append(",");
+          separator.append("|");
         }
       }
     });
-    sb.append("}");
+    sb.append("))$)");
     rawGlobFilter = sb.toString();
 
     // Create the operation list
-    List<FilesystemOperation> fsOpList = new ArrayList<>();
+    List<IFilesystemOperation> fsOpList = new ArrayList<>();
     pathList.forEach(path -> this.createOperation(path, fsOpList));
 
     // Create the operation report
@@ -148,6 +150,8 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
     opReport.addHeader(FSOP_DESTINATION_NAME);
     opReport.addHeader(FSOP_STATUS);
     fsOpList.forEach(op -> {
+      FilesystemOperationPerformer.perform(op, performOperations);
+
       TableReportRow row = opReport.createRow();
       row.set(FSOP_OPERATION, op.getType());
       row.set(FSOP_SOURCE, op.getSource() == null ? null : workingFolderPath.relativize(op.getSource()));

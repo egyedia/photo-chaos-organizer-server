@@ -1,6 +1,8 @@
 package com.dubylon.photochaos.task;
 
-public enum TaskTemplateParameterCopyOrMove {
+import com.dubylon.photochaos.util.PcoEnum;
+
+public enum TaskTemplateParameterCopyOrMove implements PcoEnum {
   COPY("copy"),
   MOVE("move");
 
@@ -10,6 +12,7 @@ public enum TaskTemplateParameterCopyOrMove {
     this.value = value;
   }
 
+  @Override
   public String getValue() {
     return value;
   }

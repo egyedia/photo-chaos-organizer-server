@@ -1,8 +1,11 @@
 package com.dubylon.photochaos.model.operation;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.IOException;
 import java.nio.file.Path;
 
-public class MoveFile implements FilesystemOperation {
+public class MoveFile extends AbstractFilesystemOperation {
 
   private Path fileName;
   private Path sourcePath;
@@ -40,7 +43,15 @@ public class MoveFile implements FilesystemOperation {
   }
 
   @Override
-  public FilesystemOperationStatus getStatus() {
-    return FilesystemOperationStatus.SUCCESS;
+  public void perform() {
+    try {
+      FileUtils.moveFile(sourcePath.resolve(fileName).toFile(), destinationPath.resolve(fileName).toFile());
+      setStatus(FilesystemOperationStatus.SUCCESS);
+    } catch (IOException e) {
+      e.printStackTrace();
+      setStatus(FilesystemOperationStatus.ERROR);
+      errorMessage = e.getMessage();
+    }
   }
+
 }

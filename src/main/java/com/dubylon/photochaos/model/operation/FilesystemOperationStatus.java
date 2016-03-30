@@ -3,6 +3,7 @@ package com.dubylon.photochaos.model.operation;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum FilesystemOperationStatus {
+  UNDEFINED("U"),
   SUCCESS("S"),
   WARNING("W"),
   ERROR("E");

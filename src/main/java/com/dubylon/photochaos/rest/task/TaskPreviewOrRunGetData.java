@@ -6,11 +6,11 @@ import com.dubylon.photochaos.report.ITaskReport;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskPreviewGetData extends PCHandlerResponseData {
+public class TaskPreviewOrRunGetData extends PCHandlerResponseData {
 
   private List<ITaskReport> reports;
 
-  public TaskPreviewGetData() {
+  public TaskPreviewOrRunGetData() {
     reports = new ArrayList<>();
   }
 

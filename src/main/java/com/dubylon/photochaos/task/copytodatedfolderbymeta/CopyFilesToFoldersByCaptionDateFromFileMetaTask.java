@@ -1,12 +1,11 @@
 package com.dubylon.photochaos.task.copytodatedfolderbymeta;
 
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
-import com.dubylon.photochaos.rest.task.TaskPreviewGetData;
+import com.dubylon.photochaos.rest.task.TaskPreviewOrRunGetData;
 import com.dubylon.photochaos.task.IPcoTask;
 import com.dubylon.photochaos.task.PcoTaskTemplate;
 import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
 import com.dubylon.photochaos.task.TaskTemplateParameterCopyOrMove;
-import com.dubylon.photochaos.task.copytodatedfolderbyname.CopyToDatedFolderGetData;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileMeta.")
 public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask {
@@ -35,7 +34,7 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.SHORTDATEFORMAT,
       mandatory = true,
-      defaultValue = "YYYYMMDD"
+      defaultValue = "yyyyMMdd"
   )
   private String newFolderDateFormat;
 
@@ -51,7 +50,7 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask
   }
 
   @Override
-  public void execute(TaskPreviewGetData response, boolean performOperations) {
+  public void execute(TaskPreviewOrRunGetData response, boolean performOperations) {
 
   }
 }
