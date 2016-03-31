@@ -31,14 +31,16 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.PATH,
       mandatory = true,
-      defaultValue = ""
+      defaultValue = "",
+      order = 1
   )
   private String workingFolder;
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.FOLDERNAME,
       mandatory = true,
-      defaultValue = "raw"
+      defaultValue = "raw",
+      order = 2
   )
   private String rawFolder;
   private Path rawPath;

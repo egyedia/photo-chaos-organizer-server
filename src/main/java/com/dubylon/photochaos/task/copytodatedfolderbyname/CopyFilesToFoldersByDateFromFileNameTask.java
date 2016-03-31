@@ -35,35 +35,40 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.PATH,
       mandatory = true,
-      defaultValue = ""
+      defaultValue = "",
+      order = 1
   )
   private String sourceFolder;
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.PATH,
       mandatory = true,
-      defaultValue = ""
+      defaultValue = "",
+      order = 2
   )
   private String destinationFolder;
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.FOLDERSUFFIX,
-      mandatory = true,
-      defaultValue = ""
+      mandatory = false,
+      defaultValue = "",
+      order = 3
   )
   private String newFolderSuffix;
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.SHORTDATEFORMAT,
       mandatory = true,
-      defaultValue = "yyyyMMdd"
+      defaultValue = "yyyyMMdd",
+      order = 4
   )
   private String newFolderDateFormat;
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.COPYORMOVE,
       mandatory = true,
-      defaultValue = "copy"
+      defaultValue = "copy",
+      order = 5
   )
   private TaskTemplateParameterCopyOrMove fileOperation;
 

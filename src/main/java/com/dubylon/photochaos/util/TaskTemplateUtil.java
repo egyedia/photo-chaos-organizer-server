@@ -9,6 +9,7 @@ import org.reflections.scanners.FieldAnnotationsScanner;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public final class TaskTemplateUtil {
       TaskTemplate tt = buildTaskTemplate(c);
       ret.add(tt);
     }
+    Collections.sort(ret);
     return ret;
   }
 
@@ -41,6 +43,7 @@ public final class TaskTemplateUtil {
     Reflections fieldReflections = new Reflections(c.getCanonicalName(), fas);
     Set<Field> fields =
         fieldReflections.getFieldsAnnotatedWith(PcoTaskTemplateParameter.class);
+    List<TaskTemplateParameter> parameterList = new ArrayList<>();
     for (Field f : fields) {
       PcoTaskTemplateParameter fieldAnnotation = f.getAnnotation(PcoTaskTemplateParameter.class);
       TaskTemplateParameter ttp = new TaskTemplateParameter();
@@ -51,8 +54,11 @@ public final class TaskTemplateUtil {
       ttp.setMandatory(fieldAnnotation.mandatory());
       ttp.setNameKey(taskAnnotation.languageKeyPrefix() + "field." + fieldName + ".name");
       ttp.setDescriptionKey(taskAnnotation.languageKeyPrefix() + "field." + fieldName + ".description");
-      tt.getParameters().put(fieldName, ttp);
+      ttp.setOrder(fieldAnnotation.order());
+      parameterList.add(ttp);
     }
+    Collections.sort(parameterList);
+    parameterList.forEach(p -> tt.getParameters().put(p.getName(), p));
     return tt;
   }
 

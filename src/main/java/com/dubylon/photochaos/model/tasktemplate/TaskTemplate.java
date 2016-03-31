@@ -1,9 +1,9 @@
 package com.dubylon.photochaos.model.tasktemplate;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.HashMap;
 
-public class TaskTemplate {
+public class TaskTemplate implements Comparable<TaskTemplate> {
 
   protected String name;
   protected String description;
@@ -11,7 +11,7 @@ public class TaskTemplate {
   protected Map<String, TaskTemplateParameter> parameters;
 
   public TaskTemplate() {
-    parameters = new HashMap<>();
+    parameters = new LinkedHashMap<>();
   }
 
   public String getName() {
@@ -46,4 +46,12 @@ public class TaskTemplate {
     this.parameters = parameters;
   }
 
+  @Override
+  public int compareTo(TaskTemplate o) {
+    if (this.name != null) {
+      return this.name.compareTo(o.name);
+    } else {
+      return 1;
+    }
+  }
 }

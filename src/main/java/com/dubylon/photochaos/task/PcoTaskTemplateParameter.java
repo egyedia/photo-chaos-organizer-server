@@ -12,4 +12,6 @@ public @interface PcoTaskTemplateParameter {
   boolean mandatory();
 
   String defaultValue();
+
+  int order();
 }
