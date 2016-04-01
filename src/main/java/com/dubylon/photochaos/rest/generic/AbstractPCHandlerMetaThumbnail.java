@@ -5,9 +5,11 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
+import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.ExifThumbnailDirectory;
+import com.drew.metadata.jpeg.JpegDirectory;
 import com.dubylon.photochaos.model.response.meta.BigImageMeta;
 import com.dubylon.photochaos.model.response.meta.ImageExtractedMeta;
 import com.dubylon.photochaos.model.response.meta.ThumbnailMeta;
@@ -47,73 +49,151 @@ public abstract class AbstractPCHandlerMetaThumbnail extends AbstractPCHandlerFi
     em.setImage(bim);
     em.setThumbnail(thm);
 
-    final Directory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-    if (directory != null) {
-      if (directory.hasTagName(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)) {
-        Date dto = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+    /*
+    System.out.println("-------------------------------------");
+    System.out.println("-------------------------------------");
+    System.out.println("-------------------------------------");
+    System.out.println(response.getRequestedPath());
+    for (Directory directory : metadata.getDirectories()) {
+      for (Tag tag : directory.getTags()) {
+        System.out.println(tag);
+      }
+      if (directory.hasErrors()) {
+        for (String error : directory.getErrors()) {
+          System.err.println("ERROR: " + error);
+        }
+      }
+    }
+    System.out.println("***************************");
+    System.out.println("***************************");
+    System.out.println("***************************");
+    */
+
+    // Handle the big image
+
+    // Read directories
+    final JpegDirectory jpegDirectory = metadata.getFirstDirectoryOfType(JpegDirectory.class);
+    final Directory exifSubIFDDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+    final ExifIFD0Directory exifIFD0Directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+
+    // Extract date from [Exif SubIFD]
+    if (exifSubIFDDirectory != null) {
+      if (exifSubIFDDirectory.containsTag(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)) {
+        Date dto = exifSubIFDDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
         if (dto != null) {
           bim.setDateTimeOriginalRead(true);
           bim.setDateTimeOriginal(dto.getTime());
         }
       }
     }
-    final ExifIFD0Directory exifIFD0Directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
-    if (exifIFD0Directory != null) {
-      try {
-        if (exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
-          bim.setOrientation(exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION));
-          bim.setOrientationRead(true);
+
+    // Extract date from [Exif IFD0] - if needed
+    if (!bim.isDateTimeOriginalRead()) {
+      if (exifIFD0Directory != null) {
+        if (exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_DATETIME)) {
+          Date dto = exifIFD0Directory.getDate(ExifIFD0Directory.TAG_DATETIME);
+          if (dto != null) {
+            bim.setDateTimeOriginalRead(true);
+            bim.setDateTimeOriginal(dto.getTime());
+          }
         }
-      } catch (MetadataException ex) {
-        //Do not log
-      }
-      try {
-        if (exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_IMAGE_WIDTH)) {
-          bim.setWidth(exifIFD0Directory.getInt(ExifIFD0Directory.TAG_IMAGE_WIDTH));
-          bim.setWidthRead(true);
-        }
-      } catch (MetadataException ex) {
-        //Do not log
-      }
-      try {
-        if (exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_IMAGE_HEIGHT)) {
-          bim.setHeight(exifIFD0Directory.getInt(ExifIFD0Directory.TAG_IMAGE_HEIGHT));
-          bim.setHeightRead(true);
-        }
-      } catch (MetadataException ex) {
-        //Do not log
       }
     }
 
+    // Extract width and height from [JPEG]
+    if (jpegDirectory != null) {
+      if (jpegDirectory.containsTag(JpegDirectory.TAG_IMAGE_WIDTH)) {
+        try {
+          bim.setWidth(jpegDirectory.getInt(JpegDirectory.TAG_IMAGE_WIDTH));
+          bim.setWidthRead(true);
+        } catch (MetadataException e) {
+          //Do not log
+        }
+      }
+      if (jpegDirectory.containsTag(JpegDirectory.TAG_IMAGE_HEIGHT)) {
+        try {
+          bim.setHeight(jpegDirectory.getInt(JpegDirectory.TAG_IMAGE_HEIGHT));
+          bim.setHeightRead(true);
+        } catch (MetadataException e) {
+          //Do not log
+        }
+      }
+    }
+
+    // Extract width from [Exif IFD0] - if needed
+    if (!bim.isWidthRead()) {
+      if (exifIFD0Directory != null) {
+        if (exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_IMAGE_WIDTH)) {
+          try {
+            bim.setWidth(exifIFD0Directory.getInt(ExifIFD0Directory.TAG_IMAGE_WIDTH));
+            bim.setWidthRead(true);
+          } catch (MetadataException ex) {
+            //Do not log
+          }
+        }
+      }
+    }
+
+    // Extract height from [Exif IFD0] - if needed
+    if (!bim.isHeightRead()) {
+      if (exifIFD0Directory != null) {
+        if (exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_IMAGE_HEIGHT)) {
+          try {
+            bim.setHeight(exifIFD0Directory.getInt(ExifIFD0Directory.TAG_IMAGE_HEIGHT));
+            bim.setHeightRead(true);
+          } catch (MetadataException ex) {
+            //Do not log
+          }
+        }
+      }
+    }
+
+    // Extract orientation from [Exif IFD0]
+    if (exifIFD0Directory != null) {
+      if (exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
+        try {
+          bim.setOrientation(exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION));
+          bim.setOrientationRead(true);
+        } catch (MetadataException ex) {
+          //Do not log
+        }
+      }
+    }
+
+    // Handle the thumbnail
+
     ExifThumbnailDirectory thumbDir = metadata.getFirstDirectoryOfType(ExifThumbnailDirectory.class);
     if (thumbDir != null) {
+      // Check thumbnail data
       if (thumbDir.hasThumbnailData()) {
         thm.setExifThumbReadable(true);
       }
-      try {
-        if (thumbDir.containsTag(ExifThumbnailDirectory.TAG_ORIENTATION)) {
+      // Extract orientation
+      if (thumbDir.containsTag(ExifThumbnailDirectory.TAG_ORIENTATION)) {
+        try {
           thm.setOrientation(thumbDir.getInt(ExifThumbnailDirectory.TAG_ORIENTATION));
           thm.setOrientationRead(true);
-
+        } catch (MetadataException ex) {
+          //Do not log
         }
-      } catch (MetadataException ex) {
-        //Do not log
       }
-      try {
-        if (thumbDir.containsTag(ExifThumbnailDirectory.TAG_IMAGE_WIDTH)) {
+      // Extract width
+      if (thumbDir.containsTag(ExifThumbnailDirectory.TAG_IMAGE_WIDTH)) {
+        try {
           thm.setWidth(thumbDir.getLong(ExifThumbnailDirectory.TAG_IMAGE_WIDTH));
           thm.setWidthRead(true);
+        } catch (MetadataException ex) {
+          //Do not log
         }
-      } catch (MetadataException ex) {
-        //Do not log
       }
-      try {
-        if (thumbDir.containsTag(ExifThumbnailDirectory.TAG_IMAGE_HEIGHT)) {
+      // Extract height
+      if (thumbDir.containsTag(ExifThumbnailDirectory.TAG_IMAGE_HEIGHT)) {
+        try {
           thm.setHeight(thumbDir.getLong(ExifThumbnailDirectory.TAG_IMAGE_HEIGHT));
           thm.setHeightRead(true);
+        } catch (MetadataException ex) {
+          //Do not log
         }
-      } catch (MetadataException ex) {
-        //Do not log
       }
     }
 

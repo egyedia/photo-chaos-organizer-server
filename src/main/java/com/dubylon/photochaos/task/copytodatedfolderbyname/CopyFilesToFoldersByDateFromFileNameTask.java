@@ -1,33 +1,30 @@
 package com.dubylon.photochaos.task.copytodatedfolderbyname;
 
-import com.dubylon.photochaos.Defaults;
-import com.dubylon.photochaos.app.CopyDatedFolderTaskConfig;
 import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
 import com.dubylon.photochaos.rest.task.TaskPreviewOrRunGetData;
 import com.dubylon.photochaos.task.*;
-import com.dubylon.photochaos.util.PhotoChaosFileType;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static com.dubylon.photochaos.report.TableReport.*;
-import static com.dubylon.photochaos.report.TableReport.FSOP_DESTINATION_NAME;
-import static com.dubylon.photochaos.report.TableReport.FSOP_STATUS;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileName.")
 public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
@@ -59,7 +56,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.SHORTDATEFORMAT,
       mandatory = true,
-      defaultValue = "yyyyMMdd",
+      defaultValue = "uuuuMMdd",
       order = 4
   )
   private String newFolderDateFormat;
@@ -85,12 +82,10 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
   private Path destinationPath;
   private List<Path> pathList;
   private Set<String> createdFolders;
-  private SimpleDateFormat dateFormat;
-  private TimeZone timeZone = TimeZone.getTimeZone("UTC");
+  private DateTimeFormatter dateFormatter;
 
 
   public CopyFilesToFoldersByDateFromFileNameTask() {
-    //this.targetFolderNameFormatter = "%1$04d%2$02d%3$02d%4$s";
     this.fullDateTimePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})" +
         "([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)";
     this.justDatePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)";
@@ -121,19 +116,12 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
             String name = namePath.toString();
             String fileName = FilenameUtils.getBaseName(name);
             DateTimeBean dateTime = extractDateAndTime(fileName);
-            String targetDateFolderName = null;
             if (dateTime == null) {
               dateTime = extractDate(fileName);
             }
             if (dateTime != null) {
-              Calendar calendar = Calendar.getInstance(timeZone);
-              calendar.set(Calendar.YEAR, dateTime.getYear());
-              calendar.set(Calendar.MONTH, dateTime.getMonth() - 1);
-              calendar.set(Calendar.DAY_OF_MONTH, dateTime.getDay());
-              calendar.set(Calendar.HOUR, dateTime.getHour());
-              calendar.set(Calendar.MINUTE, dateTime.getMinute());
-              calendar.set(Calendar.SECOND, dateTime.getSecond());
-              targetDateFolderName = dateFormat.format(calendar.getTime()) + newFolderSuffix;
+              LocalDateTime fileDateTime = LocalDateTime.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay(), dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond());
+              String targetDateFolderName = dateFormatter.format(fileDateTime) + newFolderSuffix;
               Path targetDatePath = Paths.get(targetDateFolderName);
               Path newPath = destinationPath.resolve(targetDatePath);
               String newPathString = newPath.toString();
@@ -153,6 +141,8 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
                 fileOp = new MoveFile(namePath, currentPath, newPath);
               }
               fsol.add(fileOp);
+            } else {
+              System.out.println("unable to determine file date for:" + path);
             }
           });
     } catch (IOException e) {
@@ -191,8 +181,8 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
     // Create the operation list
     List<IFilesystemOperation> fsOpList = new ArrayList<>();
     createdFolders = new HashSet<>();
-    dateFormat = new SimpleDateFormat(newFolderDateFormat);
-    dateFormat.setTimeZone(timeZone);
+    dateFormatter = DateTimeFormatter.ofPattern(newFolderDateFormat).withZone(ZoneOffset.UTC);
+
     pathList.forEach(path -> this.createOperation(path, fsOpList));
 
     // Create the operation report
