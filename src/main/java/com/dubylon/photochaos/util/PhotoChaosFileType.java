@@ -12,7 +12,7 @@ public enum PhotoChaosFileType {
   SOUND("sound"),
   OTHER("other");
 
-  private String value;
+  private final String value;
 
   PhotoChaosFileType(String value) {
     this.value = value;

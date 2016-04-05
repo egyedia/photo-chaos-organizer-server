@@ -8,7 +8,7 @@ public enum FileSystemFileType {
   SYMLINK("symlink"),
   OTHER("other");
 
-  private String value;
+  private final String value;
 
   FileSystemFileType(String value) {
     this.value = value;
