@@ -2,6 +2,7 @@ package com.dubylon.photochaos.app;
 
 import com.dubylon.photochaos.resource.ClasspathResourceHandler;
 import com.dubylon.photochaos.rest.config.ConfigServlet;
+import com.dubylon.photochaos.rest.control.AppControlShutdownServlet;
 import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
 import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.rest.fsraw.FilesystemRawServlet;
@@ -41,7 +42,7 @@ public class PhotoChaosOrganizerApplication {
 
   private Path basePath;
   private static AppConfig appConfig;
-  private Server jettyServer;
+  private static Server jettyServer;
   private org.h2.tools.Server h2Server;
 
   public static AppConfig getAppConfig() {
@@ -137,6 +138,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(TaskTemplateServlet.class, "/task-templates/*");
     servletHandler.addServletWithMapping(TasksServlet.class, "/tasks");
     servletHandler.addServletWithMapping(TaskServlet.class, "/tasks/*");
+    servletHandler.addServletWithMapping(AppControlShutdownServlet.class, "/app-control-shutdown");
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
 
@@ -173,6 +175,10 @@ public class PhotoChaosOrganizerApplication {
     } else {
       System.out.println("To access the application, please open your browser, and navigate to: " + uri);
     }
+  }
+
+  public static Server getJettyServer() {
+    return jettyServer;
   }
 
   public void init() {
@@ -218,6 +224,7 @@ public class PhotoChaosOrganizerApplication {
 
     try {
       jettyServer.join();
+      System.out.println("Application stopped. You can safely close this terminal window.");
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

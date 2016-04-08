@@ -1,3 +1,3 @@
 # Photo Chaos Organizer - server application
 
-For documentation, see [Photo Chaos Organizer Project](https://github.com/egyedia/photo-chaos-organizer-project)
+See the project page at: [Photo Chaos Organizer](https://egyedia.github.com/photo-chaos-organizer)
