@@ -6,7 +6,7 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.*;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"path"}, name = "UK_path"))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"path", "owner_user_id"}, name = "UK_path"))
 public class FavoritePath {
 
   @Id

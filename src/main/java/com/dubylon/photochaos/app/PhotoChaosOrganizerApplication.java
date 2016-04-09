@@ -4,6 +4,8 @@ import com.dubylon.photochaos.resource.ClasspathResourceHandler;
 import com.dubylon.photochaos.rest.config.ConfigServlet;
 import com.dubylon.photochaos.rest.control.AppControlShutdownServlet;
 import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
+import com.dubylon.photochaos.rest.fsfolder.FilesystemPathRenamePutHandler;
+import com.dubylon.photochaos.rest.fsfolder.FilesystemPathRenameServlet;
 import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.rest.fsraw.FilesystemRawServlet;
 import com.dubylon.photochaos.rest.fsroot.FilesystemRootsServlet;
@@ -139,6 +141,8 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(TasksServlet.class, "/tasks");
     servletHandler.addServletWithMapping(TaskServlet.class, "/tasks/*");
     servletHandler.addServletWithMapping(AppControlShutdownServlet.class, "/app-control-shutdown");
+    servletHandler.addServletWithMapping(FilesystemPathRenameServlet.class, "/filesystem-path/*");
+
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
 
