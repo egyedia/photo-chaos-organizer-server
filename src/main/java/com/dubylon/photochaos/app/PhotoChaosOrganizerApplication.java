@@ -2,6 +2,7 @@ package com.dubylon.photochaos.app;
 
 import com.dubylon.photochaos.resource.ClasspathResourceHandler;
 import com.dubylon.photochaos.rest.config.ConfigServlet;
+import com.dubylon.photochaos.rest.control.AppControlPlayVideoServlet;
 import com.dubylon.photochaos.rest.control.AppControlShutdownServlet;
 import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
 import com.dubylon.photochaos.rest.fsfolder.FilesystemPathRenamePutHandler;
@@ -68,6 +69,7 @@ public class PhotoChaosOrganizerApplication {
           ().toURI());
       basePath = jarPath.getParent();
       Path configFilePath = basePath.resolve("pco.config.json");
+      System.out.println("Reading config file:" + configFilePath);
       ObjectMapper mapper = new ObjectMapper();
       mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       byte[] configBytes = Files.readAllBytes(configFilePath);
@@ -141,7 +143,9 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(TasksServlet.class, "/tasks");
     servletHandler.addServletWithMapping(TaskServlet.class, "/tasks/*");
     servletHandler.addServletWithMapping(AppControlShutdownServlet.class, "/app-control-shutdown");
+    servletHandler.addServletWithMapping(AppControlPlayVideoServlet.class, "/app-control-play-video/*");
     servletHandler.addServletWithMapping(FilesystemPathRenameServlet.class, "/filesystem-path/*");
+
 
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");

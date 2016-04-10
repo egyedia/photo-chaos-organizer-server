@@ -4,6 +4,7 @@ public class AppConfig {
 
   private boolean openBrowser = true;
   private int defaultPort = 2120;
+  private AppConfigVideo video;
   private int realPort;
 
   public AppConfig() {
@@ -31,5 +32,13 @@ public class AppConfig {
 
   public void setRealPort(int realPort) {
     this.realPort = realPort;
+  }
+
+  public AppConfigVideo getVideo() {
+    return video;
+  }
+
+  public void setVideo(AppConfigVideo video) {
+    this.video = video;
   }
 }
