@@ -50,7 +50,7 @@ public class TasksPostHandler extends AbstractPCHandler {
     TaskDefinition td = new TaskDefinition();
     td.setClassName(tc.getClassName());
     td.setParameters(tc.getParameters());
-    td.setName("Task @ " + new Date().toString());
+    td.setName(tc.getTaskName());
 
     SessionFactory sessionFactory = null;
     try {
