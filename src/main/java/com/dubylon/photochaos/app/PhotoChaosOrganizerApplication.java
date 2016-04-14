@@ -10,6 +10,7 @@ import com.dubylon.photochaos.rest.fsfolder.FilesystemPathRenameServlet;
 import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.rest.fsraw.FilesystemRawServlet;
 import com.dubylon.photochaos.rest.fsroot.FilesystemRootsServlet;
+import com.dubylon.photochaos.rest.stream.FilesystemStreamServlet;
 import com.dubylon.photochaos.rest.task.TaskServlet;
 import com.dubylon.photochaos.rest.tasks.TasksServlet;
 import com.dubylon.photochaos.rest.tasktemplate.TaskTemplateServlet;
@@ -145,7 +146,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(AppControlShutdownServlet.class, "/app-control-shutdown");
     servletHandler.addServletWithMapping(AppControlPlayVideoServlet.class, "/app-control-play-video/*");
     servletHandler.addServletWithMapping(FilesystemPathRenameServlet.class, "/filesystem-path/*");
-
+    servletHandler.addServletWithMapping(FilesystemStreamServlet.class, "/filesystem-stream/*");
 
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
