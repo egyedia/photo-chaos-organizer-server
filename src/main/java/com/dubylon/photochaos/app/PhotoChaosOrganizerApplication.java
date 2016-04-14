@@ -190,7 +190,7 @@ public class PhotoChaosOrganizerApplication {
     return jettyServer;
   }
 
-  public void init() {
+  public void run() {
 
     // Read config
     readConfig();
@@ -233,13 +233,13 @@ public class PhotoChaosOrganizerApplication {
 
     try {
       jettyServer.join();
-      System.out.println("Application stopped. You can safely close this terminal window.");
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
 
     h2Server.stop();
-
+    System.out.println("Application stopped. You can safely close this terminal window.");
+    System.exit(0);
   }
 
 }

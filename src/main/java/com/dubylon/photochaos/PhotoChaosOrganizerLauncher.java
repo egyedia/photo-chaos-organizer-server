@@ -6,6 +6,6 @@ public class PhotoChaosOrganizerLauncher {
 
   public static void main(String[] args) throws Exception {
     PhotoChaosOrganizerApplication app = new PhotoChaosOrganizerApplication();
-    app.init();
+    app.run();
   }
 }

@@ -58,11 +58,10 @@ public class FilesystemStreamGetHandler extends AbstractPCHandlerMetaThumbnail {
       int contentLength = end - start + 1;
 
       String contentType = Files.probeContentType(video);
-      System.out.println("Probed contentType:" + contentType + ":");
+      // TODO detect mimetype based on the extension
       if (contentType == null || "".equals(contentType)) {
         contentType = "video/mp4";
       }
-      System.out.println("  finale contentType:" + contentType + ":");
 
       String contentDisposition = String.format("inline;filename=\"%s\"", video.getFileName());
 
@@ -77,8 +76,6 @@ public class FilesystemStreamGetHandler extends AbstractPCHandlerMetaThumbnail {
       httpServletResponse.setHeader("Content-Length", String.format("%s", contentLength));
       httpServletResponse.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-      System.out.println("   start:" + start);
-      System.out.println("   contentLength:" + contentLength);
       int bytesRead;
       int bytesLeft = contentLength;
       ByteBuffer buffer = ByteBuffer.allocate(BUFFER_LENGTH);
