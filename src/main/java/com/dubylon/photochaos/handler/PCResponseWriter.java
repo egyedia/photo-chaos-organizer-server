@@ -1,11 +1,13 @@
 package com.dubylon.photochaos.handler;
 
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
 import com.dubylon.photochaos.rest.PCHandlerError;
@@ -72,6 +74,12 @@ public abstract class PCResponseWriter {
     response.setContentType("application/json");
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setStatus(pcResponse.getResponseCode());
+  }
+
+  public static void writeSuccess(HttpServletResponse response, RenderedImage ri) throws IOException {
+    response.setContentType("image/jpg");
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    ImageIO.write(ri, "jpg", response.getOutputStream());
   }
 
 }

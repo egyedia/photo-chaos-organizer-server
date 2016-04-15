@@ -5,18 +5,18 @@ import com.dubylon.photochaos.rest.config.ConfigServlet;
 import com.dubylon.photochaos.rest.control.AppControlPlayVideoServlet;
 import com.dubylon.photochaos.rest.control.AppControlShutdownServlet;
 import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
-import com.dubylon.photochaos.rest.fsfolder.FilesystemPathRenamePutHandler;
 import com.dubylon.photochaos.rest.fsfolder.FilesystemPathRenameServlet;
 import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.rest.fsraw.FilesystemRawServlet;
 import com.dubylon.photochaos.rest.fsroot.FilesystemRootsServlet;
-import com.dubylon.photochaos.rest.stream.FilesystemStreamServlet;
+import com.dubylon.photochaos.rest.range.FilesystemRangeServlet;
 import com.dubylon.photochaos.rest.task.TaskServlet;
 import com.dubylon.photochaos.rest.tasks.TasksServlet;
 import com.dubylon.photochaos.rest.tasktemplate.TaskTemplateServlet;
 import com.dubylon.photochaos.rest.tasktemplates.TaskTemplatesServlet;
 import com.dubylon.photochaos.rest.thumbdata.FilesystemMetaThumbnailDataServlet;
 import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaServlet;
+import com.dubylon.photochaos.rest.thumbonthefly.FilesystemOnTheFlyThumbnailDataServlet;
 import com.dubylon.photochaos.rest.user.UserServlet;
 import com.dubylon.photochaos.rest.users.UsersServlet;
 import com.dubylon.photochaos.servlet.RemainderServlet;
@@ -134,6 +134,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(FilesystemPathContentsServlet.class, "/filesystem-path-contents/*");
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailDataServlet.class, "/filesystem-meta-thumbnail-data/*");
     servletHandler.addServletWithMapping(FilesystemMetaThumbnailMetaServlet.class, "/filesystem-meta-thumbnail-meta/*");
+    servletHandler.addServletWithMapping(FilesystemOnTheFlyThumbnailDataServlet.class, "/filesystem-onthefly-thumbnail-data/*");
     servletHandler.addServletWithMapping(FilesystemRawServlet.class, "/filesystem-raw/*");
     servletHandler.addServletWithMapping(FilesystemFavoritesServlet.class, "/filesystem-favorites/*");
     servletHandler.addServletWithMapping(UsersServlet.class, "/users");
@@ -146,7 +147,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(AppControlShutdownServlet.class, "/app-control-shutdown");
     servletHandler.addServletWithMapping(AppControlPlayVideoServlet.class, "/app-control-play-video/*");
     servletHandler.addServletWithMapping(FilesystemPathRenameServlet.class, "/filesystem-path/*");
-    servletHandler.addServletWithMapping(FilesystemStreamServlet.class, "/filesystem-stream/*");
+    servletHandler.addServletWithMapping(FilesystemRangeServlet.class, "/filesystem-range/*");
 
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");

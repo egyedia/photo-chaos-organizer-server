@@ -2,7 +2,6 @@ package com.dubylon.photochaos.rest.thumbdata;
 
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandlerMetaThumbnail;
-import com.dubylon.photochaos.rest.thumbmeta.FilesystemMetaThumbnailMetaGetData;
 
 import javax.servlet.http.HttpServletRequest;
 

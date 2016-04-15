@@ -1,4 +1,4 @@
-package com.dubylon.photochaos.rest.stream;
+package com.dubylon.photochaos.rest.range;
 
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandlerMetaThumbnail;
@@ -15,7 +15,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FilesystemStreamGetHandler extends AbstractPCHandlerMetaThumbnail {
+public class FilesystemRangeGetHandler extends AbstractPCHandlerMetaThumbnail {
 
   private static final int BUFFER_LENGTH = 1024 * 16;
   private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24;
@@ -26,8 +26,8 @@ public class FilesystemStreamGetHandler extends AbstractPCHandlerMetaThumbnail {
   // http://www.adrianwalker.org/2012/06/html5-video-pseudosteaming-with-java-7.html
 
   @Override
-  public FilesystemStreamGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
-    FilesystemStreamGetData response = new FilesystemStreamGetData();
+  public FilesystemRangeGetData handleRequest(HttpServletRequest request) throws PCHandlerError {
+    FilesystemRangeGetData response = new FilesystemRangeGetData();
     handlePath(request, response);
     Path video = response.getRequestedPath();
 
@@ -90,7 +90,7 @@ public class FilesystemStreamGetHandler extends AbstractPCHandlerMetaThumbnail {
           try {
             output.write(buffer.array(), 0, bytesLeft < bytesRead ? bytesLeft : bytesRead);
           } catch (IOException e) {
-            System.out.println("Execption while writing:" + e.toString());
+            //System.out.println("Execption while writing:" + e.toString());
           }
           bytesLeft -= bytesRead;
         }
