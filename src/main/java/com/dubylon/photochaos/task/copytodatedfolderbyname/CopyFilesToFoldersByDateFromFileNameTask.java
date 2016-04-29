@@ -4,7 +4,6 @@ import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
-import com.dubylon.photochaos.rest.task.TaskPreviewOrRunGetData;
 import com.dubylon.photochaos.task.*;
 import org.apache.commons.io.FilenameUtils;
 
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import static com.dubylon.photochaos.report.TableReport.*;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileName.")
-public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
+public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.PATH,
@@ -75,7 +75,6 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
   private Pattern fullDateTimePattern;
   private Pattern justDatePattern;
 
-  private TaskPreviewOrRunGetData response;
   private boolean performOperations;
 
   private Path sourcePath;
@@ -120,29 +119,39 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
               dateTime = extractDate(fileName);
             }
             if (dateTime != null) {
-              LocalDateTime fileDateTime = LocalDateTime.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay(), dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond());
-              String targetDateFolderName = dateFormatter.format(fileDateTime) + newFolderSuffix;
-              Path targetDatePath = Paths.get(targetDateFolderName);
-              Path newPath = destinationPath.resolve(targetDatePath);
-              String newPathString = newPath.toString();
-              final IFilesystemOperation folderOp;
-              if (newPath.toFile().exists() || createdFolders.contains(newPathString)) {
-                folderOp = new FolderAlreadyPresent(newPath);
-              } else {
-                folderOp = new CreateFolder(destinationPath, targetDatePath);
-                createdFolders.add(newPathString);
+              LocalDateTime fileDateTime = null;
+              try {
+                fileDateTime = LocalDateTime.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay(), dateTime
+                    .getHour(), dateTime.getMinute(), dateTime.getSecond());
+              } catch (DateTimeException ex) {
+                ex.printStackTrace();
               }
-              fsol.add(folderOp);
+              if (fileDateTime != null) {
+                String targetDateFolderName = dateFormatter.format(fileDateTime) + newFolderSuffix;
+                Path targetDatePath = Paths.get(targetDateFolderName);
+                Path newPath = destinationPath.resolve(targetDatePath);
+                String newPathString = newPath.toString();
+                final IFilesystemOperation folderOp;
+                if (newPath.toFile().exists() || createdFolders.contains(newPathString)) {
+                  folderOp = new FolderAlreadyPresent(newPath);
+                } else {
+                  folderOp = new CreateFolder(destinationPath, targetDatePath);
+                  createdFolders.add(newPathString);
+                }
+                fsol.add(folderOp);
 
-              final IFilesystemOperation fileOp;
-              if (TaskTemplateParameterCopyOrMove.COPY == fileOperation) {
-                fileOp = new CopyFile(namePath, currentPath, newPath);
+                final IFilesystemOperation fileOp;
+                if (TaskTemplateParameterCopyOrMove.COPY == fileOperation) {
+                  fileOp = new CopyFile(namePath, currentPath, newPath);
+                } else {
+                  fileOp = new MoveFile(namePath, currentPath, newPath);
+                }
+                fsol.add(fileOp);
               } else {
-                fileOp = new MoveFile(namePath, currentPath, newPath);
+                System.out.println("Error while determining file date for:" + path);
               }
-              fsol.add(fileOp);
             } else {
-              System.out.println("unable to determine file date for:" + path);
+              System.out.println("Unable to determine file date for:" + path);
             }
           });
     } catch (IOException e) {
@@ -151,8 +160,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
   }
 
   @Override
-  public void execute(TaskPreviewOrRunGetData response, boolean performOperations) {
-    this.response = response;
+  public void execute(boolean performOperations) {
     this.performOperations = performOperations;
 
     sourcePath = Paths.get(sourceFolder);
@@ -187,6 +195,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
 
     // Create the operation report
     TableReport opReport = new TableReport();
+    status.getReports().add(opReport);
     opReport.addHeader(FSOP_OPERATION);
     opReport.addHeader(FSOP_SOURCE);
     opReport.addHeader(FSOP_SOURCE_NAME);
@@ -204,8 +213,6 @@ public class CopyFilesToFoldersByDateFromFileNameTask implements IPcoTask {
       row.set(FSOP_DESTINATION_NAME, op.getDestinationName());
       row.set(FSOP_STATUS, op.getStatus());
     });
-
-    response.getReports().add(opReport);
 
   }
 

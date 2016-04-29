@@ -1,24 +1,29 @@
 package com.dubylon.photochaos.rest.task;
 
 import com.dubylon.photochaos.rest.PCHandlerResponseData;
-import com.dubylon.photochaos.report.ITaskReport;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TaskPreviewOrRunGetData extends PCHandlerResponseData {
 
-  private List<ITaskReport> reports;
+  private boolean started = false;
+  private boolean alreadyRunning = false;
 
   public TaskPreviewOrRunGetData() {
-    reports = new ArrayList<>();
+
   }
 
-  public List<ITaskReport> getReports() {
-    return reports;
+  public boolean isStarted() {
+    return started;
   }
 
-  public void setReports(List<ITaskReport> reports) {
-    this.reports = reports;
+  public void setStarted(boolean started) {
+    this.started = started;
+  }
+
+  public boolean isAlreadyRunning() {
+    return alreadyRunning;
+  }
+
+  public void setAlreadyRunning(boolean alreadyRunning) {
+    this.alreadyRunning = alreadyRunning;
   }
 }

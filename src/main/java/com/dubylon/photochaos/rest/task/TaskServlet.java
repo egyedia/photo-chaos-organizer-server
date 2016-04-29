@@ -28,7 +28,7 @@ public class TaskServlet extends AbstractPhotoChaosServlet {
       TaskPreviewOrRunGetHandler h = new TaskPreviewOrRunGetHandler(runTask);
       try {
         TaskPreviewOrRunGetData pcResponse = h.handleRequest(request);
-        PCResponseWriter.writeSuccess(response, pcResponse, pcResponse.getReports());
+        PCResponseWriter.writeSuccess(response, pcResponse, pcResponse);
       } catch (PCHandlerError err) {
         PCResponseWriter.writeError(response, err);
       }

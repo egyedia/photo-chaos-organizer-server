@@ -6,6 +6,7 @@ import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandler;
 import com.dubylon.photochaos.task.IPcoTask;
+import com.dubylon.photochaos.task.TaskCentralizer;
 import com.dubylon.photochaos.util.TaskUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 public class TaskPreviewOrRunGetHandler extends AbstractPCHandler {
 
   private boolean performOperations;
+
   public TaskPreviewOrRunGetHandler(boolean performOperations) {
     this.performOperations = performOperations;
   }
@@ -29,8 +31,8 @@ public class TaskPreviewOrRunGetHandler extends AbstractPCHandler {
       throw new PCHandlerError(PCHandlerResponse.NOT_FOUND, "NO_SUCH_TASK");
     } else {
       IPcoTask task = TaskUtil.buildTaskWithParameters(td.getClassName(), td.getParameters());
-      TaskPreviewOrRunGetData response = new TaskPreviewOrRunGetData();
-      task.execute(response, performOperations);
+      TaskPreviewOrRunGetData response = TaskCentralizer.getInstance().launchTask(task, id, performOperations,
+          getUserId(request));
       return response;
     }
   }

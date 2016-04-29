@@ -34,6 +34,7 @@ public final class Defaults {
     FILE_EXTENSIONS.put("3gp", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.VIDEO, false, false, true));
     FILE_EXTENSIONS.put("mp4", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.VIDEO, false, false, true));
     FILE_EXTENSIONS.put("mov", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.VIDEO, false, false, true));
+    FILE_EXTENSIONS.put("mts", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.VIDEO, false, false, true));
     FILE_EXTENSIONS.put("m2ts", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.VIDEO, false, false, true));
 
     FILE_EXTENSIONS.put("modd", new PhotoChaosFileTypeDescriptor(PhotoChaosFileType.VIDEO_META, false, false, false));

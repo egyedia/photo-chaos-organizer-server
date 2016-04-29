@@ -5,9 +5,8 @@ import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
-import com.dubylon.photochaos.rest.task.TaskPreviewOrRunGetData;
+import com.dubylon.photochaos.task.AbstractPcoTask;
 import com.dubylon.photochaos.task.FilesystemOperationPerformer;
-import com.dubylon.photochaos.task.IPcoTask;
 import com.dubylon.photochaos.task.PcoTaskTemplate;
 import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
 import com.dubylon.photochaos.util.PhotoChaosFileType;
@@ -26,7 +25,7 @@ import java.util.stream.Stream;
 import static com.dubylon.photochaos.report.TableReport.*;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.moveRawImagesToSubfolders.")
-public class MoveRawImagesToSubfolderTask implements IPcoTask {
+public class MoveRawImagesToSubfolderTask extends AbstractPcoTask {
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.PATH,
@@ -45,7 +44,6 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
   private String rawFolder;
   private Path rawPath;
 
-  private TaskPreviewOrRunGetData response;
   private boolean performOperations;
   private String rawGlobFilter;
 
@@ -102,8 +100,7 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
   }
 
   @Override
-  public void execute(TaskPreviewOrRunGetData response, boolean performOperations) {
-    this.response = response;
+  public void execute(boolean performOperations) {
     this.performOperations = performOperations;
 
     rawPath = Paths.get(rawFolder);
@@ -145,6 +142,7 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
 
     // Create the operation report
     TableReport opReport = new TableReport();
+    status.getReports().add(opReport);
     opReport.addHeader(FSOP_OPERATION);
     opReport.addHeader(FSOP_SOURCE);
     opReport.addHeader(FSOP_SOURCE_NAME);
@@ -162,9 +160,6 @@ public class MoveRawImagesToSubfolderTask implements IPcoTask {
       row.set(FSOP_DESTINATION_NAME, op.getDestinationName());
       row.set(FSOP_STATUS, op.getStatus());
     });
-
-    response.getReports().add(opReport);
-
   }
 
 }

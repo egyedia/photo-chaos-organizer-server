@@ -12,6 +12,7 @@ import com.dubylon.photochaos.rest.fsroot.FilesystemRootsServlet;
 import com.dubylon.photochaos.rest.range.FilesystemRangeServlet;
 import com.dubylon.photochaos.rest.task.TaskServlet;
 import com.dubylon.photochaos.rest.tasks.TasksServlet;
+import com.dubylon.photochaos.rest.taskstatus.TaskStatusServlet;
 import com.dubylon.photochaos.rest.tasktemplate.TaskTemplateServlet;
 import com.dubylon.photochaos.rest.tasktemplates.TaskTemplatesServlet;
 import com.dubylon.photochaos.rest.thumbdata.FilesystemMetaThumbnailDataServlet;
@@ -144,6 +145,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(TaskTemplateServlet.class, "/task-templates/*");
     servletHandler.addServletWithMapping(TasksServlet.class, "/tasks");
     servletHandler.addServletWithMapping(TaskServlet.class, "/tasks/*");
+    servletHandler.addServletWithMapping(TaskStatusServlet.class, "/task-status/*");
     servletHandler.addServletWithMapping(AppControlShutdownServlet.class, "/app-control-shutdown");
     servletHandler.addServletWithMapping(AppControlPlayVideoServlet.class, "/app-control-play-video/*");
     servletHandler.addServletWithMapping(FilesystemPathRenameServlet.class, "/filesystem-path/*");

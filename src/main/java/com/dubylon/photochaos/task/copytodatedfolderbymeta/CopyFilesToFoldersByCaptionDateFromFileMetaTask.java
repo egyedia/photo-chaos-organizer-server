@@ -10,7 +10,6 @@ import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
-import com.dubylon.photochaos.rest.task.TaskPreviewOrRunGetData;
 import com.dubylon.photochaos.task.*;
 
 import java.io.File;
@@ -29,7 +28,7 @@ import java.util.stream.Stream;
 import static com.dubylon.photochaos.report.TableReport.*;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileMeta.")
-public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask {
+public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractPcoTask {
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.PATH,
@@ -71,7 +70,6 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask
   )
   private TaskTemplateParameterCopyOrMove fileOperation;
 
-  private TaskPreviewOrRunGetData response;
   private boolean performOperations;
   private Path sourcePath;
   private Path destinationPath;
@@ -185,8 +183,7 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask
 
 
   @Override
-  public void execute(TaskPreviewOrRunGetData response, boolean performOperations) {
-    this.response = response;
+  public void execute(boolean performOperations) {
     this.performOperations = performOperations;
 
     sourcePath = Paths.get(sourceFolder);
@@ -221,6 +218,7 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask
 
     // Create the operation report
     TableReport opReport = new TableReport();
+    status.getReports().add(opReport);
     opReport.addHeader(FSOP_OPERATION);
     opReport.addHeader(FSOP_SOURCE);
     opReport.addHeader(FSOP_SOURCE_NAME);
@@ -238,8 +236,5 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask implements IPcoTask
       row.set(FSOP_DESTINATION_NAME, op.getDestinationName());
       row.set(FSOP_STATUS, op.getStatus());
     });
-
-    response.getReports().add(opReport);
-
   }
 }
