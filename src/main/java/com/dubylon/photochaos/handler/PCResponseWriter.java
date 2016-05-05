@@ -70,7 +70,7 @@ public abstract class PCResponseWriter {
     }
   }
 
-  public static void writeSuccess(HttpServletResponse response, PCResponseObject pcResponse) throws IOException {
+  public static void writeSuccess(HttpServletResponse response, PCHandlerResponse pcResponse) throws IOException {
     response.setContentType("application/json");
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setStatus(pcResponse.getResponseCode());

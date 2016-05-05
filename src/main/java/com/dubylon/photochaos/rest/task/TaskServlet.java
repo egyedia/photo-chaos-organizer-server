@@ -2,6 +2,7 @@ package com.dubylon.photochaos.rest.task;
 
 import com.dubylon.photochaos.handler.PCResponseWriter;
 import com.dubylon.photochaos.rest.PCHandlerError;
+import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.dubylon.photochaos.servlet.AbstractPhotoChaosServlet;
 
 import javax.servlet.ServletException;
@@ -43,4 +44,20 @@ public class TaskServlet extends AbstractPhotoChaosServlet {
     }
   }
 
+  @Override
+  protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    TaskDeleteHandler h = new TaskDeleteHandler();
+    try {
+      TaskDeleteData pcResponse = h.handleRequest(request);
+      if (pcResponse.isDeleted()) {
+        pcResponse.setResponseCode(PCHandlerResponse.NO_CONTENT);
+        PCResponseWriter.writeSuccess(response, pcResponse);
+      } else {
+        pcResponse.setResponseCode(PCHandlerResponse.ERROR);
+        PCResponseWriter.writeSuccess(response, pcResponse, pcResponse);
+      }
+    } catch (PCHandlerError err) {
+      PCResponseWriter.writeError(response, err);
+    }
+  }
 }

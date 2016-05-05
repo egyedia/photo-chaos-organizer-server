@@ -1,16 +1,19 @@
 package com.dubylon.photochaos.task.copytodatedfolderbyname;
 
+import com.dubylon.photochaos.Defaults;
 import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
 import com.dubylon.photochaos.task.*;
+import com.dubylon.photochaos.util.PhotoChaosFileType;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
@@ -76,6 +79,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
   private Pattern justDatePattern;
 
   private boolean performOperations;
+  private String knownGlobFilter;
 
   private Path sourcePath;
   private Path destinationPath;
@@ -107,9 +111,10 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
 
 
   private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
+    final PathMatcher filter = currentPath.getFileSystem().getPathMatcher(knownGlobFilter);
     try (final Stream<Path> stream = Files.list(currentPath)) {
       stream
-          .filter(path -> path.toFile().isFile())
+          .filter(path -> path.toFile().isFile() && filter.matches(path.getFileName()))
           .forEach(path -> {
             Path namePath = path.getFileName();
             String name = namePath.toString();
@@ -124,7 +129,8 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
                 fileDateTime = LocalDateTime.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay(), dateTime
                     .getHour(), dateTime.getMinute(), dateTime.getSecond());
               } catch (DateTimeException ex) {
-                ex.printStackTrace();
+                System.out.println(ex.getMessage());
+                //ex.printStackTrace();
               }
               if (fileDateTime != null) {
                 String targetDateFolderName = dateFormatter.format(fileDateTime) + newFolderSuffix;
@@ -190,6 +196,22 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
     List<IFilesystemOperation> fsOpList = new ArrayList<>();
     createdFolders = new HashSet<>();
     dateFormatter = DateTimeFormatter.ofPattern(newFolderDateFormat).withZone(ZoneOffset.UTC);
+
+    // Build the glob for matching known files
+    StringBuilder sb = new StringBuilder();
+    sb.append("regex:");
+    sb.append("([^\\s]+(\\.(?i)(");
+    final StringBuilder separator = new StringBuilder();
+    Defaults.FILE_EXTENSIONS.forEach((ext, desc) -> {
+        sb.append(separator);
+        sb.append(ext);
+        if (separator.length() == 0) {
+          separator.append("|");
+        }
+    });
+    sb.append("))$)");
+    knownGlobFilter = sb.toString();
+
 
     pathList.forEach(path -> this.createOperation(path, fsOpList));
 
