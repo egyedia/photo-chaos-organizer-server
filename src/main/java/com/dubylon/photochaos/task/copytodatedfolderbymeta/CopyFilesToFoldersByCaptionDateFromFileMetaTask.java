@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -71,6 +72,7 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractPco
   private TaskTemplateParameterCopyOrMove fileOperation;
 
   private boolean performOperations;
+  private String knownGlobFilter;
   private Path sourcePath;
   private Path destinationPath;
   private List<Path> pathList;
@@ -94,11 +96,11 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractPco
     }
   }
 
-
   private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
+    final PathMatcher filter = currentPath.getFileSystem().getPathMatcher(knownGlobFilter);
     try (final Stream<Path> stream = Files.list(currentPath)) {
       stream
-          .filter(path -> path.toFile().isFile())
+          .filter(path -> path.toFile().isFile() && filter.matches(path.getFileName()))
           .forEach(path -> {
 
             File imageFile = path.toFile();
@@ -213,6 +215,8 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractPco
     List<IFilesystemOperation> fsOpList = new ArrayList<>();
     createdFolders = new HashSet<>();
     dateFormatter = DateTimeFormatter.ofPattern(newFolderDateFormat).withZone(ZoneOffset.UTC);
+
+    knownGlobFilter = buildKnownGlobFilter();
 
     pathList.forEach(path -> this.createOperation(path, fsOpList));
 

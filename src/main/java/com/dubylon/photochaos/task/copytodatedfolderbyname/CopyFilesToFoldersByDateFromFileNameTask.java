@@ -197,21 +197,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
     createdFolders = new HashSet<>();
     dateFormatter = DateTimeFormatter.ofPattern(newFolderDateFormat).withZone(ZoneOffset.UTC);
 
-    // Build the glob for matching known files
-    StringBuilder sb = new StringBuilder();
-    sb.append("regex:");
-    sb.append("([^\\s]+(\\.(?i)(");
-    final StringBuilder separator = new StringBuilder();
-    Defaults.FILE_EXTENSIONS.forEach((ext, desc) -> {
-        sb.append(separator);
-        sb.append(ext);
-        if (separator.length() == 0) {
-          separator.append("|");
-        }
-    });
-    sb.append("))$)");
-    knownGlobFilter = sb.toString();
-
+    knownGlobFilter = buildKnownGlobFilter();
 
     pathList.forEach(path -> this.createOperation(path, fsOpList));
 
