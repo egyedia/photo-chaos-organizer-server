@@ -18,6 +18,10 @@ public class RemainderServlet extends HttpServlet {
     response.setStatus(HttpServletResponse.SC_OK);
     //System.out.println(resource);
     //System.out.println(resource.getURI());
-    IOUtils.copy(resource.getInputStream(), response.getOutputStream());
+    if (resource != null) {
+      IOUtils.copy(resource.getInputStream(), response.getOutputStream());
+    } else {
+      response.getWriter().write("Photo Chaos Organizer Server");
+    }
   }
 }

@@ -2,22 +2,22 @@ package com.dubylon.photochaos.model.config;
 
 public class ConfigData {
 
-  private int restPort;
-  private String osUsername;
+  private int port;
+  private String userName;
 
-  public int getRestPort() {
-    return restPort;
+  public int getPort() {
+    return port;
   }
 
-  public void setRestPort(int restPort) {
-    this.restPort = restPort;
+  public void setPort(int port) {
+    this.port = port;
   }
 
-  public String getOsUsername() {
-    return osUsername;
+  public String getUserName() {
+    return userName;
   }
 
-  public void setOsUsername(String osUsername) {
-    this.osUsername = osUsername;
+  public void setUserName(String userName) {
+    this.userName = userName;
   }
 }

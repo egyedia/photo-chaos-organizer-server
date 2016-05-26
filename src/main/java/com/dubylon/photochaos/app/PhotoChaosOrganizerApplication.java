@@ -1,7 +1,7 @@
 package com.dubylon.photochaos.app;
 
 import com.dubylon.photochaos.resource.ClasspathResourceHandler;
-import com.dubylon.photochaos.rest.config.ConfigServlet;
+import com.dubylon.photochaos.rest.clientsettings.PcoClientSettingsServlet;
 import com.dubylon.photochaos.rest.control.AppControlPlayVideoServlet;
 import com.dubylon.photochaos.rest.control.AppControlShutdownServlet;
 import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
@@ -140,7 +140,6 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(FilesystemFavoritesServlet.class, "/filesystem-favorites/*");
     servletHandler.addServletWithMapping(UsersServlet.class, "/users");
     servletHandler.addServletWithMapping(UserServlet.class, "/users/*");
-    servletHandler.addServletWithMapping(ConfigServlet.class, "/config");
     servletHandler.addServletWithMapping(TaskTemplatesServlet.class, "/task-templates");
     servletHandler.addServletWithMapping(TaskTemplateServlet.class, "/task-templates/*");
     servletHandler.addServletWithMapping(TasksServlet.class, "/tasks");
@@ -150,6 +149,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(AppControlPlayVideoServlet.class, "/app-control-play-video/*");
     servletHandler.addServletWithMapping(FilesystemPathRenameServlet.class, "/filesystem-path/*");
     servletHandler.addServletWithMapping(FilesystemRangeServlet.class, "/filesystem-range/*");
+    servletHandler.addServletWithMapping(PcoClientSettingsServlet.class, "/pco-client-settings-dynamic");
 
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");

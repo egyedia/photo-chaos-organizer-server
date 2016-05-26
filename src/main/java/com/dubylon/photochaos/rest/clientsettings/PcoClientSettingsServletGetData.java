@@ -1,13 +1,13 @@
-package com.dubylon.photochaos.rest.config;
+package com.dubylon.photochaos.rest.clientsettings;
 
 import com.dubylon.photochaos.model.config.ConfigData;
 import com.dubylon.photochaos.rest.PCHandlerResponseData;
 
-public class ConfigGetData extends PCHandlerResponseData {
+public class PcoClientSettingsServletGetData extends PCHandlerResponseData {
 
   private ConfigData configData;
 
-  public ConfigGetData() {
+  public PcoClientSettingsServletGetData() {
   }
 
   public ConfigData getConfigData() {
