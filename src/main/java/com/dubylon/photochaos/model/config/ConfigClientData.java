@@ -1,6 +1,6 @@
 package com.dubylon.photochaos.model.config;
 
-public class ConfigData {
+public class ConfigClientData {
 
   private int port;
   private String userName;

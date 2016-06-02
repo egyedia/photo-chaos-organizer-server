@@ -151,7 +151,7 @@
               <outputDirectory>target</outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/main/resources/config</directory>
+                  <directory>src/main/resources</directory>
                   <filtering>true</filtering>
                 </resource>
               </resources>

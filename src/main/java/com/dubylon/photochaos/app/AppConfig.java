@@ -2,28 +2,28 @@ package com.dubylon.photochaos.app;
 
 public class AppConfig {
 
-  private boolean openBrowser = true;
-  private int defaultPort = 2120;
+  private AppConfigMain main;
   private AppConfigVideo video;
+  private AppConfigDateFormats dateFormats;
   private int realPort;
 
   public AppConfig() {
   }
 
-  public boolean isOpenBrowser() {
-    return openBrowser;
+  public AppConfigMain getMain() {
+    return main;
   }
 
-  public void setOpenBrowser(boolean openBrowser) {
-    this.openBrowser = openBrowser;
+  public void setMain(AppConfigMain main) {
+    this.main = main;
   }
 
-  public int getDefaultPort() {
-    return defaultPort;
+  public AppConfigVideo getVideo() {
+    return video;
   }
 
-  public void setDefaultPort(int defaultPort) {
-    this.defaultPort = defaultPort;
+  public void setVideo(AppConfigVideo video) {
+    this.video = video;
   }
 
   public int getRealPort() {
@@ -34,11 +34,11 @@ public class AppConfig {
     this.realPort = realPort;
   }
 
-  public AppConfigVideo getVideo() {
-    return video;
+  public AppConfigDateFormats getDateFormats() {
+    return dateFormats;
   }
 
-  public void setVideo(AppConfigVideo video) {
-    this.video = video;
+  public void setDateFormats(AppConfigDateFormats dateFormats) {
+    this.dateFormats = dateFormats;
   }
 }

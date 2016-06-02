@@ -5,6 +5,7 @@ import com.dubylon.photochaos.rest.clientsettings.PcoClientSettingsServlet;
 import com.dubylon.photochaos.rest.control.AppControlPlayVideoServlet;
 import com.dubylon.photochaos.rest.control.AppControlShutdownServlet;
 import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
+import com.dubylon.photochaos.rest.frontendsettings.PcoFrontendSettingsServlet;
 import com.dubylon.photochaos.rest.fsfolder.FilesystemPathRenameServlet;
 import com.dubylon.photochaos.rest.fspath.FilesystemPathContentsServlet;
 import com.dubylon.photochaos.rest.fsraw.FilesystemRawServlet;
@@ -21,10 +22,6 @@ import com.dubylon.photochaos.rest.thumbonthefly.FilesystemOnTheFlyThumbnailData
 import com.dubylon.photochaos.rest.user.UserServlet;
 import com.dubylon.photochaos.rest.users.UsersServlet;
 import com.dubylon.photochaos.servlet.RemainderServlet;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -38,14 +35,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 
 public class PhotoChaosOrganizerApplication {
 
-  private Path basePath;
   private static AppConfig appConfig;
   private static Server jettyServer;
   private org.h2.tools.Server h2Server;
@@ -62,28 +55,6 @@ public class PhotoChaosOrganizerApplication {
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }
-  }
-
-  private void readConfig() {
-    try {
-      Path jarPath = Paths.get(PhotoChaosOrganizerApplication.class.getProtectionDomain().getCodeSource().getLocation
-          ().toURI());
-      basePath = jarPath.getParent();
-      Path configFilePath = basePath.resolve("pco.config.json");
-      System.out.println("Reading config file:" + configFilePath);
-      ObjectMapper mapper = new ObjectMapper();
-      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      byte[] configBytes = Files.readAllBytes(configFilePath);
-      appConfig = mapper.readValue(configBytes, AppConfig.class);
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    } catch (JsonMappingException e) {
-      e.printStackTrace();
-    } catch (JsonParseException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
     }
   }
 
@@ -150,6 +121,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(FilesystemPathRenameServlet.class, "/filesystem-path/*");
     servletHandler.addServletWithMapping(FilesystemRangeServlet.class, "/filesystem-range/*");
     servletHandler.addServletWithMapping(PcoClientSettingsServlet.class, "/pco-client-settings-dynamic");
+    servletHandler.addServletWithMapping(PcoFrontendSettingsServlet.class, "/pco-frontend-settings");
 
 
     servletHandler.addServletWithMapping(RemainderServlet.class, "/*");
@@ -181,7 +153,7 @@ public class PhotoChaosOrganizerApplication {
     } catch (URISyntaxException e) {
       e.printStackTrace();
     }
-    if (appConfig.isOpenBrowser()) {
+    if (appConfig.getMain().isOpenBrowser()) {
       System.out.println("Opening default browser for URI: " + uri);
       openBrowser(uri);
     } else {
@@ -196,10 +168,11 @@ public class PhotoChaosOrganizerApplication {
   public void run() {
 
     // Read config
-    readConfig();
+    ConfigReader cr = new ConfigReader();
+    appConfig = cr.readConfig();
 
     // Find an open ports
-    int defaultPort = appConfig.getDefaultPort();
+    int defaultPort = appConfig.getMain().getDefaultPort();
     int MAX_TRIES = 20;
     int currentPort = defaultPort;
     boolean foundOpenPort = false;

@@ -1,0 +1,13 @@
+{
+  "options": {
+    "uuuuMMdd": "YYYYMMDD",
+    "uuuu-MM-dd": "YYYY-MM-DD",
+    "uuuu.MM.dd": "YYYY.MM.DD",
+    "uuuu/MMdd": "YYYY/MMDD",
+    "uuuu/MM-dd": "YYYY/MM-DD",
+    "uuuu/MM.dd": "YYYY/MM.DD",
+    "uuuu/MM/dd": "YYYY/MM/DD",
+    "uuuu/uuuuMMdd": "YYYY/YYYYMMDD",
+    "uuuu/uuuu-MM-dd": "YYYY/YYYY-MM-DD"
+  }
+}
