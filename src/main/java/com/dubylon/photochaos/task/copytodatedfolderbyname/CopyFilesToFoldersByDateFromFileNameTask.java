@@ -98,16 +98,16 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
 
   private void detectPaths(Path currentPath) {
     try (final Stream<Path> stream = Files.list(currentPath)) {
-      stream
-          .filter(path -> path.toFile().isDirectory())
-          .forEach(path -> {
-            pathList.add(path);
-            detectPaths(path);
-          });
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    stream
+        .filter(path -> path.toFile().isDirectory())
+        .forEach(path -> {
+          pathList.add(path);
+          detectPaths(path);
+        });
+  } catch (IOException e) {
+    e.printStackTrace();
   }
+}
 
 
   private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
