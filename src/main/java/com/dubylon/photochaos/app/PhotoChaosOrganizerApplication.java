@@ -1,5 +1,6 @@
 package com.dubylon.photochaos.app;
 
+import com.dubylon.photochaos.Defaults;
 import com.dubylon.photochaos.resource.ClasspathResourceHandler;
 import com.dubylon.photochaos.rest.clientsettings.PcoClientSettingsServlet;
 import com.dubylon.photochaos.rest.control.AppControlPlayVideoServlet;
@@ -170,6 +171,7 @@ public class PhotoChaosOrganizerApplication {
     // Read config
     ConfigReader cr = new ConfigReader();
     appConfig = cr.readConfig();
+    Defaults.initFrom(appConfig.getFileTypes());
 
     // Find an open ports
     int defaultPort = appConfig.getMain().getDefaultPort();

@@ -1,12 +1,10 @@
 package com.dubylon.photochaos.task.copytodatedfolderbyname;
 
-import com.dubylon.photochaos.Defaults;
 import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
 import com.dubylon.photochaos.task.*;
-import com.dubylon.photochaos.util.PhotoChaosFileType;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -98,16 +96,16 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
 
   private void detectPaths(Path currentPath) {
     try (final Stream<Path> stream = Files.list(currentPath)) {
-    stream
-        .filter(path -> path.toFile().isDirectory())
-        .forEach(path -> {
-          pathList.add(path);
-          detectPaths(path);
-        });
-  } catch (IOException e) {
-    e.printStackTrace();
+      stream
+          .filter(path -> path.toFile().isDirectory())
+          .forEach(path -> {
+            pathList.add(path);
+            detectPaths(path);
+          });
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
-}
 
 
   private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {

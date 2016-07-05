@@ -5,6 +5,7 @@ public class AppConfig {
   private AppConfigMain main;
   private AppConfigVideo video;
   private AppConfigDateFormats dateFormats;
+  private AppConfigFileTypes fileTypes;
   private int realPort;
 
   public AppConfig() {
@@ -40,5 +41,13 @@ public class AppConfig {
 
   public void setDateFormats(AppConfigDateFormats dateFormats) {
     this.dateFormats = dateFormats;
+  }
+
+  public AppConfigFileTypes getFileTypes() {
+    return fileTypes;
+  }
+
+  public void setFileTypes(AppConfigFileTypes fileTypes) {
+    this.fileTypes = fileTypes;
   }
 }

@@ -57,6 +57,9 @@ public class ConfigReader {
       } else if ("date-formats.json".equals(fileName.toString())) {
         AppConfigDateFormats dateFormatsConfig = mapper.readValue(configBytes, AppConfigDateFormats.class);
         appConfig.setDateFormats(dateFormatsConfig);
+      } else if ("file-types.json".equals(fileName.toString())) {
+        AppConfigFileTypes fileTypesConfig = mapper.readValue(configBytes, AppConfigFileTypes.class);
+        appConfig.setFileTypes(fileTypesConfig);
       }
     } catch (IOException e) {
       e.printStackTrace();

@@ -1,0 +1,80 @@
+{
+  "types": {
+    "imageWithMeta": {
+      "fileType": "image",
+      "canHaveMeta": true,
+      "canHaveOnTheFlyImageThumb": true,
+      "canShowThumb": true,
+      "extensions": [
+        "jpg",
+        "jpeg",
+        "tiff"
+      ]
+    },
+    "imageWithoutMeta": {
+      "fileType": "image",
+      "canHaveMeta": false,
+      "canHaveOnTheFlyImageThumb": true,
+      "canShowThumb": true,
+      "extensions": [
+        "png",
+        "gif"
+      ]
+    },
+    "thumbnail": {
+      "fileType": "thumbnail",
+      "canHaveMeta": false,
+      "canHaveOnTheFlyImageThumb": true,
+      "canShowThumb": false,
+      "extensions": [
+        "thm"
+      ]
+    },
+    "imageRaw": {
+      "fileType": "image-raw",
+      "canHaveMeta": true,
+      "canHaveOnTheFlyImageThumb": false,
+      "canShowThumb": false,
+      "extensions": [
+        "cr2",
+        "nef"
+      ]
+    },
+    "video": {
+      "fileType": "video",
+      "canHaveMeta": true,
+      "canHaveOnTheFlyImageThumb": false,
+      "canShowThumb": false,
+      "extensions": [
+        "avi",
+        "mk4",
+        "mvi",
+        "3gp",
+        "mp4",
+        "mov",
+        "mts",
+        "m2ts"
+      ]
+    },
+    "videoMeta": {
+      "fileType": "video-meta",
+      "canHaveMeta": false,
+      "canHaveOnTheFlyImageThumb": false,
+      "canShowThumb": false,
+      "extensions": [
+        "modd",
+        "moff"
+      ]
+    },
+    "sound": {
+      "fileType": "sound",
+      "canHaveMeta": false,
+      "canHaveOnTheFlyImageThumb": false,
+      "canShowThumb": false,
+      "extensions": [
+        "mp3",
+        "wav"
+      ]
+    }
+  }
+}
