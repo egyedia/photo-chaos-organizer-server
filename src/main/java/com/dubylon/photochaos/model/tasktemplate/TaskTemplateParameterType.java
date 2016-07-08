@@ -7,7 +7,9 @@ public enum TaskTemplateParameterType {
   FOLDERNAME("folderName"),
   FOLDERSUFFIX("folderSuffix"),
   PATH("path"),
-  SHORTDATEFORMAT("shortDateFormat");
+  SHORTDATEFORMAT("shortDateFormat"),
+  IMPORTORPREVIEW("importOrPreview"),
+  REPONAME("repoName");
 
   private final String value;
 
@@ -20,4 +22,4 @@ public enum TaskTemplateParameterType {
     return value;
   }
 
-}
+  }

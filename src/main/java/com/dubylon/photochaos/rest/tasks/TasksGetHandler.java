@@ -1,12 +1,9 @@
 package com.dubylon.photochaos.rest.tasks;
 
-import com.dubylon.photochaos.model.db.FavoritePath;
 import com.dubylon.photochaos.model.db.TaskDefinition;
 import com.dubylon.photochaos.model.db.User;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandler;
-import com.dubylon.photochaos.rest.users.UsersGetData;
 import com.dubylon.photochaos.util.HibernateUtil;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;

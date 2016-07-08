@@ -2,15 +2,15 @@ package com.dubylon.photochaos.model.operation;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum FilesystemOperationType {
-  COPYFILE("copyFile"),
-  MOVEFILE("moveFile"),
-  CREATEFOLDER("createFolder"),
-  DONOTHING("doNothing");
+public enum PcoOperationStatus {
+  UNDEFINED("U"),
+  SUCCESS("S"),
+  WARNING("W"),
+  ERROR("E");
 
   private final String value;
 
-  FilesystemOperationType(String value) {
+  PcoOperationStatus(String value) {
     this.value = value;
   }
 

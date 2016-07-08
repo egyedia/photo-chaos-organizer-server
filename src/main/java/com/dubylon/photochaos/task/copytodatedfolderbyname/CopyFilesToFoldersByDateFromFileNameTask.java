@@ -5,6 +5,9 @@ import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
 import com.dubylon.photochaos.task.*;
+import com.dubylon.photochaos.util.FileNameDateUtil;
+import com.dubylon.photochaos.util.FileSystemUtil;
+import com.dubylon.photochaos.util.ReportUtil;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -14,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.time.DateTimeException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +32,7 @@ import java.util.stream.Stream;
 import static com.dubylon.photochaos.report.TableReport.*;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileName.")
-public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
+public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystemTask {
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.PATH,
@@ -71,42 +75,40 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
   private TaskTemplateParameterCopyOrMove fileOperation;
 
   //private String targetFolderNameFormatter;
-  private String fullDateTimePatternString;
-  private String justDatePatternString;
-  private Pattern fullDateTimePattern;
-  private Pattern justDatePattern;
 
-  private boolean performOperations;
   private String knownGlobFilter;
-
   private Path sourcePath;
   private Path destinationPath;
   private List<Path> pathList;
   private Set<String> createdFolders;
   private DateTimeFormatter dateFormatter;
 
-
   public CopyFilesToFoldersByDateFromFileNameTask() {
-    this.fullDateTimePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})" +
-        "([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)";
-    this.justDatePatternString = "([^\\d]*)([\\d]{2,4})([^\\d]*)([\\d]{1,2})([^\\d]*)([\\d]{1,2})([^\\d]*)";
-    this.fullDateTimePattern = Pattern.compile(fullDateTimePatternString);
-    this.justDatePattern = Pattern.compile(justDatePatternString);
   }
 
-  private void detectPaths(Path currentPath) {
-    try (final Stream<Path> stream = Files.list(currentPath)) {
-      stream
-          .filter(path -> path.toFile().isDirectory())
-          .forEach(path -> {
-            pathList.add(path);
-            detectPaths(path);
-          });
-    } catch (IOException e) {
-      e.printStackTrace();
+  private LocalDateTime readFileDateFromFileName(Path path) {
+    LocalDateTime fileDateTime = null;
+
+    Path namePath = path.getFileName();
+    String name = namePath.toString();
+    String fileName = FilenameUtils.getBaseName(name);
+    DateTimeBean dateTime = FileNameDateUtil.extractDateAndTime(fileName);
+    if (dateTime == null) {
+      dateTime = FileNameDateUtil.extractDate(fileName);
     }
+    if (dateTime != null) {
+      try {
+        fileDateTime = LocalDateTime.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay(), dateTime
+            .getHour(), dateTime.getMinute(), dateTime.getSecond());
+      } catch (DateTimeException ex) {
+        System.out.println(ex.getMessage());
+        //ex.printStackTrace();
+      }
+    } else {
+      System.out.println("Unable to determine file date for:" + path);
+    }
+    return fileDateTime;
   }
-
 
   private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
     final PathMatcher filter = currentPath.getFileSystem().getPathMatcher(knownGlobFilter);
@@ -114,48 +116,33 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
       stream
           .filter(path -> path.toFile().isFile() && filter.matches(path.getFileName()))
           .forEach(path -> {
-            Path namePath = path.getFileName();
-            String name = namePath.toString();
-            String fileName = FilenameUtils.getBaseName(name);
-            DateTimeBean dateTime = extractDateAndTime(fileName);
-            if (dateTime == null) {
-              dateTime = extractDate(fileName);
-            }
-            if (dateTime != null) {
-              LocalDateTime fileDateTime = null;
-              try {
-                fileDateTime = LocalDateTime.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay(), dateTime
-                    .getHour(), dateTime.getMinute(), dateTime.getSecond());
-              } catch (DateTimeException ex) {
-                System.out.println(ex.getMessage());
-                //ex.printStackTrace();
-              }
-              if (fileDateTime != null) {
-                String targetDateFolderName = dateFormatter.format(fileDateTime) + newFolderSuffix;
-                Path targetDatePath = Paths.get(targetDateFolderName);
-                Path newPath = destinationPath.resolve(targetDatePath);
-                String newPathString = newPath.toString();
-                final IFilesystemOperation folderOp;
-                if (newPath.toFile().exists() || createdFolders.contains(newPathString)) {
-                  folderOp = new FolderAlreadyPresent(newPath);
-                } else {
-                  folderOp = new CreateFolder(destinationPath, targetDatePath);
-                  createdFolders.add(newPathString);
-                }
-                fsol.add(folderOp);
 
-                final IFilesystemOperation fileOp;
-                if (TaskTemplateParameterCopyOrMove.COPY == fileOperation) {
-                  fileOp = new CopyFile(namePath, currentPath, newPath);
-                } else {
-                  fileOp = new MoveFile(namePath, currentPath, newPath);
-                }
-                fsol.add(fileOp);
+            LocalDateTime fileDateTime = readFileDateFromFileName(path);
+
+            if (fileDateTime != null) {
+              String targetDateFolderName = dateFormatter.format(fileDateTime) + newFolderSuffix;
+              Path targetDatePath = Paths.get(targetDateFolderName);
+              Path newPath = destinationPath.resolve(targetDatePath);
+              String newPathString = newPath.toString();
+              final IFilesystemOperation folderOp;
+              if (newPath.toFile().exists() || createdFolders.contains(newPathString)) {
+                folderOp = new FolderAlreadyPresent(newPath);
               } else {
-                System.out.println("Error while determining file date for:" + path);
+                folderOp = new CreateFolder(destinationPath, targetDatePath);
+                createdFolders.add(newPathString);
               }
+              fsol.add(folderOp);
+
+              Path namePath = path.getFileName();
+              final IFilesystemOperation fileOp;
+              if (TaskTemplateParameterCopyOrMove.COPY == fileOperation) {
+                fileOp = new CopyFile(namePath, currentPath, newPath);
+              } else {
+                fileOp = new MoveFile(namePath, currentPath, newPath);
+              }
+              fsol.add(fileOp);
             } else {
-              System.out.println("Unable to determine file date for:" + path);
+              System.out.println("Error while determining file date for:" + path);
             }
           });
     } catch (IOException e) {
@@ -165,29 +152,20 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
 
   @Override
   public void execute(boolean performOperations) {
-    this.performOperations = performOperations;
-
     sourcePath = Paths.get(sourceFolder);
     destinationPath = Paths.get(destinationFolder);
 
-    pathList = new ArrayList<>();
-
     // Check source folder
-    File sourceFolderFile = sourcePath.toFile();
-    boolean sourceFolderOk = sourceFolderFile.exists()
-        && sourceFolderFile.isDirectory()
-        && sourceFolderFile.canRead();
+    boolean sourceFolderOk = FileSystemUtil.isDirectoryAndReadable(sourcePath);
 
     // Check destination folder
-    File destinationFolderFile = destinationPath.toFile();
-    boolean destinationFolderOk = destinationFolderFile.exists()
-        && destinationFolderFile.isDirectory()
-        && destinationFolderFile.canWrite();
+    boolean destinationFolderOk = FileSystemUtil.isDirectoryAndWritable(destinationPath);
 
     // Detect all subfolders
     if (sourceFolderOk && destinationFolderOk) {
-      pathList.add(sourcePath);
-      detectPaths(sourcePath);
+      pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath);
+    } else {
+      pathList = new ArrayList<>();
     }
 
     // Create the operation list
@@ -200,68 +178,10 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractPcoTask {
     pathList.forEach(path -> this.createOperation(path, fsOpList));
 
     // Create the operation report
-    TableReport opReport = new TableReport();
+    TableReport opReport = ReportUtil.buildOperationReport();
     status.getReports().add(opReport);
-    opReport.addHeader(FSOP_OPERATION);
-    opReport.addHeader(FSOP_SOURCE);
-    opReport.addHeader(FSOP_SOURCE_NAME);
-    opReport.addHeader(FSOP_DESTINATION);
-    opReport.addHeader(FSOP_DESTINATION_NAME);
-    opReport.addHeader(FSOP_STATUS);
-    fsOpList.forEach(op -> {
-      FilesystemOperationPerformer.perform(op, performOperations);
 
-      TableReportRow row = opReport.createRow();
-      row.set(FSOP_OPERATION, op.getType());
-      row.set(FSOP_SOURCE, op.getSource() == null ? null : sourcePath.relativize(op.getSource()));
-      row.set(FSOP_SOURCE_NAME, op.getSourceName());
-      row.set(FSOP_DESTINATION, op.getDestination() == null ? null : destinationPath.relativize(op.getDestination()));
-      row.set(FSOP_DESTINATION_NAME, op.getDestinationName());
-      row.set(FSOP_STATUS, op.getStatus());
-    });
-
+    executeOperations(fsOpList, opReport, sourcePath, destinationPath, performOperations);
   }
 
-  private DateTimeBean extractDateAndTime(String fileName) {
-    DateTimeBean dtb = null;
-    Matcher m = fullDateTimePattern.matcher(fileName);
-    if (m.find()) {
-      dtb = new DateTimeBean();
-      fillDateTimeBean(dtb, m);
-    }
-    return dtb;
-  }
-
-  private DateTimeBean extractDate(String fileName) {
-    DateTimeBean dtb = null;
-    Matcher m = justDatePattern.matcher(fileName);
-    if (m.find()) {
-      dtb = new DateTimeBean();
-      fillDate(dtb, m);
-    }
-    return dtb;
-  }
-
-  private static void fillDateTimeBean(DateTimeBean dtb, Matcher m) {
-    dtb.setYear(getSafeIntValue(m.group(2)));
-    dtb.setMonth(getSafeIntValue(m.group(4)));
-    dtb.setDay(getSafeIntValue(m.group(6)));
-    dtb.setHour(getSafeIntValue(m.group(8)));
-    dtb.setMinute(getSafeIntValue(m.group(10)));
-    dtb.setSecond(getSafeIntValue(m.group(12)));
-  }
-
-  private static void fillDate(DateTimeBean dtb, Matcher m) {
-    dtb.setYear(getSafeIntValue(m.group(2)));
-    dtb.setMonth(getSafeIntValue(m.group(4)));
-    dtb.setDay(getSafeIntValue(m.group(6)));
-  }
-
-  private static int getSafeIntValue(String s) {
-    try {
-      return Integer.parseInt(s);
-    } catch (NumberFormatException ex) {
-      return 0;
-    }
-  }
 }

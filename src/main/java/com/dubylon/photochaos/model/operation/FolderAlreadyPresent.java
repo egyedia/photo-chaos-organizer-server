@@ -11,8 +11,8 @@ public class FolderAlreadyPresent extends AbstractFilesystemOperation {
   }
 
   @Override
-  public FilesystemOperationType getType() {
-    return FilesystemOperationType.DONOTHING;
+  public PcoOperationType getType() {
+    return PcoOperationType.DONOTHING;
   }
 
   @Override

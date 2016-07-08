@@ -1,17 +1,14 @@
 package com.dubylon.photochaos.task.moverawtosubfolder;
 
-import com.dubylon.photochaos.Defaults;
 import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
-import com.dubylon.photochaos.report.TableReportRow;
-import com.dubylon.photochaos.task.AbstractPcoTask;
-import com.dubylon.photochaos.task.FilesystemOperationPerformer;
+import com.dubylon.photochaos.task.AbstractFileSystemTask;
 import com.dubylon.photochaos.task.PcoTaskTemplate;
 import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
-import com.dubylon.photochaos.util.PhotoChaosFileType;
+import com.dubylon.photochaos.util.FileSystemUtil;
+import com.dubylon.photochaos.util.ReportUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,10 +19,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import static com.dubylon.photochaos.report.TableReport.*;
-
 @PcoTaskTemplate(languageKeyPrefix = "task.moveRawImagesToSubfolders.")
-public class MoveRawImagesToSubfolderTask extends AbstractPcoTask {
+public class MoveRawImagesToSubfolderTask extends AbstractFileSystemTask {
 
   @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.PATH,
@@ -42,29 +37,13 @@ public class MoveRawImagesToSubfolderTask extends AbstractPcoTask {
       order = 2
   )
   private String rawFolder;
+
   private Path rawPath;
-
-  private boolean performOperations;
   private String rawGlobFilter;
-
   private List<Path> pathList;
 
   public MoveRawImagesToSubfolderTask() {
   }
-
-  private void detectPaths(Path currentPath) {
-    try (final Stream<Path> stream = Files.list(currentPath)) {
-      stream
-          .filter(path -> path.toFile().isDirectory() && !rawFolder.equalsIgnoreCase(path.getFileName().toString()))
-          .forEach(path -> {
-            pathList.add(path);
-            detectPaths(path);
-          });
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
 
   private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
     final IFilesystemOperation folderOp;
@@ -101,65 +80,32 @@ public class MoveRawImagesToSubfolderTask extends AbstractPcoTask {
 
   @Override
   public void execute(boolean performOperations) {
-    this.performOperations = performOperations;
+    Path workingPath = Paths.get(workingFolder);
 
     rawPath = Paths.get(rawFolder);
-
     pathList = new ArrayList<>();
-    // Check working folder
-    Path workingFolderPath = Paths.get(workingFolder);
-    File workingFolderFile = workingFolderPath.toFile();
-    boolean workingFolderOk = workingFolderFile.exists()
-        && workingFolderFile.isDirectory()
-        && workingFolderFile.canRead();
 
-    // Detect all subfolders
+    // Check working folder
+    boolean workingFolderOk = FileSystemUtil.isDirectoryAndReadable(workingPath);
+
+    // Detect all subfolders except raw
     if (workingFolderOk) {
-      pathList.add(workingFolderPath);
-      detectPaths(workingFolderPath);
+      pathList = FileSystemUtil.getAllSubfoldersIncludingExcluding(workingPath, rawFolder);
+    } else {
+      pathList = new ArrayList<>();
     }
 
-    // Build the glob for matching raw files
-    StringBuilder sb = new StringBuilder();
-    sb.append("regex:");
-    sb.append("([^\\s]+(\\.(?i)(");
-    final StringBuilder separator = new StringBuilder();
-    Defaults.FILE_EXTENSIONS.forEach((ext, desc) -> {
-      if (PhotoChaosFileType.IMAGE_RAW.equals(desc.getFileType())) {
-        sb.append(separator);
-        sb.append(ext);
-        if (separator.length() == 0) {
-          separator.append("|");
-        }
-      }
-    });
-    sb.append("))$)");
-    rawGlobFilter = sb.toString();
+    rawGlobFilter = buildRawGlobFilter();
 
     // Create the operation list
     List<IFilesystemOperation> fsOpList = new ArrayList<>();
     pathList.forEach(path -> this.createOperation(path, fsOpList));
 
     // Create the operation report
-    TableReport opReport = new TableReport();
+    TableReport opReport = ReportUtil.buildOperationReport();
     status.getReports().add(opReport);
-    opReport.addHeader(FSOP_OPERATION);
-    opReport.addHeader(FSOP_SOURCE);
-    opReport.addHeader(FSOP_SOURCE_NAME);
-    opReport.addHeader(FSOP_DESTINATION);
-    opReport.addHeader(FSOP_DESTINATION_NAME);
-    opReport.addHeader(FSOP_STATUS);
-    fsOpList.forEach(op -> {
-      FilesystemOperationPerformer.perform(op, performOperations);
 
-      TableReportRow row = opReport.createRow();
-      row.set(FSOP_OPERATION, op.getType());
-      row.set(FSOP_SOURCE, op.getSource() == null ? null : workingFolderPath.relativize(op.getSource()));
-      row.set(FSOP_SOURCE_NAME, op.getSourceName());
-      row.set(FSOP_DESTINATION, op.getDestination() == null ? null : workingFolderPath.relativize(op.getDestination()));
-      row.set(FSOP_DESTINATION_NAME, op.getDestinationName());
-      row.set(FSOP_STATUS, op.getStatus());
-    });
+    executeOperations(fsOpList, opReport, workingPath, workingPath, performOperations);
   }
 
 }

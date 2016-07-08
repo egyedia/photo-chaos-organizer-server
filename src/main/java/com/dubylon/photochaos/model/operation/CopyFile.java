@@ -18,8 +18,8 @@ public class CopyFile extends AbstractFilesystemOperation {
   }
 
   @Override
-  public FilesystemOperationType getType() {
-    return FilesystemOperationType.COPYFILE;
+  public PcoOperationType getType() {
+    return PcoOperationType.COPYFILE;
   }
 
   @Override
@@ -46,10 +46,10 @@ public class CopyFile extends AbstractFilesystemOperation {
   public void perform() {
     try {
       FileUtils.copyFile(sourcePath.resolve(fileName).toFile(), destinationPath.resolve(fileName).toFile());
-      setStatus(FilesystemOperationStatus.SUCCESS);
+      setStatus(PcoOperationStatus.SUCCESS);
     } catch (IOException e) {
       e.printStackTrace();
-      setStatus(FilesystemOperationStatus.ERROR);
+      setStatus(PcoOperationStatus.ERROR);
       errorMessage = e.getMessage();
     }
   }

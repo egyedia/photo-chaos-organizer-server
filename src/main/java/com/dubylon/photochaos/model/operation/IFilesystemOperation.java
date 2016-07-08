@@ -2,9 +2,7 @@ package com.dubylon.photochaos.model.operation;
 
 import java.nio.file.Path;
 
-public interface IFilesystemOperation {
-
-  FilesystemOperationType getType();
+public interface IFilesystemOperation extends IPcoOperation {
 
   Path getSource();
 
@@ -13,12 +11,4 @@ public interface IFilesystemOperation {
   Path getDestination();
 
   Path getDestinationName();
-
-  void setStatus(FilesystemOperationStatus status);
-
-  FilesystemOperationStatus getStatus();
-
-  void perform();
-
-  String getErrorMessage();
 }

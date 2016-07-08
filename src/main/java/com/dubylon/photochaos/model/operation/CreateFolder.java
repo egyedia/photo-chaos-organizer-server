@@ -16,8 +16,8 @@ public class CreateFolder extends AbstractFilesystemOperation {
   }
 
   @Override
-  public FilesystemOperationType getType() {
-    return FilesystemOperationType.CREATEFOLDER;
+  public PcoOperationType getType() {
+    return PcoOperationType.CREATEFOLDER;
   }
 
   @Override
@@ -44,10 +44,10 @@ public class CreateFolder extends AbstractFilesystemOperation {
   public void perform() {
     try {
       FileUtils.forceMkdir(parent.resolve(name).toFile());
-      setStatus(FilesystemOperationStatus.SUCCESS);
+      setStatus(PcoOperationStatus.SUCCESS);
     } catch (IOException e) {
       e.printStackTrace();
-      setStatus(FilesystemOperationStatus.ERROR);
+      setStatus(PcoOperationStatus.ERROR);
       errorMessage = e.getMessage();
     }
   }
