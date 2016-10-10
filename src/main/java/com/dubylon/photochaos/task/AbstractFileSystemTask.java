@@ -26,5 +26,4 @@ public abstract class AbstractFileSystemTask extends AbstractPcoTask {
     });
   }
 
-
 }
