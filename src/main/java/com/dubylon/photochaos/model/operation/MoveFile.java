@@ -44,14 +44,17 @@ public class MoveFile extends AbstractFilesystemOperation {
 
   @Override
   public void perform() {
-    try {
-      FileUtils.moveFile(sourcePath.resolve(fileName).toFile(), destinationPath.resolve(fileName).toFile());
-      setStatus(PcoOperationStatus.SUCCESS);
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (exception != null) {
       setStatus(PcoOperationStatus.ERROR);
-      errorMessage = e.getMessage();
+    } else {
+      try {
+        FileUtils.moveFile(sourcePath.resolve(fileName).toFile(), destinationPath.resolve(fileName).toFile());
+        setStatus(PcoOperationStatus.SUCCESS);
+      } catch (IOException e) {
+        e.printStackTrace();
+        setStatus(PcoOperationStatus.ERROR);
+        errorMessage = e.getMessage();
+      }
     }
   }
-
 }

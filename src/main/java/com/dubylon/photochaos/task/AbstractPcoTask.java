@@ -3,7 +3,7 @@ package com.dubylon.photochaos.task;
 import com.dubylon.photochaos.Defaults;
 import com.dubylon.photochaos.util.PhotoChaosFileType;
 
-public abstract class AbstractPcoTask implements IPcoTask {
+public abstract class AbstractPcoTask implements PcoTask {
 
   protected TaskStatus status;
 

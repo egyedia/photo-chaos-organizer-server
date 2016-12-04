@@ -1,12 +1,5 @@
 package com.dubylon.photochaos.task.detectrepoduplicates;
 
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
-import com.dubylon.photochaos.model.db.FavoritePath;
 import com.dubylon.photochaos.model.db.RepoFile;
 import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
@@ -14,25 +7,18 @@ import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.task.AbstractFileSystemTask;
 import com.dubylon.photochaos.task.PcoTaskTemplate;
 import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
-import com.dubylon.photochaos.task.TaskTemplateParameterCopyOrMove;
+import com.dubylon.photochaos.task.PreviewOrRun;
 import com.dubylon.photochaos.util.FileSystemUtil;
 import com.dubylon.photochaos.util.HibernateUtil;
 import com.dubylon.photochaos.util.ReportUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -69,7 +55,7 @@ public class DetectDuplicatesVersusRepoTask extends AbstractFileSystemTask {
 
   }
 
-  private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
+  private void createOperation(Path currentPath, List<FilesystemOperation> fsol) {
     final PathMatcher filter = currentPath.getFileSystem().getPathMatcher(knownGlobFilter);
 
     sessionFactory = null;
@@ -100,7 +86,7 @@ public class DetectDuplicatesVersusRepoTask extends AbstractFileSystemTask {
             RepoFile dbrf = (RepoFile)crit.uniqueResult();
 
             if (dbrf != null) {
-              final IFilesystemOperation fileOp = new MoveFile(namePath, currentPath, newPath);
+              final FilesystemOperation fileOp = new MoveFile(namePath, currentPath, newPath);
               fsol.add(fileOp);
             }
           });
@@ -121,7 +107,7 @@ public class DetectDuplicatesVersusRepoTask extends AbstractFileSystemTask {
   }
 
   @Override
-  public void execute(boolean performOperations) {
+  public void execute(PreviewOrRun previewOrRun) {
     sourcePath = Paths.get(sourceFolder);
     destinationPath = Paths.get(destinationFolder);
 
@@ -139,7 +125,7 @@ public class DetectDuplicatesVersusRepoTask extends AbstractFileSystemTask {
     }
 
     // Create the operation list
-    List<IFilesystemOperation> fsOpList = new ArrayList<>();
+    List<FilesystemOperation> fsOpList = new ArrayList<>();
 
     knownGlobFilter = buildKnownGlobFilter();
 
@@ -149,6 +135,6 @@ public class DetectDuplicatesVersusRepoTask extends AbstractFileSystemTask {
     TableReport opReport = ReportUtil.buildOperationReport();
     status.getReports().add(opReport);
 
-    executeOperations(fsOpList, opReport, sourcePath, destinationPath, performOperations);
+    executeOperations(fsOpList, opReport, sourcePath, destinationPath, previewOrRun);
   }
 }

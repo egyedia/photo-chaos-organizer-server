@@ -1,14 +1,14 @@
 package com.dubylon.photochaos.rest.tasktemplates;
 
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplate;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
+import com.dubylon.photochaos.rest.PhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.util.TaskTemplateUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-public class TaskTemplatesGetHandler implements IPhotoChaosHandler {
+public class TaskTemplatesGetHandler implements PhotoChaosHandler {
 
   public TaskTemplatesGetHandler() {
   }

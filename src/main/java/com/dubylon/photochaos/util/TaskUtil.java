@@ -1,6 +1,6 @@
 package com.dubylon.photochaos.util;
 
-import com.dubylon.photochaos.task.IPcoTask;
+import com.dubylon.photochaos.task.PcoTask;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -9,9 +9,9 @@ public final class TaskUtil {
   private TaskUtil() {
   }
 
-  public static IPcoTask buildTaskWithParameters(String className, Map<String, String> parameters) {
+  public static PcoTask buildTaskWithParameters(String className, Map<String, String> parameters) {
     //TODO handle errors, make it fool-proof
-    IPcoTask task = null;
+    PcoTask task = null;
 
     Class c = null;
     try {
@@ -22,7 +22,7 @@ public final class TaskUtil {
 
     if (c != null) {
       try {
-        task = (IPcoTask) c.newInstance();
+        task = (PcoTask) c.newInstance();
       } catch (InstantiationException e) {
         e.printStackTrace();
       } catch (IllegalAccessException e) {

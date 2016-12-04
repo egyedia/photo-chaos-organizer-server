@@ -24,7 +24,7 @@ public final class TaskCentralizer {
     return instance;
   }
 
-  public TaskPreviewOrRunGetData launchTask(IPcoTask task, long taskDefinitionId, boolean performOperations, long userId) {
+  public TaskPreviewOrRunGetData launchTask(PcoTask task, long taskDefinitionId, PreviewOrRun previewOrRun, long userId) {
     TaskPreviewOrRunGetData response = new TaskPreviewOrRunGetData();
     TaskRunInstance tri = runningInstances.get(taskDefinitionId);
     if (tri != null) {
@@ -44,7 +44,7 @@ public final class TaskCentralizer {
     final TaskRunInstance runningInstance = tri;
     executor.submit(() -> {
       runningInstance.start(userId);
-      task.execute(performOperations);
+      task.execute(previewOrRun);
       runningInstance.finish();
     });
     response.setStarted(true);

@@ -5,10 +5,7 @@ import com.dubylon.photochaos.model.operation.RepoImportFile;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
-import com.dubylon.photochaos.task.AbstractPcoTask;
-import com.dubylon.photochaos.task.PcoOperationPerformer;
-import com.dubylon.photochaos.task.PcoTaskTemplate;
-import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
+import com.dubylon.photochaos.task.*;
 import com.dubylon.photochaos.util.FileSystemUtil;
 import com.dubylon.photochaos.util.HibernateUtil;
 import org.hibernate.*;
@@ -78,13 +75,13 @@ public class ImportFilesIntoRepoTask extends AbstractPcoTask {
   }
 
   protected void executeOperations(List<RepoImportFile> fsOpList, TableReport opReport, Path sourcePath,
-                                   boolean performOperations) {
+                                   PreviewOrRun previewOrRun) {
 
     SessionFactory sessionFactory = null;
     Session session = null;
     Transaction tx = null;
 
-    if (performOperations) {
+    if (previewOrRun == PreviewOrRun.RUN) {
       try {
         sessionFactory = HibernateUtil.getSessionFactory();
         session = sessionFactory.openSession();
@@ -106,7 +103,7 @@ public class ImportFilesIntoRepoTask extends AbstractPcoTask {
       op.injectSession(session);
       boolean addRow = i % 100 == 0;
       try {
-        PcoOperationPerformer.perform(op, performOperations);
+        PcoOperationPerformer.perform(op, previewOrRun);
       } catch (HibernateException e) {
         e.printStackTrace();
         addRow = true;
@@ -121,7 +118,7 @@ public class ImportFilesIntoRepoTask extends AbstractPcoTask {
       i++;
     }
 
-    if (performOperations && tx != null) {
+    if (previewOrRun == PreviewOrRun.RUN && tx != null) {
       try {
         tx.commit();
       } catch (HibernateException e) {
@@ -136,7 +133,7 @@ public class ImportFilesIntoRepoTask extends AbstractPcoTask {
   }
 
   @Override
-  public void execute(boolean performOperations) {
+  public void execute(PreviewOrRun previewOrRun) {
     sourcePath = Paths.get(sourceFolder);
 
     // Check source folder
@@ -160,7 +157,7 @@ public class ImportFilesIntoRepoTask extends AbstractPcoTask {
     TableReport opReport = buildOperationReport();
     status.getReports().add(opReport);
 
-    executeOperations(fsOpList, opReport, sourcePath, performOperations);
+    executeOperations(fsOpList, opReport, sourcePath, previewOrRun);
 
   }
 

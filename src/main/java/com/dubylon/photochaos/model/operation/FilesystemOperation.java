@@ -2,7 +2,7 @@ package com.dubylon.photochaos.model.operation;
 
 import java.nio.file.Path;
 
-public interface IFilesystemOperation extends IPcoOperation {
+public interface FilesystemOperation extends PcoOperation {
 
   Path getSource();
 

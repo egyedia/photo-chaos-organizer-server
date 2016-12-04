@@ -1,13 +1,13 @@
 package com.dubylon.photochaos.rest.control;
 
 import com.dubylon.photochaos.app.PhotoChaosOrganizerApplication;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
+import com.dubylon.photochaos.rest.PhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import org.eclipse.jetty.server.Server;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class AppControlShutdownGetHandler implements IPhotoChaosHandler {
+public class AppControlShutdownGetHandler implements PhotoChaosHandler {
 
   private class JettyStopper implements Runnable {
 

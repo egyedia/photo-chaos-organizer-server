@@ -1,14 +1,9 @@
 package com.dubylon.photochaos.rest.fsfolder;
 
 import com.dubylon.photochaos.model.request.FilesystemPathRename;
-import com.dubylon.photochaos.model.request.TaskCreate;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandlerPath;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import sun.nio.ch.IOUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

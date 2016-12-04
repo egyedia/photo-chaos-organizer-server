@@ -6,6 +6,7 @@ import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.task.AbstractFileSystemTask;
 import com.dubylon.photochaos.task.PcoTaskTemplate;
 import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
+import com.dubylon.photochaos.task.PreviewOrRun;
 import com.dubylon.photochaos.util.FileSystemUtil;
 import com.dubylon.photochaos.util.ReportUtil;
 
@@ -45,8 +46,8 @@ public class MoveRawImagesToSubfolderTask extends AbstractFileSystemTask {
   public MoveRawImagesToSubfolderTask() {
   }
 
-  private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
-    final IFilesystemOperation folderOp;
+  private void createOperation(Path currentPath, List<FilesystemOperation> fsol) {
+    final FilesystemOperation folderOp;
     Path newPath = currentPath.resolve(rawPath);
     if (newPath.toFile().exists()) {
       if (newPath.toFile().isDirectory()) {
@@ -70,7 +71,7 @@ public class MoveRawImagesToSubfolderTask extends AbstractFileSystemTask {
               fsol.add(folderOp);
               folderAlreadyCreated.set(true);
             }
-            IFilesystemOperation moveOp = new MoveFile(path.getFileName(), currentPath, newPath);
+            FilesystemOperation moveOp = new MoveFile(path.getFileName(), currentPath, newPath);
             fsol.add(moveOp);
           });
     } catch (IOException e) {
@@ -79,7 +80,7 @@ public class MoveRawImagesToSubfolderTask extends AbstractFileSystemTask {
   }
 
   @Override
-  public void execute(boolean performOperations) {
+  public void execute(PreviewOrRun previewOrRun) {
     Path workingPath = Paths.get(workingFolder);
 
     rawPath = Paths.get(rawFolder);
@@ -98,14 +99,14 @@ public class MoveRawImagesToSubfolderTask extends AbstractFileSystemTask {
     rawGlobFilter = buildRawGlobFilter();
 
     // Create the operation list
-    List<IFilesystemOperation> fsOpList = new ArrayList<>();
+    List<FilesystemOperation> fsOpList = new ArrayList<>();
     pathList.forEach(path -> this.createOperation(path, fsOpList));
 
     // Create the operation report
     TableReport opReport = ReportUtil.buildOperationReport();
     status.getReports().add(opReport);
 
-    executeOperations(fsOpList, opReport, workingPath, workingPath, performOperations);
+    executeOperations(fsOpList, opReport, workingPath, workingPath, previewOrRun);
   }
 
 }

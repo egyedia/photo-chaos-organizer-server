@@ -9,11 +9,10 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
-import com.dubylon.photochaos.task.AbstractFileSystemTask;
-import com.dubylon.photochaos.task.PcoTaskTemplate;
-import com.dubylon.photochaos.task.PcoTaskTemplateParameter;
-import com.dubylon.photochaos.task.TaskTemplateParameterCopyOrMove;
+import com.dubylon.photochaos.report.TableReportRow;
+import com.dubylon.photochaos.task.*;
 import com.dubylon.photochaos.util.FileSystemUtil;
+import com.dubylon.photochaos.util.Pair;
 import com.dubylon.photochaos.util.ReportUtil;
 
 import java.io.File;
@@ -29,6 +28,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Stream;
+
+import static com.dubylon.photochaos.report.TableReport.*;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileMeta.")
 public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFileSystemTask {
@@ -84,17 +85,15 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
 
   }
 
-  private Instant readFileDateFromMetadata(Path path) {
+  private Pair<Instant, Exception> readFileDateFromMetadata(Path path) {
     Instant captureInstant = null;
     File imageFile = path.toFile();
     Metadata metadata = null;
     //read metadata
     try {
       metadata = ImageMetadataReader.readMetadata(imageFile);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (ImageProcessingException e) {
-      e.printStackTrace();
+    } catch (IOException | ImageProcessingException e) {
+      return new Pair(null, e);
     }
 
     if (metadata != null) {
@@ -137,25 +136,36 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
       }
     }
 
-    return captureInstant;
+    return new Pair(captureInstant, null);
   }
 
-  private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
+  private void createOperation(Path currentPath, List<FilesystemOperation> fsol) {
     final PathMatcher filter = currentPath.getFileSystem().getPathMatcher(knownGlobFilter);
     try (final Stream<Path> stream = Files.list(currentPath)) {
       stream
           .filter(path -> path.toFile().isFile() && filter.matches(path.getFileName()))
           .forEach(path -> {
 
-            Instant captureInstant = readFileDateFromMetadata(path);
+            /*try {
+              System.out.println("Create operation");
+              Thread.sleep(200);
+            } catch (Exception e) {
+              System.out.println("Not able to sleep");
+            }*/
 
+            Pair<Instant, Exception> metaDate = readFileDateFromMetadata(path);
+
+            Instant captureInstant = metaDate.getLeft();
+
+            Path namePath = path.getFileName();
+            Path newPath = null;
+            final FilesystemOperation fileOp;
             if (captureInstant != null) {
-              Path namePath = path.getFileName();
               String targetDateFolderName = dateFormatter.format(captureInstant) + newFolderSuffix;
               Path targetDatePath = Paths.get(targetDateFolderName);
-              Path newPath = destinationPath.resolve(targetDatePath);
+              newPath = destinationPath.resolve(targetDatePath);
               String newPathString = newPath.toString();
-              final IFilesystemOperation folderOp;
+              final FilesystemOperation folderOp;
               if (newPath.toFile().exists() || createdFolders.contains(newPathString)) {
                 folderOp = new FolderAlreadyPresent(newPath);
               } else {
@@ -163,17 +173,14 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
                 createdFolders.add(newPathString);
               }
               fsol.add(folderOp);
-
-              final IFilesystemOperation fileOp;
-              if (TaskTemplateParameterCopyOrMove.COPY == fileOperation) {
-                fileOp = new CopyFile(namePath, currentPath, newPath);
-              } else {
-                fileOp = new MoveFile(namePath, currentPath, newPath);
-              }
-              fsol.add(fileOp);
-            } else {
-              System.out.println("unable to determine file date for:" + path);
             }
+            if (TaskTemplateParameterCopyOrMove.COPY == fileOperation) {
+              fileOp = new CopyFile(namePath, currentPath, newPath);
+            } else {
+              fileOp = new MoveFile(namePath, currentPath, newPath);
+            }
+            fileOp.setException(metaDate.getRight());
+            fsol.add(fileOp);
           });
     } catch (IOException e) {
       e.printStackTrace();
@@ -182,7 +189,7 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
 
 
   @Override
-  public void execute(boolean performOperations) {
+  public void execute(PreviewOrRun previewOrRun) {
     sourcePath = Paths.get(sourceFolder);
     destinationPath = Paths.get(destinationFolder);
 
@@ -192,15 +199,22 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
     // Check destination folder
     boolean destinationFolderOk = FileSystemUtil.isDirectoryAndWritable(destinationPath);
 
+    TableReport phaseReport = ReportUtil.buildPhaseReport();
+    status.getReports().add(phaseReport);
+
     // Detect all subfolders
     if (sourceFolderOk && destinationFolderOk) {
+      TableReportRow row1 = phaseReport.createRow();
+      row1.set(FSOP_PHASE, "detectingFolders");
       pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath);
     } else {
       pathList = new ArrayList<>();
     }
 
+    TableReportRow row2 = phaseReport.createRow();
+    row2.set(FSOP_PHASE, "detectingFiles");
     // Create the operation list
-    List<IFilesystemOperation> fsOpList = new ArrayList<>();
+    List<FilesystemOperation> fsOpList = new ArrayList<>();
     createdFolders = new HashSet<>();
     dateFormatter = DateTimeFormatter.ofPattern(newFolderDateFormat).withZone(ZoneOffset.UTC);
 
@@ -212,6 +226,8 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
     TableReport opReport = ReportUtil.buildOperationReport();
     status.getReports().add(opReport);
 
-    executeOperations(fsOpList, opReport, sourcePath, destinationPath, performOperations);
+    TableReportRow row3 = phaseReport.createRow();
+    row3.set(FSOP_PHASE, "workingOnFiles");
+    executeOperations(fsOpList, opReport, sourcePath, destinationPath, previewOrRun);
   }
 }

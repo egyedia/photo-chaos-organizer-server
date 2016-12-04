@@ -3,21 +3,18 @@ package com.dubylon.photochaos.task.copytodatedfolderbyname;
 import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
-import com.dubylon.photochaos.report.TableReportRow;
 import com.dubylon.photochaos.task.*;
 import com.dubylon.photochaos.util.FileNameDateUtil;
 import com.dubylon.photochaos.util.FileSystemUtil;
 import com.dubylon.photochaos.util.ReportUtil;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.time.DateTimeException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -25,11 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import static com.dubylon.photochaos.report.TableReport.*;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileName.")
 public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystemTask {
@@ -110,7 +103,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
     return fileDateTime;
   }
 
-  private void createOperation(Path currentPath, List<IFilesystemOperation> fsol) {
+  private void createOperation(Path currentPath, List<FilesystemOperation> fsol) {
     final PathMatcher filter = currentPath.getFileSystem().getPathMatcher(knownGlobFilter);
     try (final Stream<Path> stream = Files.list(currentPath)) {
       stream
@@ -124,7 +117,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
               Path targetDatePath = Paths.get(targetDateFolderName);
               Path newPath = destinationPath.resolve(targetDatePath);
               String newPathString = newPath.toString();
-              final IFilesystemOperation folderOp;
+              final FilesystemOperation folderOp;
               if (newPath.toFile().exists() || createdFolders.contains(newPathString)) {
                 folderOp = new FolderAlreadyPresent(newPath);
               } else {
@@ -134,7 +127,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
               fsol.add(folderOp);
 
               Path namePath = path.getFileName();
-              final IFilesystemOperation fileOp;
+              final FilesystemOperation fileOp;
               if (TaskTemplateParameterCopyOrMove.COPY == fileOperation) {
                 fileOp = new CopyFile(namePath, currentPath, newPath);
               } else {
@@ -151,7 +144,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
   }
 
   @Override
-  public void execute(boolean performOperations) {
+  public void execute(PreviewOrRun previewOrRun) {
     sourcePath = Paths.get(sourceFolder);
     destinationPath = Paths.get(destinationFolder);
 
@@ -169,7 +162,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
     }
 
     // Create the operation list
-    List<IFilesystemOperation> fsOpList = new ArrayList<>();
+    List<FilesystemOperation> fsOpList = new ArrayList<>();
     createdFolders = new HashSet<>();
     dateFormatter = DateTimeFormatter.ofPattern(newFolderDateFormat).withZone(ZoneOffset.UTC);
 
@@ -181,7 +174,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
     TableReport opReport = ReportUtil.buildOperationReport();
     status.getReports().add(opReport);
 
-    executeOperations(fsOpList, opReport, sourcePath, destinationPath, performOperations);
+    executeOperations(fsOpList, opReport, sourcePath, destinationPath, previewOrRun);
   }
 
 }

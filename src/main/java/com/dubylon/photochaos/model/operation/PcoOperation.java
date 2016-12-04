@@ -1,6 +1,6 @@
 package com.dubylon.photochaos.model.operation;
 
-public interface IPcoOperation {
+public interface PcoOperation {
 
   PcoOperationType getType();
 
@@ -11,4 +11,9 @@ public interface IPcoOperation {
   void perform();
 
   String getErrorMessage();
+
+  void setException(Exception e);
+
+  Exception getException();
+
 }

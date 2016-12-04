@@ -2,12 +2,12 @@ package com.dubylon.photochaos.rest.clientsettings;
 
 import com.dubylon.photochaos.app.PhotoChaosOrganizerApplication;
 import com.dubylon.photochaos.model.config.ConfigClientData;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
+import com.dubylon.photochaos.rest.PhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class PcoClientSettingsGetHandler implements IPhotoChaosHandler {
+public class PcoClientSettingsGetHandler implements PhotoChaosHandler {
 
   public PcoClientSettingsGetHandler() {
   }

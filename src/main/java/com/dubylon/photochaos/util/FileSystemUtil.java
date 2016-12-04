@@ -36,6 +36,15 @@ public class FileSystemUtil {
       stream
           .filter(path -> path.toFile().isDirectory())
           .forEach(path -> {
+
+            /*try {
+              System.out.println("Detect paths");
+              Thread.sleep(200);
+            } catch (Exception e) {
+              System.out.println("Not able to sleep");
+            }*/
+
+
             pathList.add(path);
             detectPaths(path, pathList);
           });

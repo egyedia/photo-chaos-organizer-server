@@ -4,6 +4,7 @@ import com.dubylon.photochaos.handler.PCResponseWriter;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.dubylon.photochaos.servlet.AbstractPhotoChaosServlet;
+import com.dubylon.photochaos.task.PreviewOrRun;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,15 +19,17 @@ public class TaskServlet extends AbstractPhotoChaosServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String action = request.getParameter("action");
-    Boolean runTask = null;
+    Boolean launchTaskAtAll = false;
+    PreviewOrRun previewOrRun = PreviewOrRun.PREVIEW;
     if (PREVIEW.equals(action)) {
-      runTask = Boolean.FALSE;
+      launchTaskAtAll = Boolean.TRUE;
     } else if (RUN.equals(action)) {
-      runTask = Boolean.TRUE;
+      launchTaskAtAll = Boolean.TRUE;
+      previewOrRun = PreviewOrRun.RUN;
     }
 
-    if (runTask != null) {
-      TaskPreviewOrRunGetHandler h = new TaskPreviewOrRunGetHandler(runTask);
+    if (launchTaskAtAll) {
+      TaskPreviewOrRunGetHandler h = new TaskPreviewOrRunGetHandler(previewOrRun);
       try {
         TaskPreviewOrRunGetData pcResponse = h.handleRequest(request);
         PCResponseWriter.writeSuccess(response, pcResponse, pcResponse);
@@ -45,7 +48,8 @@ public class TaskServlet extends AbstractPhotoChaosServlet {
   }
 
   @Override
-  protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+      IOException {
     TaskDeleteHandler h = new TaskDeleteHandler();
     try {
       TaskDeleteData pcResponse = h.handleRequest(request);

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TableReport implements ITaskReport {
+public class TableReport implements TaskReport {
 
   public static final String FSOP_OPERATION = "OPERATION";
   public static final String FSOP_SOURCE = "SOURCE";
@@ -13,6 +13,8 @@ public class TableReport implements ITaskReport {
   public static final String FSOP_DESTINATION = "DESTINATION";
   public static final String FSOP_DESTINATION_NAME = "DESTINATION_NAME";
   public static final String FSOP_STATUS = "STATUS";
+  public static final String FSOP_ERROR = "ERROR";
+  public static final String FSOP_PHASE = "PHASE";
 
   private List<String> headers;
   private Map<String, Integer> headerToPos;

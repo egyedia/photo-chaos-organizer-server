@@ -1,7 +1,7 @@
 package com.dubylon.photochaos.rest.users;
 
 import com.dubylon.photochaos.model.db.User;
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
+import com.dubylon.photochaos.rest.PhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.util.HibernateUtil;
 import org.hibernate.HibernateException;
@@ -12,7 +12,7 @@ import org.hibernate.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-public class UsersGetHandler implements IPhotoChaosHandler {
+public class UsersGetHandler implements PhotoChaosHandler {
 
   public UsersGetHandler() {
   }

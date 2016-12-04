@@ -1,6 +1,6 @@
 package com.dubylon.photochaos.rest.generic;
 
-import com.dubylon.photochaos.rest.IPhotoChaosHandler;
+import com.dubylon.photochaos.rest.PhotoChaosHandler;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import org.apache.commons.io.IOUtils;
 
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public abstract class AbstractPCHandler implements IPhotoChaosHandler {
+public abstract class AbstractPCHandler implements PhotoChaosHandler {
 
   public final static String PATH_PREFIX = "file://";
   public final static String HEADER_AUTHORIZATION = "Authorization";

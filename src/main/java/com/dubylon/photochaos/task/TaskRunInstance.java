@@ -4,20 +4,20 @@ import java.time.Instant;
 
 public class TaskRunInstance {
 
-  private IPcoTask task;
+  private PcoTask task;
   private long userId;
   private RunningInstanceInfo instance;
 
-  public TaskRunInstance(IPcoTask task) {
+  public TaskRunInstance(PcoTask task) {
     this.task = task;
     this.instance = new RunningInstanceInfo();
   }
 
-  public IPcoTask getTask() {
+  public PcoTask getTask() {
     return task;
   }
 
-  public void setTask(IPcoTask task) {
+  public void setTask(PcoTask task) {
     this.task = task;
   }
 
