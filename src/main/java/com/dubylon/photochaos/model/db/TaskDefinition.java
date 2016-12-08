@@ -39,6 +39,13 @@ public class TaskDefinition {
   public TaskDefinition() {
   }
 
+  public TaskDefinition(TaskDefinition task) {
+    this.owner = task.getOwner();
+    this.name = "Clone of " + task.getName();
+    this.parameters = task.getParameters();
+    this.className = task.getClassName();
+  }
+
   public Long getId() {
     return id;
   }

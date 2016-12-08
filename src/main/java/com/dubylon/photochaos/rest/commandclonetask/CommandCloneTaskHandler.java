@@ -1,23 +1,24 @@
-package com.dubylon.photochaos.rest.task;
+package com.dubylon.photochaos.rest.commandclonetask;
 
 import com.dubylon.photochaos.model.db.TaskDefinition;
 import com.dubylon.photochaos.model.db.User;
 import com.dubylon.photochaos.rest.PCHandlerError;
 import com.dubylon.photochaos.rest.PCHandlerResponse;
 import com.dubylon.photochaos.rest.generic.AbstractPCHandler;
+import com.dubylon.photochaos.rest.task.TaskDeleteData;
 import com.dubylon.photochaos.util.HibernateUtil;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class TaskDeleteHandler extends AbstractPCHandler {
+public class CommandCloneTaskHandler extends AbstractPCHandler {
 
-  public TaskDeleteHandler() {
+  public CommandCloneTaskHandler() {
   }
 
   @Override
-  public TaskDeleteData handleRequest(HttpServletRequest request) throws PCHandlerError {
+  public CommandCloneTaskData handleRequest(HttpServletRequest request) throws PCHandlerError {
     long id = extractIdFromPathInfo(request, "Task id");
 
     SessionFactory sessionFactory = null;
@@ -43,10 +44,11 @@ public class TaskDeleteHandler extends AbstractPCHandler {
         tx.commit();
         throw new PCHandlerError(PCHandlerResponse.NOT_FOUND, "NO_SUCH_TASK");
       } else {
-        session.delete(task);
+        TaskDefinition newTaskDefinition = new TaskDefinition(task);
+        session.save(newTaskDefinition);
         tx.commit();
-        TaskDeleteData response = new TaskDeleteData();
-        response.setDeleted(true);
+        CommandCloneTaskData response = new CommandCloneTaskData();
+        response.setCloned(true);
         return response;
       }
     } catch (HibernateException e) {
@@ -54,7 +56,7 @@ public class TaskDeleteHandler extends AbstractPCHandler {
       if (tx != null) {
         tx.rollback();
       }
-      throw new PCHandlerError("ERROR_WHILE_DELETING", e);
+      throw new PCHandlerError("ERROR_WHILE_CLONING", e);
     } finally {
       session.close();
     }
