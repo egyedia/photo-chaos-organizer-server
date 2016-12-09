@@ -18,13 +18,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Objects;
 
-/**
- * Hibernate {@link UserType} implementation to handle JSON objects
- *
- * @see https
- *      ://docs.jboss.org/hibernate/orm/4.1/javadocs/org/hibernate/usertype/
- *      UserType.html
- */
 public class JSONUserType implements UserType, ParameterizedType, Serializable {
 
   private static final long serialVersionUID = 1L;

@@ -3,6 +3,7 @@ package com.dubylon.photochaos.app;
 import com.dubylon.photochaos.Defaults;
 import com.dubylon.photochaos.resource.ClasspathResourceHandler;
 import com.dubylon.photochaos.rest.clientsettings.PcoClientSettingsServlet;
+import com.dubylon.photochaos.rest.commandclonetask.CommandCloneTaskServlet;
 import com.dubylon.photochaos.rest.control.AppControlPlayVideoServlet;
 import com.dubylon.photochaos.rest.control.AppControlShutdownServlet;
 import com.dubylon.photochaos.rest.favorite.FilesystemFavoritesServlet;
@@ -116,6 +117,7 @@ public class PhotoChaosOrganizerApplication {
     servletHandler.addServletWithMapping(TaskTemplateServlet.class, "/task-templates/*");
     servletHandler.addServletWithMapping(TasksServlet.class, "/tasks");
     servletHandler.addServletWithMapping(TaskServlet.class, "/tasks/*");
+    servletHandler.addServletWithMapping(CommandCloneTaskServlet.class, "/command-clone-task/*");
     servletHandler.addServletWithMapping(TaskStatusServlet.class, "/task-status/*");
     servletHandler.addServletWithMapping(AppControlShutdownServlet.class, "/app-control-shutdown");
     servletHandler.addServletWithMapping(AppControlPlayVideoServlet.class, "/app-control-play-video/*");

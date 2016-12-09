@@ -20,6 +20,12 @@
     <metadata-extractor-version>2.9.1</metadata-extractor-version>
   </properties>
 
+  <scm>
+    <connection>scm:git:git@github.com:egyedia/photo-chaos-organizer-server.git</connection>
+    <developerConnection>scm:git:git@github.com:egyedia/photo-chaos-organizer-server.git</developerConnection>
+    <url>https://github.com/egyedia/photo-chaos-organizer-server</url>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
