@@ -17,6 +17,9 @@
     <log4j-version>2.7</log4j-version>
     <commons-io-version>2.5</commons-io-version>
     <metadata-extractor-version>2.9.1</metadata-extractor-version>
+
+    <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
+    <maven.scm.gitexe.version>1.9.5</maven.scm.gitexe.version>
   </properties>
 
   <scm>
@@ -180,6 +183,19 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>${maven.release.plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>${maven.scm.gitexe.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
 
