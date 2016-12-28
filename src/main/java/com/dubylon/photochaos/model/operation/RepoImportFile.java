@@ -27,6 +27,11 @@ public class RepoImportFile extends AbstractPcoOperation {
     setStatus(PcoOperationStatus.SUCCESS);
   }
 
+  @Override
+  public boolean isDoingSomething() {
+    return true;
+  }
+
   public RepoFile getRepoFile() {
     return repoFile;
   }

@@ -12,9 +12,9 @@ public class TableReport implements TaskReport {
   public static final String FSOP_SOURCE_NAME = "SOURCE_NAME";
   public static final String FSOP_DESTINATION = "DESTINATION";
   public static final String FSOP_DESTINATION_NAME = "DESTINATION_NAME";
-  public static final String FSOP_STATUS = "STATUS";
   public static final String FSOP_ERROR = "ERROR";
   public static final String FSOP_PHASE = "PHASE";
+  public static final String FSOP_PHASE_VALUE = "PHASE_VALUE";
 
   private List<String> headers;
   private Map<String, Integer> headerToPos;

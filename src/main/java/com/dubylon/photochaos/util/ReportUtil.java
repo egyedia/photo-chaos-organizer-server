@@ -16,7 +16,6 @@ public class ReportUtil {
     opReport.addHeader(FSOP_SOURCE_NAME);
     opReport.addHeader(FSOP_DESTINATION);
     opReport.addHeader(FSOP_DESTINATION_NAME);
-    opReport.addHeader(FSOP_STATUS);
     opReport.addHeader(FSOP_ERROR);
     return opReport;
   }
@@ -24,6 +23,7 @@ public class ReportUtil {
   public static TableReport buildPhaseReport() {
     TableReport opReport = new TableReport();
     opReport.addHeader(FSOP_PHASE);
+    opReport.addHeader(FSOP_PHASE_VALUE);
     return opReport;
   }
 }

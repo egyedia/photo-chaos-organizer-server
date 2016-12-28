@@ -8,6 +8,7 @@
     "uuuu/MM.dd": "YYYY/MM.DD",
     "uuuu/MM/dd": "YYYY/MM/DD",
     "uuuu/uuuuMMdd": "YYYY/YYYYMMDD",
-    "uuuu/uuuu-MM-dd": "YYYY/YYYY-MM-DD"
+    "uuuu/uuuu-MM-dd": "YYYY/YYYY-MM-DD",
+    "uuuu-MM-dd:HH-mm": "YYYY-MM-DD:HH-mm"
   }
 }

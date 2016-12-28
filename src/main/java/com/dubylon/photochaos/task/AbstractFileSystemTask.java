@@ -7,13 +7,14 @@ import com.dubylon.photochaos.report.TableReportRow;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.dubylon.photochaos.report.TableReport.*;
 
 public abstract class AbstractFileSystemTask extends AbstractPcoTask {
 
   protected void executeOperations(List<FilesystemOperation> fsOpList, TableReport opReport, Path sourcePath, Path
-      destinationPath, PreviewOrRun previewOrRun) {
+      destinationPath, PreviewOrRun previewOrRun, TableReportRow countRow, Consumer<TableReportRow> action) {
     fsOpList.forEach(op -> {
       /*try {
         System.out.println("Execute operation");
@@ -23,7 +24,7 @@ public abstract class AbstractFileSystemTask extends AbstractPcoTask {
       }*/
 
       PcoOperationPerformer.perform(op, previewOrRun);
-      if (op.getType() != PcoOperationType.DONOTHING) {
+      if (op.isDoingSomething()) {
         TableReportRow row = opReport.createRow();
         row.set(FSOP_OPERATION, op.getType());
         row.set(FSOP_SOURCE, op.getSource() == null ? null : sourcePath.relativize(op.getSource()).toString());
@@ -31,8 +32,9 @@ public abstract class AbstractFileSystemTask extends AbstractPcoTask {
         row.set(FSOP_DESTINATION, op.getDestination() == null ? null : destinationPath.relativize(op.getDestination()
         ).toString());
         row.set(FSOP_DESTINATION_NAME, op.getDestinationName() == null ? null : op.getDestinationName().toString());
-        row.set(FSOP_STATUS, op.getStatus());
         row.set(FSOP_ERROR, op.getErrorMessage());
+        row.setStatus(op.getStatus());
+        action.accept(countRow);
       }
     });
   }

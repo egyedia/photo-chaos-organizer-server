@@ -16,4 +16,6 @@ public interface PcoOperation {
 
   Exception getException();
 
+  boolean isDoingSomething();
+
 }

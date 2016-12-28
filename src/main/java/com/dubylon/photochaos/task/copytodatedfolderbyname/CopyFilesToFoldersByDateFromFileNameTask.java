@@ -3,9 +3,11 @@ package com.dubylon.photochaos.task.copytodatedfolderbyname;
 import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
+import com.dubylon.photochaos.report.TableReportRow;
 import com.dubylon.photochaos.task.*;
 import com.dubylon.photochaos.util.FileNameDateUtil;
 import com.dubylon.photochaos.util.FileSystemUtil;
+import com.dubylon.photochaos.util.Pair;
 import com.dubylon.photochaos.util.ReportUtil;
 import org.apache.commons.io.FilenameUtils;
 
@@ -22,7 +24,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static com.dubylon.photochaos.report.TableReport.FSOP_PHASE;
+import static com.dubylon.photochaos.report.TableReport.FSOP_PHASE_VALUE;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileName.")
 public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystemTask {
@@ -79,7 +85,7 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
   public CopyFilesToFoldersByDateFromFileNameTask() {
   }
 
-  private LocalDateTime readFileDateFromFileName(Path path) {
+  private Pair<LocalDateTime, Exception> readFileDateFromFileName(Path path) {
     LocalDateTime fileDateTime = null;
 
     Path namePath = path.getFileName();
@@ -94,23 +100,25 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
         fileDateTime = LocalDateTime.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay(), dateTime
             .getHour(), dateTime.getMinute(), dateTime.getSecond());
       } catch (DateTimeException ex) {
-        System.out.println(ex.getMessage());
-        //ex.printStackTrace();
+        return new Pair(null, ex);
       }
     } else {
-      System.out.println("Unable to determine file date for:" + path);
+      return new Pair(null, new IllegalArgumentException("Unable to determine file date"));
     }
-    return fileDateTime;
+    return new Pair(fileDateTime, null);
   }
 
-  private void createOperation(Path currentPath, List<FilesystemOperation> fsol) {
+  private void createOperation(Path currentPath, List<FilesystemOperation> fsol, TableReportRow row,
+                               Consumer<TableReportRow> action) {
     final PathMatcher filter = currentPath.getFileSystem().getPathMatcher(knownGlobFilter);
     try (final Stream<Path> stream = Files.list(currentPath)) {
       stream
           .filter(path -> path.toFile().isFile() && filter.matches(path.getFileName()))
           .forEach(path -> {
 
-            LocalDateTime fileDateTime = readFileDateFromFileName(path);
+            Pair<LocalDateTime, Exception> dateResult = readFileDateFromFileName(path);
+
+            LocalDateTime fileDateTime = dateResult.getLeft();
 
             if (fileDateTime != null) {
               String targetDateFolderName = dateFormatter.format(fileDateTime) + newFolderSuffix;
@@ -125,6 +133,9 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
                 createdFolders.add(newPathString);
               }
               fsol.add(folderOp);
+              if (folderOp.isDoingSomething()) {
+                action.accept(row);
+              }
 
               Path namePath = path.getFileName();
               final FilesystemOperation fileOp;
@@ -134,8 +145,16 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
                 fileOp = new MoveFile(namePath, currentPath, newPath);
               }
               fsol.add(fileOp);
+              if (fileOp.isDoingSomething()) {
+                action.accept(row);
+              }
             } else {
-              System.out.println("Error while determining file date for:" + path);
+              Path namePath = path.getFileName();
+              final FilesystemOperation fileOp = new UnableToProcessFile(namePath, currentPath);
+              fileOp.setStatus(PcoOperationStatus.ERROR);
+              fileOp.setException(dateResult.getRight());
+              fsol.add(fileOp);
+              action.accept(row);
             }
           });
     } catch (IOException e) {
@@ -154,27 +173,52 @@ public class CopyFilesToFoldersByDateFromFileNameTask extends AbstractFileSystem
     // Check destination folder
     boolean destinationFolderOk = FileSystemUtil.isDirectoryAndWritable(destinationPath);
 
+    TableReport phaseReport = ReportUtil.buildPhaseReport();
+    status.getReports().add(phaseReport);
+
     // Detect all subfolders
+    TableReportRow row1 = phaseReport.createRow();
+    row1.set(FSOP_PHASE, "detectingFolders");
     if (sourceFolderOk && destinationFolderOk) {
-      pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath);
+      row1.set(FSOP_PHASE_VALUE, 0);
+      pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath, row1, row -> {
+        row.set(FSOP_PHASE_VALUE, (Integer) row.get(FSOP_PHASE_VALUE) + 1);
+      });
     } else {
       pathList = new ArrayList<>();
+      row1.setStatus(PcoOperationStatus.ERROR);
+      if (!sourceFolderOk) {
+        row1.set(FSOP_PHASE_VALUE, "sourceFolderError");
+      } else if (!destinationFolderOk) {
+        row1.set(FSOP_PHASE_VALUE, "destinationFolderError");
+      }
     }
 
     // Create the operation list
+    TableReportRow row2 = phaseReport.createRow();
+    row2.set(FSOP_PHASE, "creatingOperationList");
+    row2.set(FSOP_PHASE_VALUE, 0);
     List<FilesystemOperation> fsOpList = new ArrayList<>();
     createdFolders = new HashSet<>();
     dateFormatter = DateTimeFormatter.ofPattern(newFolderDateFormat).withZone(ZoneOffset.UTC);
 
     knownGlobFilter = buildKnownGlobFilter();
 
-    pathList.forEach(path -> this.createOperation(path, fsOpList));
+    pathList.forEach(path -> this.createOperation(path, fsOpList, row2, row -> {
+      row.set(FSOP_PHASE_VALUE, (Integer) row.get(FSOP_PHASE_VALUE) + 1);
+    }));
 
     // Create the operation report
     TableReport opReport = ReportUtil.buildOperationReport();
     status.getReports().add(opReport);
 
-    executeOperations(fsOpList, opReport, sourcePath, destinationPath, previewOrRun);
+    // Execute the operation list
+    TableReportRow row3 = phaseReport.createRow();
+    row3.set(FSOP_PHASE, "executingOperations");
+    row3.set(FSOP_PHASE_VALUE, 0);
+    executeOperations(fsOpList, opReport, sourcePath, destinationPath, previewOrRun, row3, row -> {
+      row.set(FSOP_PHASE_VALUE, (Integer) row.get(FSOP_PHASE_VALUE) + 1);
+    });
   }
 
 }

@@ -1,35 +1,29 @@
 package com.dubylon.photochaos.task.copytodatedfolderbymeta;
 
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.dubylon.photochaos.model.operation.*;
 import com.dubylon.photochaos.model.tasktemplate.TaskTemplateParameterType;
 import com.dubylon.photochaos.report.TableReport;
 import com.dubylon.photochaos.report.TableReportRow;
 import com.dubylon.photochaos.task.*;
-import com.dubylon.photochaos.util.FileSystemUtil;
-import com.dubylon.photochaos.util.Pair;
-import com.dubylon.photochaos.util.ReportUtil;
+import com.dubylon.photochaos.util.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static com.dubylon.photochaos.report.TableReport.*;
+import static com.dubylon.photochaos.report.TableReport.FSOP_PHASE;
+import static com.dubylon.photochaos.report.TableReport.FSOP_PHASE_VALUE;
 
 @PcoTaskTemplate(languageKeyPrefix = "task.copyFilesByDateFromFileMeta.")
 public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFileSystemTask {
@@ -59,10 +53,18 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
   private String newFolderSuffix;
 
   @PcoTaskTemplateParameter(
+      type = TaskTemplateParameterType.YESORNO,
+      mandatory = false,
+      defaultValue = "no",
+      order = 4
+  )
+  private TaskTemplateParameterYesOrNo fallbackToFileDate;
+
+  @PcoTaskTemplateParameter(
       type = TaskTemplateParameterType.SHORTDATEFORMAT,
       mandatory = true,
       defaultValue = "uuuuMMdd",
-      order = 4
+      order = 5
   )
   private String newFolderDateFormat;
 
@@ -70,7 +72,7 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
       type = TaskTemplateParameterType.COPYORMOVE,
       mandatory = true,
       defaultValue = "copy",
-      order = 5
+      order = 6
   )
   private TaskTemplateParameterCopyOrMove fileOperation;
 
@@ -86,60 +88,27 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
   }
 
   private Pair<Instant, Exception> readFileDateFromMetadata(Path path) {
-    Instant captureInstant = null;
-    File imageFile = path.toFile();
-    Metadata metadata = null;
-    //read metadata
-    try {
-      metadata = ImageMetadataReader.readMetadata(imageFile);
-    } catch (IOException | ImageProcessingException e) {
-      return new Pair(null, e);
+
+    // try with Metadata-Extractor
+    Pair<Instant, Exception> result = ExifMetadataDateTimeParser.parse(path);
+
+    // try with Tika-Mp4Parser
+    if (result.getLeft() == null) {
+      result = TikaDateTimeParser.parse(path);
     }
 
-    if (metadata != null) {
-      final Directory exifSubIFDDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-      final ExifIFD0Directory exifIFD0Directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
-
-      // read ExifIFD0Directory/ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL
-      if (exifSubIFDDirectory != null) {
-        if (exifSubIFDDirectory.containsTag(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)) {
-          Date dto = exifSubIFDDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
-          if (dto != null) {
-            captureInstant = dto.toInstant();
-          }
-        }
-      }
-
-      // read ExifIFD0Directory/ExifIFD0Directory.TAG_DATETIME
-      if (captureInstant == null) {
-        if (exifIFD0Directory != null) {
-          if (exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_DATETIME)) {
-            Date dto = exifIFD0Directory.getDate(ExifIFD0Directory.TAG_DATETIME);
-            if (dto != null) {
-              captureInstant = dto.toInstant();
-            }
-          }
-        }
+    // try the file creation date, if allowed
+    if (result.getLeft() == null) {
+      if (TaskTemplateParameterYesOrNo.YES == fallbackToFileDate) {
+        result = FileSystemDateTimeParser.parse(path);
       }
     }
 
-    // fall back to file creation date
-    if (captureInstant == null) {
-      try {
-        BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
-        FileTime fileTime = attr.creationTime();
-        if (fileTime != null) {
-          captureInstant = fileTime.toInstant();
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-
-    return new Pair(captureInstant, null);
+    return result;
   }
 
-  private void createOperation(Path currentPath, List<FilesystemOperation> fsol) {
+  private void createOperation(Path currentPath, List<FilesystemOperation> fsol, TableReportRow row,
+                               Consumer<TableReportRow> action) {
     final PathMatcher filter = currentPath.getFileSystem().getPathMatcher(knownGlobFilter);
     try (final Stream<Path> stream = Files.list(currentPath)) {
       stream
@@ -173,6 +142,9 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
                 createdFolders.add(newPathString);
               }
               fsol.add(folderOp);
+              if (folderOp.isDoingSomething()) {
+                action.accept(row);
+              }
             }
             if (TaskTemplateParameterCopyOrMove.COPY == fileOperation) {
               fileOp = new CopyFile(namePath, currentPath, newPath);
@@ -181,6 +153,9 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
             }
             fileOp.setException(metaDate.getRight());
             fsol.add(fileOp);
+            if (fileOp.isDoingSomething()) {
+              action.accept(row);
+            }
           });
     } catch (IOException e) {
       e.printStackTrace();
@@ -203,31 +178,47 @@ public class CopyFilesToFoldersByCaptionDateFromFileMetaTask extends AbstractFil
     status.getReports().add(phaseReport);
 
     // Detect all subfolders
+    TableReportRow row1 = phaseReport.createRow();
+    row1.set(FSOP_PHASE, "detectingFolders");
     if (sourceFolderOk && destinationFolderOk) {
-      TableReportRow row1 = phaseReport.createRow();
-      row1.set(FSOP_PHASE, "detectingFolders");
-      pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath);
+      row1.set(FSOP_PHASE_VALUE, 0);
+      pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath, row1, row -> {
+        row.set(FSOP_PHASE_VALUE, (Integer) row.get(FSOP_PHASE_VALUE) + 1);
+      });
     } else {
       pathList = new ArrayList<>();
+      row1.setStatus(PcoOperationStatus.ERROR);
+      if (!sourceFolderOk) {
+        row1.set(FSOP_PHASE_VALUE, "sourceFolderError");
+      } else if (!destinationFolderOk) {
+        row1.set(FSOP_PHASE_VALUE, "destinationFolderError");
+      }
     }
 
-    TableReportRow row2 = phaseReport.createRow();
-    row2.set(FSOP_PHASE, "detectingFiles");
     // Create the operation list
+    TableReportRow row2 = phaseReport.createRow();
+    row2.set(FSOP_PHASE, "creatingOperationList");
+    row2.set(FSOP_PHASE_VALUE, 0);
     List<FilesystemOperation> fsOpList = new ArrayList<>();
     createdFolders = new HashSet<>();
     dateFormatter = DateTimeFormatter.ofPattern(newFolderDateFormat).withZone(ZoneOffset.UTC);
 
     knownGlobFilter = buildKnownGlobFilter();
 
-    pathList.forEach(path -> this.createOperation(path, fsOpList));
+    pathList.forEach(path -> this.createOperation(path, fsOpList, row2, row -> {
+      row.set(FSOP_PHASE_VALUE, (Integer) row.get(FSOP_PHASE_VALUE) + 1);
+    }));
 
     // Create the operation report
     TableReport opReport = ReportUtil.buildOperationReport();
     status.getReports().add(opReport);
 
+    // Execute the operation list
     TableReportRow row3 = phaseReport.createRow();
-    row3.set(FSOP_PHASE, "workingOnFiles");
-    executeOperations(fsOpList, opReport, sourcePath, destinationPath, previewOrRun);
+    row3.set(FSOP_PHASE, "executingOperations");
+    row3.set(FSOP_PHASE_VALUE, 0);
+    executeOperations(fsOpList, opReport, sourcePath, destinationPath, previewOrRun, row3, row -> {
+      row.set(FSOP_PHASE_VALUE, (Integer) row.get(FSOP_PHASE_VALUE) + 1);
+    });
   }
 }

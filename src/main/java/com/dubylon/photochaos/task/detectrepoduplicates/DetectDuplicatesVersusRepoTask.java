@@ -119,7 +119,8 @@ public class DetectDuplicatesVersusRepoTask extends AbstractFileSystemTask {
 
     // Detect all subfolders
     if (sourceFolderOk && destinationFolderOk) {
-      pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath);
+      //TODO: fix these nulls
+      pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath, null, null);
     } else {
       pathList = new ArrayList<>();
     }
@@ -135,6 +136,7 @@ public class DetectDuplicatesVersusRepoTask extends AbstractFileSystemTask {
     TableReport opReport = ReportUtil.buildOperationReport();
     status.getReports().add(opReport);
 
-    executeOperations(fsOpList, opReport, sourcePath, destinationPath, previewOrRun);
+    //TODO: fix the two nulls
+    executeOperations(fsOpList, opReport, sourcePath, destinationPath, previewOrRun, null, null);
   }
 }

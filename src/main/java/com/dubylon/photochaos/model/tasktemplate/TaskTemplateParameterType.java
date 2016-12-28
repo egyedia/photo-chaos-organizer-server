@@ -8,6 +8,7 @@ public enum TaskTemplateParameterType {
   FOLDERSUFFIX("folderSuffix"),
   PATH("path"),
   SHORTDATEFORMAT("shortDateFormat"),
+  YESORNO("yesOrNo"),
   IMPORTORPREVIEW("importOrPreview"),
   REPONAME("repoName");
 

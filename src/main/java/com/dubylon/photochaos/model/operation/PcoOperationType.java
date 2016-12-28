@@ -8,7 +8,8 @@ public enum PcoOperationType {
   CREATEFOLDER("createFolder"),
   DONOTHING("doNothing"),
   IMPORTINTOREPO("importIntoRepo"),
-  PREVIEWIMPORTINTOREPO("previewImportIntoRepo");
+  PREVIEWIMPORTINTOREPO("previewImportIntoRepo"),
+  REPORTERROR("reportError");
 
   private final String value;
 

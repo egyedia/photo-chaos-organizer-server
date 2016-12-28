@@ -1,6 +1,6 @@
 package com.dubylon.photochaos.util;
 
-import com.dubylon.photochaos.task.copytodatedfolderbyname.DateTimeBean;
+import com.dubylon.photochaos.task.DateTimeBean;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -70,7 +70,6 @@ public class ImportFilesIntoRepoTask extends AbstractPcoTask {
     opReport.addHeader(FSOP_OPERATION);
     opReport.addHeader(FSOP_SOURCE);
     opReport.addHeader(FSOP_SOURCE_NAME);
-    opReport.addHeader(FSOP_STATUS);
     return opReport;
   }
 
@@ -113,7 +112,7 @@ public class ImportFilesIntoRepoTask extends AbstractPcoTask {
         row.set(FSOP_OPERATION, op.getType());
         row.set(FSOP_SOURCE, op.getParentPath() == null ? null : sourcePath.relativize(op.getParentPath()));
         row.set(FSOP_SOURCE_NAME, op.getRepoFile().getName());
-        row.set(FSOP_STATUS, op.getStatus());
+        row.setStatus(op.getStatus());
       }
       i++;
     }
@@ -141,7 +140,8 @@ public class ImportFilesIntoRepoTask extends AbstractPcoTask {
 
     // Detect all subfolders
     if (sourceFolderOk) {
-      pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath);
+      //TODO fix these nulls
+      pathList = FileSystemUtil.getAllSubfoldersIncluding(sourcePath, null, null);
     } else {
       pathList = new ArrayList<>();
     }
